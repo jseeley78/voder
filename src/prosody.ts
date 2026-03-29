@@ -37,7 +37,7 @@ export interface ProsodyOptions {
 
 const DEFAULT_OPTIONS: ProsodyOptions = {
   expressiveness: 0.7,
-  declination: 0.012,
+  declination: 0.018,
 }
 
 function parseToken(raw: string): { phoneme: string; stress: number } | { punct: string } | { wordBreak: true } {
@@ -206,19 +206,19 @@ export function applyProsody(
       const expr = o.expressiveness
       switch (p.stress) {
         case 1:
-          pitchMul += 0.12 * expr
-          durationMul += 0.25 * expr
-          ampMul += 0.10 * expr
+          pitchMul += 0.14 * expr
+          durationMul += 0.35 * expr
+          ampMul += 0.12 * expr
           break
         case 2:
-          pitchMul += 0.05 * expr
-          durationMul += 0.12 * expr
-          ampMul += 0.05 * expr
+          pitchMul += 0.08 * expr
+          durationMul += 0.18 * expr
+          ampMul += 0.06 * expr
           break
         case 0:
-          pitchMul -= 0.06 * expr
-          durationMul -= 0.15 * expr
-          ampMul -= 0.08 * expr
+          pitchMul -= 0.08 * expr
+          durationMul -= 0.18 * expr
+          ampMul -= 0.10 * expr
           break
       }
     }
@@ -228,7 +228,7 @@ export function applyProsody(
     // natural "hat pattern" of English intonation within each phrase.
     if (phrase) {
       // Phrase-initial boost: pitch starts ~8% above neutral, falls to ~4% below
-      const phrasePitchArc = 0.08 - phraseProgress * 0.12
+      const phrasePitchArc = 0.10 - phraseProgress * 0.16
       pitchMul += phrasePitchArc * o.expressiveness
 
       // Topline declination: successive phrases start lower
@@ -250,12 +250,12 @@ export function applyProsody(
       // (not just the last one — the whole final ~20% of the phrase)
       if (phraseProgress > 0.8) {
         const slowdown = (phraseProgress - 0.8) / 0.2  // 0→1 over last 20%
-        durationMul += slowdown * 0.20 * o.expressiveness
+        durationMul += slowdown * 0.25 * o.expressiveness
       }
     }
 
     // ── Sentence-level: declination ──
-    pitchMul -= sentenceProgress * o.declination * totalPhonemes * 0.10
+    pitchMul -= sentenceProgress * o.declination * totalPhonemes * 0.12
 
     // ── Question rise ──
     if (sentenceType === 'question' && sentenceProgress > 0.7) {

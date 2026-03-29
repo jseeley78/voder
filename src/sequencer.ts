@@ -26,8 +26,8 @@ const COARTIC: Record<PhonemeType, { onset: number; steady: number; offset: numb
   vowel:     { onset: 0.20, steady: 0.50, offset: 0.30 },
   fricative: { onset: 0.15, steady: 0.60, offset: 0.25 },
   nasal:     { onset: 0.25, steady: 0.45, offset: 0.30 },
-  liquid:    { onset: 0.35, steady: 0.25, offset: 0.40 },
-  glide:     { onset: 0.45, steady: 0.10, offset: 0.45 },
+  liquid:    { onset: 0.30, steady: 0.35, offset: 0.35 },
+  glide:     { onset: 0.40, steady: 0.20, offset: 0.40 },
   stop:      { onset: 0.05, steady: 0.25, offset: 0.70 },
 }
 
@@ -115,6 +115,8 @@ export interface SequenceOptions {
   basePitch: number
   rateScale: number
   expressiveness?: number
+  /** Human-like randomness: 0 = robotic/deterministic, 1 = full variation */
+  humanize?: number
   onToken?: (event: TokenEvent) => void
   onDone?: () => void
 }
@@ -126,13 +128,59 @@ export interface SequenceHandle {
 
 interface ResolvedToken {
   ph: PhonemeConfig
-  bands: number[]      // after prosody amplitude scaling
+  bands: number[]      // after prosody + humanize scaling
   ampMul: number       // prosody amplitude multiplier (for diphthong scaling)
   pitchHz: number
   durationMs: number
   phoneme: string
   stress: number
   pauseAfterMs: number
+}
+
+/** Random value centered on 0 with given spread (±spread) */
+function jit(spread: number): number {
+  return (Math.random() - 0.5) * 2 * spread
+}
+
+/**
+ * Apply human-like micro-variations to resolved tokens.
+ * Models the imprecision of a live Voder operator:
+ *   - Timing drift: ±8% duration variation
+ *   - Pitch drift: slow random walk ±3% on top of prosody contour
+ *   - Band wobble: ±6% gain perturbation per band (imprecise finger pressure)
+ *   - Pause jitter: ±15% variation in pause lengths
+ *   - Transition noise: slight random offset in transition ramp times
+ */
+function humanizeTokens(tokens: ResolvedToken[], amount: number): void {
+  if (amount <= 0) return
+
+  // Pitch drift: random walk that accumulates across the utterance,
+  // like an operator's foot gradually drifting on the pedal
+  let pitchDrift = 0
+  const driftRate = 0.006 * amount  // how fast the drift wanders
+
+  for (const tok of tokens) {
+    // Duration jitter: ±8% scaled by humanize amount
+    tok.durationMs *= 1 + jit(0.08 * amount)
+
+    // Pitch drift: random walk with mean reversion
+    pitchDrift += jit(driftRate)
+    pitchDrift *= 0.95  // pull back toward center
+    tok.pitchHz *= 1 + pitchDrift + jit(0.01 * amount)
+
+    // Band gain wobble: each band gets independent ±6% perturbation
+    // (simulates imprecise finger pressure on the 10 keys)
+    tok.bands = tok.bands.map(g => {
+      if (g < 0.01) return g  // don't perturb silence
+      return Math.max(0, g * (1 + jit(0.06 * amount)))
+    })
+
+    // Pause jitter
+    if (tok.pauseAfterMs > 0) {
+      tok.pauseAfterMs *= 1 + jit(0.15 * amount)
+      tok.pauseAfterMs = Math.max(10, tok.pauseAfterMs)
+    }
+  }
 }
 
 export function speakPhonemeSequence(
@@ -169,6 +217,9 @@ export function speakPhonemeSequence(
     }
 
     if (!resolved.length) return
+
+    // Apply human-like micro-variations
+    humanizeTokens(resolved, options.humanize ?? 0.5)
 
     for (let i = 0; i < resolved.length; i++) {
       if (cancelled) break
@@ -208,7 +259,7 @@ export function speakPhonemeSequence(
           const aspBands = next.bands.map(g => g * 0.3)
           engine.applyFrame({
             voiced: false,
-            noise: 0.6,
+            noise: 0.45,
             pitchHz: cur.pitchHz,
             bands: aspBands,
           }, 5)
@@ -222,7 +273,7 @@ export function speakPhonemeSequence(
 
       if (onsetMs > 5) {
         const prevBands = prev ? prev.bands : SILENCE_BANDS
-        const blendToward = (prev && isConsonant(prev.ph.type) && isConsonant(cur.ph.type)) ? 0.75 : 0.5
+        const blendToward = (prev && isConsonant(prev.ph.type) && isConsonant(cur.ph.type)) ? 0.65 : 0.5
         const onsetBands = blendBands(prevBands, cur.bands, blendToward)
         const prevAmp = prev?.ph.voicedAmp ?? 0
         const onsetFrame: VoderFrame = {

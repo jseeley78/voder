@@ -1,4 +1,5 @@
 import { BAND_CENTERS, BAND_Q, BAND_COMPENSATION, type PhonemeConfig, type TransientConfig } from './phonemes'
+import { GLOTTAL_WORKLET_CODE } from './glottal-worklet'
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v))
@@ -18,10 +19,7 @@ export interface VoderFrame {
 }
 
 /**
- * Build a PeriodicWave that approximates the Voder's relaxation oscillator.
- * The original used a gas triode with ~0.3ms charge, ~0.8ms discharge,
- * producing a pulse-like waveform rich in harmonics but with a steeper
- * spectral rolloff than a sawtooth.
+ * Fallback PeriodicWave for browsers that don't support AudioWorklet.
  */
 function createGlottalWave(ctx: AudioContext): PeriodicWave {
   const N = 64
@@ -37,10 +35,27 @@ function createGlottalWave(ctx: AudioContext): PeriodicWave {
   return ctx.createPeriodicWave(real, imag, { disableNormalization: false })
 }
 
+/**
+ * Register the glottal pulse AudioWorklet processor.
+ * Returns true if successful, false if worklets aren't supported.
+ */
+async function registerGlottalWorklet(ctx: AudioContext): Promise<boolean> {
+  try {
+    const blob = new Blob([GLOTTAL_WORKLET_CODE], { type: 'application/javascript' })
+    const url = URL.createObjectURL(blob)
+    await ctx.audioWorklet.addModule(url)
+    URL.revokeObjectURL(url)
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
 export class VoderEngine {
   ctx: AudioContext | null = null
   private master: GainNode | null = null
-  private osc: OscillatorNode | null = null
+  private oscNode: AudioNode | null = null       // OscillatorNode or AudioWorkletNode
+  private oscFreqParam: AudioParam | null = null  // .frequency param on either node type
   private oscGain: GainNode | null = null
   private noiseGain: GainNode | null = null
   private noiseNode: AudioBufferSourceNode | null = null
@@ -48,12 +63,13 @@ export class VoderEngine {
   private _started = false
   private _currentPitch = 110
   private _currentVoiced = true
+  private _useWorklet = false
 
-  // Vibrato LFO nodes
+  // Vibrato LFO
   private vibratoLfo: OscillatorNode | null = null
   private vibratoDepthNode: GainNode | null = null
 
-  // Random jitter (separate from vibrato)
+  // Random jitter
   private jitterTimer: ReturnType<typeof setInterval> | null = null
 
   /** Exposed for waveform/spectrum visualization */
@@ -62,8 +78,8 @@ export class VoderEngine {
   pitchValue = 110
   masterValue = 1.0
   jitterValue = 0.8
-  vibratoRate = 5.2   // Hz — typical vocal vibrato ~5-6 Hz
-  vibratoDepth = 2.5  // Hz — deviation from center pitch
+  vibratoRate = 5.2
+  vibratoDepth = 2.5
 
   get started(): boolean {
     return this._started
@@ -75,7 +91,6 @@ export class VoderEngine {
     this.master = this.ctx.createGain()
     this.master.gain.value = this.masterValue
 
-    // Analyser for waveform/spectrum visualization
     this.analyser = this.ctx.createAnalyser()
     this.analyser.fftSize = 2048
     this.analyser.smoothingTimeConstant = 0.8
@@ -83,15 +98,29 @@ export class VoderEngine {
     this.master.connect(this.analyser)
     this.analyser.connect(this.ctx.destination)
 
-    // Buzz source
-    this.osc = this.ctx.createOscillator()
-    this.osc.setPeriodicWave(createGlottalWave(this.ctx))
-    this.osc.frequency.value = this.pitchValue
+    // Try AudioWorklet glottal pulse, fall back to PeriodicWave
+    this._useWorklet = await registerGlottalWorklet(this.ctx)
 
-    // Vibrato LFO: sine wave modulating the oscillator frequency.
-    // This is sample-accurate and produces smooth periodic pitch wobble,
-    // unlike the random jitter which adds slight instability.
-    //   LFO (sine) → vibratoDepthNode (gain = depth in Hz) → osc.frequency
+    let buzzOutput: AudioNode
+    if (this._useWorklet) {
+      // AudioWorklet: asymmetric pulse train with cycle-to-cycle jitter
+      const workletNode = new AudioWorkletNode(this.ctx, 'glottal-pulse')
+      this.oscNode = workletNode
+      this.oscFreqParam = workletNode.parameters.get('frequency')!
+      this.oscFreqParam.value = this.pitchValue
+      buzzOutput = workletNode
+    } else {
+      // Fallback: PeriodicWave on standard OscillatorNode
+      const osc = this.ctx.createOscillator()
+      osc.setPeriodicWave(createGlottalWave(this.ctx))
+      osc.frequency.value = this.pitchValue
+      this.oscNode = osc
+      this.oscFreqParam = osc.frequency
+      osc.start()
+      buzzOutput = osc
+    }
+
+    // Vibrato LFO → frequency param (works for both node types)
     this.vibratoLfo = this.ctx.createOscillator()
     this.vibratoLfo.type = 'sine'
     this.vibratoLfo.frequency.value = this.vibratoRate
@@ -100,19 +129,19 @@ export class VoderEngine {
     this.vibratoDepthNode.gain.value = this.vibratoDepth
 
     this.vibratoLfo.connect(this.vibratoDepthNode)
-    this.vibratoDepthNode.connect(this.osc.frequency)
+    this.vibratoDepthNode.connect(this.oscFreqParam)
     this.vibratoLfo.start()
 
     // Spectral tilt
     const oscTilt = this.ctx.createBiquadFilter()
     oscTilt.type = 'lowpass'
-    oscTilt.frequency.value = 3800
-    oscTilt.Q.value = 0.4
+    oscTilt.frequency.value = 3400
+    oscTilt.Q.value = 0.65
 
     this.oscGain = this.ctx.createGain()
     this.oscGain.gain.value = 0
 
-    this.osc.connect(oscTilt)
+    buzzOutput.connect(oscTilt)
     oscTilt.connect(this.oscGain)
 
     // Noise source
@@ -139,7 +168,6 @@ export class VoderEngine {
       this.bandGains.push(gain)
     }
 
-    this.osc.start()
     this.noiseNode.start()
     this._started = true
     this._startJitter()
@@ -160,7 +188,12 @@ export class VoderEngine {
   stop(): void {
     if (!this._started) return
     if (this.jitterTimer != null) clearInterval(this.jitterTimer)
-    try { this.osc?.stop() } catch (_) { /* already stopped */ }
+    try {
+      if (this.oscNode) {
+        if ('stop' in this.oscNode) (this.oscNode as OscillatorNode).stop()
+        this.oscNode.disconnect()
+      }
+    } catch (_) { /* already stopped */ }
     try { this.vibratoLfo?.stop() } catch (_) { /* already stopped */ }
     try { this.noiseNode?.stop() } catch (_) { /* already stopped */ }
     try { this.ctx?.close() } catch (_) { /* already closed */ }
@@ -169,15 +202,14 @@ export class VoderEngine {
     this.bandGains = []
   }
 
-  /** Random micro-jitter — adds slight pitch instability on top of vibrato */
   private _startJitter(): void {
     this.jitterTimer = setInterval(() => {
-      if (!this._started || !this._currentVoiced || !this.osc) return
+      if (!this._started || !this._currentVoiced || !this.oscFreqParam) return
       const base = this._currentPitch
       const target = base + (Math.random() * 2 - 1) * this.jitterValue
       const t = this.ctx!.currentTime
-      this.osc.frequency.cancelScheduledValues(t)
-      this.osc.frequency.linearRampToValueAtTime(target, t + 0.03)
+      this.oscFreqParam.cancelScheduledValues(t)
+      this.oscFreqParam.linearRampToValueAtTime(target, t + 0.03)
     }, 35)
   }
 
@@ -206,23 +238,26 @@ export class VoderEngine {
     const now = this.ctx.currentTime
     const sec = Math.max(transitionMs / 1000, 0.005)
 
-    const voicedAmp = frame.voiced ? (frame.voicedAmp ?? 0.25) * 0.25 : 0.0
-    const noiseAmp = (frame.noise ?? 0.0) * 0.20
+    // voicedAmp is 0-1 from the phoneme table (open vowels=1.0, nasals=0.55, etc.)
+    // Scale to a reasonable output level. No extra dampening — the phoneme
+    // table already encodes the relative loudness hierarchy.
+    const voicedAmp = frame.voiced ? (frame.voicedAmp ?? 0.8) * 0.30 : 0.0
+    // Noise scaled lower — it's perceptually louder than buzz because
+    // it's broadband and the ear is most sensitive at 2-5 kHz.
+    const noiseAmp = (frame.noise ?? 0.0) * 0.10
     this._currentVoiced = frame.voiced
     this._currentPitch = frame.pitchHz
 
     this.oscGain!.gain.cancelScheduledValues(now)
     this.noiseGain!.gain.cancelScheduledValues(now)
-    this.osc!.frequency.cancelScheduledValues(now)
+    this.oscFreqParam!.cancelScheduledValues(now)
 
     this.oscGain!.gain.linearRampToValueAtTime(voicedAmp, now + sec)
     this.noiseGain!.gain.linearRampToValueAtTime(noiseAmp, now + sec)
-    this.osc!.frequency.linearRampToValueAtTime(this._currentPitch, now + sec)
+    this.oscFreqParam!.linearRampToValueAtTime(this._currentPitch, now + sec)
 
     const bands = frame.bands || []
     for (let i = 0; i < this.bandGains.length; i++) {
-      // Apply band energy compensation: wider bands are attenuated so
-      // equal gain values in the phoneme table produce equal loudness
       const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
       this.bandGains[i].gain.cancelScheduledValues(now)
       this.bandGains[i].gain.linearRampToValueAtTime(v, now + sec)

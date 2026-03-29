@@ -270,6 +270,7 @@ function speakOpts() {
     basePitch: parseFloat($input('pitch').value),
     rateScale: parseFloat($input('rateScale').value),
     expressiveness: parseFloat($input('expressiveness').value),
+    humanize: parseFloat($input('humanize').value),
     onToken: (evt: TokenEvent) => {
       loadBandsToUI(evt.bands)
       updateWristBar(evt.voiced, evt.noise)
@@ -336,6 +337,7 @@ export function initUI(): void {
   bindSliderDisplay('durInput', 'durVal')
   bindSliderDisplay('rateScale', 'rateVal', v => Number(v).toFixed(2))
   bindSliderDisplay('expressiveness', 'expressVal', v => Number(v).toFixed(2))
+  bindSliderDisplay('humanize', 'humanizeVal', v => Number(v).toFixed(2))
 
   // Start / stop
   $('startBtn').addEventListener('click', async () => {
