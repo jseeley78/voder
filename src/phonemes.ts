@@ -202,10 +202,11 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         transient: { durationMs: 12, noise: 0.80,
                      bands: [0.20, 0.40, 0.35, 0.25, 0.15, 0.08, 0.03, 0.01, 0, 0] } },
 
-  D:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 50,
-        bands: [0.25, 0.28, 0.15, 0.08, 0.06, 0.04, 0.02, 0.01, 0, 0],
-        transient: { durationMs: 10, noise: 0.85,
-                     bands: [0.03, 0.05, 0.10, 0.15, 0.25, 0.30, 0.20, 0.50, 0.10, 0.02] } },
+  // D: voiced alveolar — same high-frequency burst locus as T but with voicing
+  D:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.03, durationMs: 45,
+        bands: [0.25, 0.28, 0.15, 0.08, 0.06, 0.04, 0.02, 0.02, 0, 0],
+        transient: { durationMs: 14, noise: 0.90,
+                     bands: [0.02, 0.04, 0.08, 0.12, 0.20, 0.28, 0.35, 0.60, 0.70, 0.15] } },
 
   G:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 55,
         bands: [0.25, 0.28, 0.20, 0.10, 0.05, 0.03, 0.02, 0.01, 0, 0],
@@ -217,10 +218,11 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         transient: { durationMs: 15, noise: 1.00,
                      bands: [0.20, 0.40, 0.35, 0.25, 0.15, 0.08, 0.03, 0.01, 0, 0] } },
 
-  T:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.05, durationMs: 40,
-        bands: [0.03, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0],
-        transient: { durationMs: 12, noise: 1.00,
-                     bands: [0.03, 0.05, 0.10, 0.15, 0.25, 0.30, 0.20, 0.55, 0.12, 0.03] } },
+  // T: strongest burst of all stops — sharp alveolar spike at 4000-5000 Hz
+  T:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.08, durationMs: 35,
+        bands: [0.03, 0.05, 0.04, 0.03, 0.03, 0.02, 0.01, 0.02, 0, 0],
+        transient: { durationMs: 18, noise: 1.00,
+                     bands: [0.02, 0.03, 0.06, 0.10, 0.18, 0.25, 0.35, 0.65, 0.80, 0.20] } },
 
   K:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.05, durationMs: 45,
         bands: [0.03, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0],

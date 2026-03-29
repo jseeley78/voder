@@ -173,12 +173,52 @@ export class VoderEngine {
     this._startJitter()
   }
 
+  /**
+   * Create a noise source modeled on the Voder's gas-filled triode.
+   *
+   * Two differences from simple Math.random() white noise:
+   *
+   * 1. Gaussian distribution — real ionic noise follows a normal
+   *    distribution (central limit theorem). Gaussian noise sounds
+   *    smoother because extreme amplitudes are rare. We use the
+   *    Box-Muller transform to convert uniform → Gaussian.
+   *
+   * 2. Pink spectral tilt — real electronic noise has a 1/f component
+   *    (more energy at low frequencies). We apply a simple 1/f filter
+   *    by accumulating a running average. This matches how the ear
+   *    perceives loudness (equal energy per octave, not per Hz) and
+   *    gives fricatives a warmer, less "digital" character.
+   */
   private _createNoiseSource(): AudioBufferSourceNode {
-    const buffer = this.ctx!.createBuffer(1, this.ctx!.sampleRate * 2, this.ctx!.sampleRate)
+    const sr = this.ctx!.sampleRate
+    // 4-second buffer to minimize audible repetition
+    const buffer = this.ctx!.createBuffer(1, sr * 4, sr)
     const data = buffer.getChannelData(0)
-    for (let i = 0; i < data.length; i++) {
-      data[i] = Math.random() * 2 - 1
+
+    // Generate Gaussian white noise via Box-Muller transform
+    for (let i = 0; i < data.length; i += 2) {
+      const u1 = Math.random() || 1e-10  // avoid log(0)
+      const u2 = Math.random()
+      const r = Math.sqrt(-2 * Math.log(u1))
+      const theta = 2 * Math.PI * u2
+      data[i] = r * Math.cos(theta)
+      if (i + 1 < data.length) {
+        data[i + 1] = r * Math.sin(theta)
+      }
     }
+
+    // Apply pink spectral tilt (1/f filtering).
+    // Uses Paul Kellet's refined method: three leaky integrators
+    // at different time constants approximate a -3dB/octave slope.
+    let b0 = 0, b1 = 0, b2 = 0
+    for (let i = 0; i < data.length; i++) {
+      const white = data[i]
+      b0 = 0.99765 * b0 + white * 0.0990460
+      b1 = 0.96300 * b1 + white * 0.2965164
+      b2 = 0.57000 * b2 + white * 1.0526913
+      data[i] = (b0 + b1 + b2 + white * 0.1848) * 0.22
+    }
+
     const src = this.ctx!.createBufferSource()
     src.buffer = buffer
     src.loop = true
