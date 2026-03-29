@@ -20,7 +20,13 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png}'],
+        // CMU dictionary adds ~4MB to the bundle — allow it in the SW cache
+        // so the app works fully offline
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
     }),
   ],
+  build: {
+    chunkSizeWarningLimit: 4000,
+  },
 })

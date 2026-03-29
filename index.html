@@ -11,16 +11,35 @@
     <h1>Voder</h1>
     <p>
       Browser-based speech synth inspired by the 1939 Bell Labs Voder.
-      10-band filter bank with patent-accurate frequencies, buzz + noise excitation,
-      and phoneme-driven control.
+      Type English text and hear it spoken through a 10-band filter bank
+      with patent-accurate frequencies, buzz + noise excitation, and prosodic expression.
     </p>
+
+    <div class="panel" style="margin-bottom: 18px;">
+      <h2>Speak</h2>
+      <label for="textInput">Type English text</label>
+      <textarea id="textInput" rows="2" style="min-height: 48px;">Hello, how are you?</textarea>
+      <div class="row" style="margin-top: 10px;">
+        <button id="speakTextBtn" class="primary">Speak</button>
+        <button id="convertBtn">Show phonemes</button>
+        <button id="exHello">Hello, how are you?</button>
+        <button id="exRobot">I am a robot.</button>
+        <button id="exVoder">The Voder can speak.</button>
+        <button id="exLong">She saw him running...</button>
+        <button id="exRainbow">Rainbow Passage</button>
+      </div>
+      <div class="small" style="margin-top: 6px;">
+        Uses the CMU Pronouncing Dictionary (134,000+ words).
+        Press Enter to speak. Unknown words are spelled out.
+      </div>
+    </div>
 
     <div class="grid">
       <div class="panel">
         <div class="row" style="justify-content: space-between;">
           <div>
             <h2>Engine</h2>
-            <div class="small">Start audio first, then try presets or enter a phoneme sequence.</div>
+            <div class="small">Start audio first, then type text above or use phoneme input below.</div>
           </div>
           <div class="row">
             <button id="startBtn" class="primary">Start audio</button>
@@ -31,13 +50,13 @@
         <div class="two" style="margin-top: 14px;">
           <div>
             <label for="pitch">Base pitch</label>
-            <input id="pitch" type="range" min="80" max="320" step="1" value="120">
-            <div class="small"><span id="pitchVal">120</span> Hz</div>
+            <input id="pitch" type="range" min="50" max="320" step="1" value="110">
+            <div class="small"><span id="pitchVal">110</span> Hz</div>
           </div>
           <div>
             <label for="master">Master level</label>
-            <input id="master" type="range" min="0" max="1" step="0.01" value="0.18">
-            <div class="small"><span id="masterVal">0.18</span></div>
+            <input id="master" type="range" min="0" max="1" step="0.01" value="1.00">
+            <div class="small"><span id="masterVal">1.00</span></div>
           </div>
         </div>
 
@@ -49,31 +68,25 @@
           </div>
           <div>
             <label for="jitter">Pitch jitter</label>
-            <input id="jitter" type="range" min="0" max="8" step="0.1" value="1.2">
-            <div class="small"><span id="jitterVal">1.2</span> Hz</div>
+            <input id="jitter" type="range" min="0" max="8" step="0.1" value="0.8">
+            <div class="small"><span id="jitterVal">0.8</span> Hz (random)</div>
           </div>
         </div>
 
-        <h3 style="margin-top: 18px;">10 bands</h3>
-        <div class="small">Patent-accurate filter bank: 0&ndash;7500 Hz in 10 quasi-logarithmic bands.</div>
-        <div class="meters" id="bands"></div>
-
-        <div class="row" style="margin-top: 14px;">
-          <button id="manualBuzz">Manual buzz</button>
-          <button id="manualHiss">Manual hiss</button>
-          <button id="manualBoth">Manual both</button>
-          <button id="manualSilence">Silence</button>
-          <button id="applyManual">Apply current sliders</button>
+        <div class="two" style="margin-top: 14px;">
+          <div>
+            <label for="vibratoRate">Vibrato rate</label>
+            <input id="vibratoRate" type="range" min="0" max="10" step="0.1" value="5.2">
+            <div class="small"><span id="vibratoRateVal">5.2</span> Hz</div>
+          </div>
+          <div>
+            <label for="vibratoDepth">Vibrato depth</label>
+            <input id="vibratoDepth" type="range" min="0" max="20" step="0.5" value="2.5">
+            <div class="small"><span id="vibratoDepthVal">2.5</span> Hz</div>
+          </div>
         </div>
-      </div>
 
-      <div class="panel">
-        <h2>Phoneme driver</h2>
-        <label for="phonemeInput">Phoneme sequence</label>
-        <textarea id="phonemeInput">HH EH L OW</textarea>
-        <div class="small">Use ARPAbet-like tokens separated by spaces. Example: <span class="kbd">HH EH L OW</span></div>
-
-        <div class="two" style="margin-top: 12px;">
+        <div class="two" style="margin-top: 14px;">
           <div>
             <label for="durInput">Default phoneme duration</label>
             <input id="durInput" type="range" min="40" max="280" step="5" value="110">
@@ -86,42 +99,94 @@
           </div>
         </div>
 
+        <div class="two" style="margin-top: 14px;">
+          <div>
+            <label for="expressiveness">Expressiveness</label>
+            <input id="expressiveness" type="range" min="0" max="1" step="0.05" value="0.70">
+            <div class="small"><span id="expressVal">0.70</span> (0=flat, 1=full)</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 18px;">Operator controls</h3>
+        <div class="small">These mirror the physical controls a Voder operator used in 1939.</div>
+        <div class="operator-controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">Wrist bar</div>
+            <div class="wrist-bar" id="wristBar">
+              <div class="wb-indicator" id="wbIndicator"></div>
+              <div class="wb-labels">
+                <span class="wb-l">BUZZ</span>
+                <span class="wb-r">HISS</span>
+              </div>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Foot pedal</div>
+            <div class="foot-pedal" id="footPedal">
+              <div class="fp-track">
+                <div class="fp-fill" id="fpFill"></div>
+              </div>
+              <div class="fp-value" id="fpValue">110 Hz</div>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Stop keys</div>
+            <div class="stop-keys">
+              <div class="stop-key" id="skBilabial">
+                <div class="sk-light" id="skBilabialLight"></div>
+                <div class="sk-label">P/B</div>
+              </div>
+              <div class="stop-key" id="skAlveolar">
+                <div class="sk-light" id="skAlveolarLight"></div>
+                <div class="sk-label">T/D</div>
+              </div>
+              <div class="stop-key" id="skVelar">
+                <div class="sk-light" id="skVelarLight"></div>
+                <div class="sk-label">K/G</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 18px;">10 spectrum keys</h3>
+        <div class="small">The 10 finger-operated bandpass filters (white keys).</div>
+        <div class="meters" id="bands"></div>
+
         <div class="row" style="margin-top: 14px;">
-          <button id="speakBtn" class="primary">Speak sequence</button>
-          <button id="speakWordHello">HELLO</button>
-          <button id="speakWordRobot">ROBOT</button>
-          <button id="speakWordVoder">VODER</button>
+          <button id="manualBuzz">Manual buzz</button>
+          <button id="manualHiss">Manual hiss</button>
+          <button id="manualBoth">Manual both</button>
+          <button id="manualSilence">Silence</button>
+          <button id="applyManual">Apply current sliders</button>
+        </div>
+
+        <h3 style="margin-top: 18px;">Scope</h3>
+        <div class="scope-container">
+          <canvas id="scopeCanvas" width="560" height="140"></canvas>
+          <div class="scope-legend">
+            <span class="scope-legend-item"><span class="scope-dot wave"></span>waveform</span>
+            <span class="scope-legend-item"><span class="scope-dot spec"></span>spectrum</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Phoneme input</h2>
+        <label for="phonemeInput">Phoneme sequence (direct)</label>
+        <textarea id="phonemeInput">HH AH0 L OW1 , | HH AW1 | AA1 R | Y UW1 ?</textarea>
+        <div class="small">
+          ARPAbet tokens with stress (0/1/2), punctuation, and <span class="kbd">|</span> word boundaries.
+        </div>
+        <div class="row" style="margin-top: 10px;">
+          <button id="speakBtn">Speak phonemes</button>
         </div>
 
         <h3 style="margin-top: 18px;">Phoneme presets</h3>
         <div class="presets" id="presetButtons"></div>
 
-        <h3 style="margin-top: 18px;">Architecture</h3>
-        <div class="chips">
-          <div class="chip">buzz = voiced (sawtooth)</div>
-          <div class="chip">hiss = noise source</div>
-          <div class="chip">10 bandpass filters</div>
-          <div class="chip">patent-accurate bands</div>
-          <div class="chip">stop burst support</div>
-        </div>
-
         <h3 style="margin-top: 18px;">Status</h3>
         <div class="status" id="status">Idle.</div>
       </div>
-    </div>
-
-    <div class="panel" style="margin-top: 18px;">
-      <h2>Tips</h2>
-      <p>
-        Start with <span class="kbd">HH EH L OW</span>. Then try <span class="kbd">V OW D ER</span>.
-        For a more "machine" sound, raise jitter a little and shorten transition time.
-        For clearer vowels, increase the master slightly and slow the rate scale.
-      </p>
-      <p style="margin-top: 8px;">
-        Filter bands match the Bell Labs Voder patent (US 2,121,142):
-        quasi-logarithmic spacing from 0&ndash;7500 Hz with increasing bandwidth.
-        Pitch range 80&ndash;320 Hz covers male through child voices.
-      </p>
     </div>
   </div>
 
