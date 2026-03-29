@@ -64,16 +64,75 @@ function spellOut(word: string): string {
 }
 
 /**
- * Tokenize input text into words and punctuation.
+ * Convert a number to English words.
+ * 42 → "forty two", 1000 → "one thousand", etc.
+ */
+function numberToWords(n: number): string {
+  if (n === 0) return 'zero'
+  if (n < 0) return 'negative ' + numberToWords(-n)
+
+  const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+    'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
+  const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+
+  function chunk(num: number): string {
+    if (num === 0) return ''
+    if (num < 20) return ones[num]
+    if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? ' ' + ones[num % 10] : '')
+    if (num < 1000) return ones[Math.floor(num / 100)] + ' hundred' + (num % 100 ? ' ' + chunk(num % 100) : '')
+    return ''
+  }
+
+  const parts: string[] = []
+  const scales = [
+    [1_000_000_000, 'billion'],
+    [1_000_000, 'million'],
+    [1_000, 'thousand'],
+    [1, ''],
+  ] as const
+
+  let remaining = Math.floor(Math.abs(n))
+  for (const [divisor, label] of scales) {
+    const count = Math.floor(remaining / divisor)
+    if (count > 0) {
+      parts.push(chunk(count) + (label ? ' ' + label : ''))
+      remaining %= divisor
+    }
+  }
+
+  return parts.join(' ') || 'zero'
+}
+
+/**
+ * Tokenize input text into words, numbers, and punctuation.
  * "Hello, how are you?" → ["Hello", ",", "how", "are", "you", "?"]
+ * "I have 42 cats." → ["I", "have", "forty", "two", "cats", "."]
  */
 function tokenize(text: string): string[] {
   const tokens: string[] = []
-  // Match words (including contractions/apostrophes) and individual punctuation
-  const regex = /[a-zA-Z]+(?:[''][a-zA-Z]+)*|[,.\?!;:]/g
+  // Match words, numbers, or individual punctuation
+  const regex = /[a-zA-Z]+(?:[''][a-zA-Z]+)*|\d+(?:\.\d+)?|[,.\?!;:]/g
   let match
   while ((match = regex.exec(text)) !== null) {
-    tokens.push(match[0])
+    const tok = match[0]
+    // Convert numbers to word tokens
+    if (/^\d/.test(tok)) {
+      const num = parseFloat(tok)
+      if (tok.includes('.')) {
+        // Decimal: "3.14" → "three point one four"
+        const [whole, frac] = tok.split('.')
+        const words = [numberToWords(parseInt(whole)), 'point']
+        for (const digit of frac) {
+          words.push(numberToWords(parseInt(digit)))
+        }
+        tokens.push(...words)
+      } else {
+        const words = numberToWords(num).split(' ')
+        tokens.push(...words)
+      }
+    } else {
+      tokens.push(tok)
+    }
   }
   return tokens
 }

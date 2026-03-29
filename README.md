@@ -33,7 +33,7 @@ The synth engine models the Voder's physical controls:
 
 - **Buzz source** — AudioWorklet glottal pulse train modeling the original relaxation oscillator's asymmetric charge/discharge cycle (~0.3ms charge, ~0.8ms discharge). Pulse width is fixed so the spectrum naturally brightens at lower pitches, matching real oscillator behavior. Includes cycle-to-cycle jitter for organic instability. Falls back to a custom PeriodicWave in browsers without AudioWorklet support.
 - **Vibrato** — Sine LFO (default 5.2 Hz, 2.5 Hz depth) for the periodic pitch wobble that prevents sustained vowels from sounding like a foghorn. Separate from the random jitter.
-- **Noise source** — Full-spectrum white noise for unvoiced sounds (fricatives, stop bursts, aspiration). Routed through the shared filter bank (not a separate path).
+- **Noise source** — Gaussian pink noise modeling the original gas-filled triode's ionic fluctuations. Box-Muller transform for normal distribution (smoother than uniform random), Paul Kellet 1/f filter for pink spectral tilt (warmer than white noise). Routed through the shared filter bank (not a separate path).
 - **10-band filter bank** — Parallel bandpass filters with center frequencies and bandwidths from [US Patent 2,121,142](https://patents.google.com/patent/US2121142A/en) (Homer Dudley, 1939). Quasi-logarithmic spacing from 0–7500 Hz. Band energy compensation normalizes perceived loudness across bands of different widths.
 - **3 stop keys** — Transient burst generators with distinct spectral shapes per place of articulation: bilabial (P/B, diffuse low-frequency), alveolar (T/D, energy at 3–4 kHz), velar (K/G, energy at 1.5–3 kHz). Aspiration noise after voiceless stops before vowels.
 - **Spectral tilt** — Lowpass filter at 3400 Hz models the natural rolloff of the original gas triode circuit.
@@ -81,14 +81,27 @@ Models the imprecision of a live Voder operator performing each utterance unique
 - Pause jitter: ±15% variation at punctuation
 - Controllable via slider (0 = deterministic, 1 = loose)
 
+### Text-to-phoneme
+
+- CMU Pronouncing Dictionary (134K words) with custom overrides
+- Number-to-words conversion (integers up to billions, decimals, negatives)
+- Possessive handling ('s)
+- Letter-by-letter spelling fallback for unknown words
+- Punctuation pass-through for prosody
+
 ### Diagnostic
 
-Built-in spectral diagnostic (`src/diagnostic.ts`) analyzes:
+Built-in spectral diagnostic (`src/diagnostic.ts`) validates the synthesis pipeline:
 
+```bash
+npx tsx -e "import { runDiagnostic } from './src/diagnostic.ts'; runDiagnostic();"
+```
+
+Checks:
 - Formant placement accuracy for all vowels against Peterson & Barney targets
 - Vowel pair similarity (Euclidean distance in 10-D compensated gain space)
-- Per-word transition analysis: spectral jumps, energy dips, energy spikes
-- Per-sentence analysis across test sentences including the Rainbow Passage
+- Per-word transition analysis across 110+ words (top 100 English words + numbers 1–10 + phonetically complex words)
+- Per-sentence analysis across 6 test sentences including the Rainbow Passage
 - Effective output levels accounting for voicedAmp, gain scaling, and band compensation
 
 ## Visualization

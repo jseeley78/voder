@@ -170,13 +170,13 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   // Strong low-frequency voicing, anti-resonance dip in mid-range
 
   // voicedAmp: 0.55 — sound exits through nose, lower energy
-  // Nasals: each has a distinct anti-resonance location that separates them
-  M:  { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 100,
-        bands: [0.55, 0.75, 0.12, 0.04, 0.02, 0.02, 0.02, 0.02, 0, 0] },
-  N:  { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 90,
-        bands: [0.40, 0.55, 0.40, 0.15, 0.04, 0.03, 0.06, 0.04, 0, 0] },
-  NG: { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 100,
-        bands: [0.35, 0.40, 0.48, 0.28, 0.10, 0.04, 0.02, 0.02, 0, 0] },
+  // Nasals: distinct anti-resonance locations, boosted for word-final presence
+  M:  { type: 'nasal', voiced: true, voicedAmp: 0.68, noise: 0.01, durationMs: 100,
+        bands: [0.55, 0.78, 0.14, 0.05, 0.03, 0.02, 0.02, 0.02, 0, 0] },
+  N:  { type: 'nasal', voiced: true, voicedAmp: 0.68, noise: 0.01, durationMs: 90,
+        bands: [0.42, 0.60, 0.45, 0.18, 0.05, 0.03, 0.06, 0.04, 0, 0] },
+  NG: { type: 'nasal', voiced: true, voicedAmp: 0.65, noise: 0.01, durationMs: 100,
+        bands: [0.38, 0.45, 0.52, 0.30, 0.12, 0.04, 0.02, 0.02, 0, 0] },
 
   // ─── Liquids / glides ───
   // voicedAmp: liquids 0.65, glides 0.70
@@ -184,8 +184,10 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         bands: [0.30, 0.60, 0.30, 0.15, 0.55, 0.15, 0.10, 0.40, 0.03, 0] },
   R:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 90,
         bands: [0.25, 0.55, 0.40, 0.15, 0.50, 0.50, 0.10, 0.15, 0.03, 0] },
-  W:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 80,
-        bands: [0.30, 0.70, 0.50, 0.15, 0.08, 0.05, 0.03, 0.02, 0, 0] },
+  // W "we": F1≈300, F2≈600 — needs enough mid-frequency energy
+  // to transition smoothly into following vowels
+  W:  { type: 'glide', voiced: true, voicedAmp: 0.75, noise: 0.01, durationMs: 70,
+        bands: [0.30, 0.65, 0.45, 0.20, 0.12, 0.06, 0.03, 0.02, 0, 0] },
   Y:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 70,
         bands: [0.25, 0.60, 0.15, 0.08, 0.10, 0.20, 0.80, 0.40, 0.05, 0] },
 

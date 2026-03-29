@@ -256,10 +256,12 @@ export function speakPhonemeSequence(
         // In clusters like "st" or "sk", no aspiration occurs.
         const nextIsVowelLike = next && (next.ph.type === 'vowel' || next.ph.type === 'glide')
         if (!cur.ph.voiced && nextIsVowelLike) {
-          const aspBands = next.bands.map(g => g * 0.3)
+          // Shape aspiration using the next vowel's spectral envelope —
+          // this bridges the gap between the burst and the vowel onset
+          const aspBands = next.bands.map(g => g * 0.5)
           engine.applyFrame({
             voiced: false,
-            noise: 0.45,
+            noise: 0.50,
             pitchHz: cur.pitchHz,
             bands: aspBands,
           }, 5)
