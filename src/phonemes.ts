@@ -72,12 +72,12 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         bands: [0.25, 0.85, 0.10, 0.05, 0.08, 0.12, 0.95, 0.65, 0.08, 0] },
 
   // IH "bit": F1≈390 F2≈1990 F3≈2550 — lower than IY
-  IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 160,
-        bands: [0.25, 0.72, 0.30, 0.12, 0.15, 0.40, 0.82, 0.50, 0.05, 0] },
+  IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
+        bands: [0.25, 0.72, 0.30, 0.12, 0.05, 0.40, 0.82, 0.50, 0.05, 0] },
 
   // EH "bet": F1≈530 F2≈1840 F3≈2480 — mid front
   EH: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.02, durationMs: 170,
-        bands: [0.25, 0.25, 0.85, 0.18, 0.12, 0.95, 0.45, 0.35, 0.04, 0] },
+        bands: [0.33, 0.25, 0.85, 0.18, 0.00, 0.95, 0.45, 0.35, 0.04, 0] },
 
   // AE "bat": F1≈660 F2≈1720 F3≈2410 — open front
   AE: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
@@ -106,7 +106,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   // OW "boat": AO-like → UH-like glide
   OW: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 195,
-        bands:       [0.30, 0.35, 0.75, 0.30, 0.65, 0.12, 0.40, 0.30, 0.03, 0],
+        bands:       [0.30, 0.20, 0.75, 0.30, 0.65, 0.12, 0.40, 0.30, 0.03, 0],
         onsetBands:  [0.30, 0.30, 0.75, 0.70, 0.30, 0.10, 0.40, 0.35, 0.04, 0],
         offsetBands: [0.30, 0.60, 0.40, 0.25, 0.60, 0.12, 0.40, 0.30, 0.03, 0] },
 
@@ -127,7 +127,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   // AY "my/time": AA → IH
   AY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 210,
-        bands:       [0.25, 0.22, 0.40, 0.75, 0.45, 0.45, 0.55, 0.35, 0.04, 0],
+        bands:       [0.33, 0.22, 0.40, 0.75, 0.45, 0.45, 0.55, 0.35, 0.04, 0],
         onsetBands:  [0.25, 0.20, 0.35, 0.90, 0.70, 0.20, 0.45, 0.35, 0.04, 0],
         offsetBands: [0.25, 0.70, 0.25, 0.10, 0.12, 0.30, 0.80, 0.50, 0.06, 0] },
 
@@ -150,17 +150,17 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   HH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.80, durationMs: 95,
         bands: [0.02, 0.05, 0.10, 0.15, 0.25, 0.30, 0.25, 0.20, 0.12, 0.05] },
-  F:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.90, durationMs: 100,
+  F:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.90, durationMs: 135,
         bands: [0, 0, 0.02, 0.05, 0.10, 0.30, 0.50, 0.70, 0.50, 0.20] },
-  S:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 130,
-        bands: [0, 0, 0, 0.02, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
+  S:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 155,
+        bands: [0, 0.08, 0, 0.02, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
   SH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 140,
         bands: [0, 0, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
   TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 110,
         bands: [0, 0.02, 0.04, 0.08, 0.15, 0.30, 0.40, 0.35, 0.20, 0.10] },
-  V:  { type: 'fricative', voiced: true, voicedAmp: 0.62, noise: 0.48, durationMs: 115,
-        bands: [0.22, 0.18, 0.08, 0.08, 0.12, 0.32, 0.55, 0.75, 0.55, 0.22] },
-  Z:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 120,
+  V:  { type: 'fricative', voiced: true, voicedAmp: 0.62, noise: 0.48, durationMs: 130,
+        bands: [0.22, 0.18, 0.23, 0.08, 0.12, 0.32, 0.55, 0.75, 0.55, 0.22] },
+  Z:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 105,
         bands: [0.20, 0.10, 0.03, 0.03, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
   ZH: { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 120,
         bands: [0.20, 0.10, 0.05, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
@@ -186,7 +186,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   R:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 115,
         bands: [0.25, 0.55, 0.40, 0.15, 0.50, 0.50, 0.10, 0.15, 0.03, 0] },
   // W: A/B tested — proposed was better (concentrate B2-B3, zero upper bands)
-  W:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 100,
+  W:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 115,
         bands: [0.30, 0.76, 0.56, 0.15, 0.00, 0.00, 0.03, 0.02, 0, 0] },
   Y:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 90,
         bands: [0.25, 0.60, 0.15, 0.08, 0.10, 0.20, 0.80, 0.40, 0.05, 0] },
