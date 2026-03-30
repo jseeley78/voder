@@ -516,8 +516,11 @@ export function initUI(): void {
     const result = abState.results[index]
 
     $('abProgress').textContent = `${index + 1} / ${PROPOSALS.length}`
+    const durInfo = proposal.proposedDuration
+      ? `<br>Duration: ${proposal.currentDuration}ms → ${proposal.proposedDuration}ms`
+      : ''
     $('abPhonemeInfo').innerHTML = `
-      <strong>${proposal.phoneme}</strong>: ${proposal.reason}<br>
+      <strong>${proposal.phoneme}</strong>: ${proposal.reason}${durInfo}<br>
       Test words: ${proposal.testWords.map(w => `<em>${w}</em>`).join(', ')}
     `
 
@@ -547,10 +550,12 @@ export function initUI(): void {
 
     const isProposed = (version === 'a' && result.aIsProposed) || (version === 'b' && !result.aIsProposed)
     const bands = isProposed ? proposal.proposedBands : proposal.currentBands
+    const duration = isProposed ? proposal.proposedDuration : proposal.currentDuration
     const testWord = word || proposal.testWords[0]
 
-    setStatus(`Playing ${version.toUpperCase()}: "${testWord}" (${proposal.phoneme})`)
-    await playWithGains(eng, testWord, proposal.phoneme, bands)
+    const durInfo = proposal.proposedDuration ? ` ${proposal.currentDuration}→${proposal.proposedDuration}ms` : ''
+    setStatus(`Playing ${version.toUpperCase()}: "${testWord}" (${proposal.phoneme}${durInfo})`)
+    await playWithGains(eng, testWord, proposal.phoneme, bands, duration)
     setStatus(`Done — ${version.toUpperCase()}`)
   }
 
@@ -587,6 +592,9 @@ export function initUI(): void {
       text += `${r.phoneme}: ${votedFor}\n`
       if (votedFor === 'PROPOSED') {
         text += `  bands: [${proposal.proposedBands.map(g => g.toFixed(2)).join(', ')}]\n`
+        if (proposal.proposedDuration) {
+          text += `  duration: ${proposal.currentDuration}→${proposal.proposedDuration}ms\n`
+        }
       }
     }
 
