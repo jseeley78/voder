@@ -207,8 +207,8 @@ function drawWaveform(ctx: CanvasRenderingContext2D, analyser: AnalyserNode, w: 
   ctx.beginPath()
 
   const sliceWidth = w / bufLen
-  // Amplify 4x for a more dramatic visual — clips but looks better
-  const gain = 4.0
+  // Amplify 10x for a dramatic visual — clips hard but looks alive
+  const gain = 10.0
   let x = 0
   for (let i = 0; i < bufLen; i++) {
     const v = data[i] * gain
