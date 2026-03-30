@@ -1,7 +1,7 @@
 import { BAND_CENTERS, PHONEMES } from './phonemes'
 import { VoderEngine } from './engine'
 import { speakPhonemeSequence, type SequenceHandle, type TokenEvent, type StopKey } from './sequencer'
-import { textToPhonemes } from './text-to-phoneme'
+import { textToPhonemes, type WordSpan } from './text-to-phoneme'
 
 let engine: VoderEngine | null = null
 let currentSequence: SequenceHandle | null = null
@@ -305,6 +305,14 @@ async function speakPhonemes(text: string): Promise<void> {
   currentSequence = speakPhonemeSequence(eng, text, speakOpts())
 }
 
+/** Find which word a phoneme token index belongs to */
+function tokenToWord(spans: WordSpan[], tokenIdx: number): string {
+  for (const span of spans) {
+    if (tokenIdx >= span.startToken && tokenIdx < span.endToken) return span.word
+  }
+  return ''
+}
+
 async function speakText(text: string): Promise<void> {
   const eng = await ensureStarted()
   if (currentSequence) currentSequence.cancel()
@@ -316,12 +324,24 @@ async function speakText(text: string): Promise<void> {
 
   if (result.unknownWords.length > 0) {
     setStatus(`Unknown words (spelled out): ${result.unknownWords.join(', ')}`)
-    // Brief pause to show the warning before speaking
     await new Promise(r => setTimeout(r, 800))
   }
 
   setStatus('Speaking...')
-  currentSequence = speakPhonemeSequence(eng, result.phonemes, speakOpts())
+  const opts = speakOpts()
+  const baseOnToken = opts.onToken
+  opts.onToken = (evt: TokenEvent) => {
+    baseOnToken?.(evt)
+    // Show current word in the word display
+    const word = tokenToWord(result.wordSpans, evt.index)
+    $('currentWord').textContent = word
+  }
+  const baseOnDone = opts.onDone
+  opts.onDone = () => {
+    baseOnDone?.()
+    $('currentWord').textContent = ''
+  }
+  currentSequence = speakPhonemeSequence(eng, result.phonemes, opts)
 }
 
 export function initUI(): void {

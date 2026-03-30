@@ -137,11 +137,21 @@ function tokenize(text: string): string[] {
   return tokens
 }
 
+export interface WordSpan {
+  word: string
+  /** Index of first phoneme token belonging to this word */
+  startToken: number
+  /** Index past the last phoneme token */
+  endToken: number
+}
+
 export interface TextToPhonemeResult {
   /** Phoneme sequence ready for the sequencer (space-separated tokens) */
   phonemes: string
   /** Words that weren't found in the dictionary */
   unknownWords: string[]
+  /** Maps each source word to its phoneme token range */
+  wordSpans: WordSpan[]
 }
 
 /**
@@ -156,6 +166,10 @@ export function textToPhonemes(text: string): TextToPhonemeResult {
   const words = tokenize(text)
   const parts: string[] = []
   const unknownWords: string[] = []
+  const wordSpans: WordSpan[] = []
+
+  // Track phoneme token count (excluding | and punctuation)
+  let tokenIdx = 0
 
   for (let i = 0; i < words.length; i++) {
     const word = words[i]
@@ -173,16 +187,21 @@ export function textToPhonemes(text: string): TextToPhonemeResult {
 
     // Look up the word
     const phonemes = lookupWord(word)
-    if (phonemes) {
-      parts.push(phonemes)
-    } else {
-      unknownWords.push(word)
-      parts.push(spellOut(word))
-    }
+    const phStr = phonemes ?? spellOut(word)
+    if (!phonemes) unknownWords.push(word)
+
+    // Count how many phoneme tokens this word produces
+    const phTokens = phStr.split(/\s+/).filter(t => t !== '|' && !PROSODY_PUNCT.has(t))
+    const startToken = tokenIdx
+    tokenIdx += phTokens.length
+
+    wordSpans.push({ word, startToken, endToken: tokenIdx })
+    parts.push(phStr)
   }
 
   return {
     phonemes: parts.join(' '),
     unknownWords,
+    wordSpans,
   }
 }
