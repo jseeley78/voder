@@ -2,6 +2,7 @@ import { BAND_CENTERS, PHONEMES } from './phonemes'
 import { VoderEngine } from './engine'
 import { speakPhonemeSequence, type SequenceHandle, type TokenEvent, type StopKey } from './sequencer'
 import { textToPhonemes, type WordSpan } from './text-to-phoneme'
+import { PROPOSALS, createABTest, playWithGains, getABResults, type ABTestState } from './ab-test'
 
 let engine: VoderEngine | null = null
 let currentSequence: SequenceHandle | null = null
@@ -458,4 +459,140 @@ export function initUI(): void {
     $input('textInput').value = text
     speakText(text)
   })
+
+  // ── A/B Test ──
+  let abState: ABTestState | null = null
+
+  function showABTest(index: number) {
+    if (!abState) return
+    const proposal = PROPOSALS[index]
+    const result = abState.results[index]
+
+    $('abProgress').textContent = `${index + 1} / ${PROPOSALS.length}`
+    $('abPhonemeInfo').innerHTML = `
+      <strong>${proposal.phoneme}</strong>: ${proposal.reason}<br>
+      Test words: ${proposal.testWords.map(w => `<em>${w}</em>`).join(', ')}
+    `
+
+    // Build word buttons
+    const wordsDiv = $('abWords')
+    wordsDiv.innerHTML = ''
+    for (const word of proposal.testWords) {
+      const btn = document.createElement('button')
+      btn.className = 'ab-word-btn'
+      btn.textContent = word
+      btn.dataset.word = word
+      wordsDiv.appendChild(btn)
+    }
+
+    // Highlight current vote if any
+    $('abVoteA').style.borderColor = result.vote === 'a' ? 'var(--accent)' : ''
+    $('abVoteB').style.borderColor = result.vote === 'b' ? 'var(--accent)' : ''
+    $('abVoteSame').style.borderColor = result.vote === 'same' ? 'var(--accent)' : ''
+  }
+
+  async function abPlay(version: 'a' | 'b', word?: string) {
+    if (!abState) return
+    const eng = await ensureStarted()
+    const index = abState.currentIndex
+    const proposal = PROPOSALS[index]
+    const result = abState.results[index]
+
+    const isProposed = (version === 'a' && result.aIsProposed) || (version === 'b' && !result.aIsProposed)
+    const bands = isProposed ? proposal.proposedBands : proposal.currentBands
+    const testWord = word || proposal.testWords[0]
+
+    setStatus(`Playing ${version.toUpperCase()}: "${testWord}" (${proposal.phoneme})`)
+    await playWithGains(eng, testWord, proposal.phoneme, bands)
+    setStatus(`Done — ${version.toUpperCase()}`)
+  }
+
+  function abVote(vote: 'a' | 'b' | 'same') {
+    if (!abState) return
+    abState.results[abState.currentIndex].vote = vote
+    showABTest(abState.currentIndex)
+
+    // Auto-advance after a short delay
+    setTimeout(() => {
+      if (!abState) return
+      if (abState.currentIndex < PROPOSALS.length - 1) {
+        abState.currentIndex++
+        showABTest(abState.currentIndex)
+      } else {
+        showABResults()
+      }
+    }, 300)
+  }
+
+  function showABResults() {
+    if (!abState) return
+    const { apply, reject, same } = getABResults(abState)
+
+    let text = '=== A/B TEST RESULTS ===\n'
+    text += `Apply (proposed was better): ${apply.length ? apply.join(', ') : 'none'}\n`
+    text += `Reject (current was better): ${reject.length ? reject.join(', ') : 'none'}\n`
+    text += `Same (no difference): ${same.length ? same.join(', ') : 'none'}\n\n`
+
+    for (const r of abState.results) {
+      const proposal = PROPOSALS.find(p => p.phoneme === r.phoneme)!
+      const votedFor = r.vote === 'same' ? 'SAME' :
+        ((r.vote === 'a' && r.aIsProposed) || (r.vote === 'b' && !r.aIsProposed)) ? 'PROPOSED' : 'CURRENT'
+      text += `${r.phoneme}: ${votedFor}\n`
+      if (votedFor === 'PROPOSED') {
+        text += `  bands: [${proposal.proposedBands.map(g => g.toFixed(2)).join(', ')}]\n`
+      }
+    }
+
+    const resultsDiv = $('abResults')
+    resultsDiv.style.display = 'block'
+    resultsDiv.innerHTML = `
+      <h3>Results</h3>
+      <div class="ab-results-text">${text}</div>
+      <div class="row" style="margin-top: 8px; gap: 8px;">
+        <button id="abCopyBtn" class="primary">Copy Results</button>
+        <button id="abRestartBtn">Start Over</button>
+      </div>
+    `
+
+    $('abCopyBtn').addEventListener('click', () => {
+      navigator.clipboard.writeText(text).then(() => setStatus('Results copied to clipboard!'))
+    })
+
+    $('abRestartBtn').addEventListener('click', () => {
+      abState = createABTest()
+      abState.currentIndex = 0
+      resultsDiv.style.display = 'none'
+      showABTest(0)
+    })
+  }
+
+  $('abStartBtn').addEventListener('click', async () => {
+    await ensureStarted()
+    abState = createABTest()
+    $('abPanel').style.display = 'block'
+    $('abStartBtn').style.display = 'none'
+    showABTest(0)
+  })
+
+  $('abPlayA').addEventListener('click', () => abPlay('a'))
+  $('abPlayB').addEventListener('click', () => abPlay('b'))
+
+  // Click on individual test words to play them
+  $('abWords').addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.ab-word-btn') as HTMLElement
+    if (!btn) return
+    // Toggle: first click plays A, second plays B
+    if (btn.classList.contains('active')) {
+      btn.classList.remove('active')
+      abPlay('b', btn.dataset.word)
+    } else {
+      document.querySelectorAll('.ab-word-btn').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      abPlay('a', btn.dataset.word)
+    }
+  })
+
+  $('abVoteA').addEventListener('click', () => abVote('a'))
+  $('abVoteB').addEventListener('click', () => abVote('b'))
+  $('abVoteSame').addEventListener('click', () => abVote('same'))
 }

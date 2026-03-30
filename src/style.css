@@ -365,6 +365,42 @@ code {
 .scope-dot.wave { background: #5dadec; }
 .scope-dot.spec { background: #dc8c32; }
 
+/* ── A/B Test ── */
+
+.ab-panel { border: 2px solid var(--accent); }
+
+.ab-words {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ab-word-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.ab-word-btn:hover { border-color: var(--accent); }
+.ab-word-btn.active { border-color: var(--accent); background: #17334a; }
+
+.ab-results-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--muted);
+  background: #0f1318;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
 @media (max-width: 920px) {
   .grid, .two { grid-template-columns: 1fr; }
   .presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }

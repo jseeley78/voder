@@ -37,6 +37,31 @@
       </div>
     </div>
 
+    <div class="panel ab-panel" id="abPanel" style="margin-bottom: 18px; display: none;">
+      <div class="row" style="justify-content: space-between; align-items: baseline;">
+        <h2>Phoneme Tuning</h2>
+        <div class="small" id="abProgress">1 / 10</div>
+      </div>
+      <div id="abPhonemeInfo" class="small" style="margin-bottom: 10px;"></div>
+      <div class="ab-test-area">
+        <div class="row" style="gap: 16px; margin-bottom: 12px;">
+          <button id="abPlayA" class="primary" style="flex: 1; font-size: 18px; padding: 14px;">Play A</button>
+          <button id="abPlayB" class="primary" style="flex: 1; font-size: 18px; padding: 14px;">Play B</button>
+        </div>
+        <div class="ab-words" id="abWords"></div>
+        <div class="row" style="gap: 12px; margin-top: 12px;">
+          <button id="abVoteA" style="flex: 1; font-size: 16px; padding: 12px;">A is better</button>
+          <button id="abVoteSame" style="flex: 1; font-size: 16px; padding: 12px;">Same</button>
+          <button id="abVoteB" style="flex: 1; font-size: 16px; padding: 12px;">B is better</button>
+        </div>
+      </div>
+      <div class="ab-results" id="abResults" style="margin-top: 12px; display: none;"></div>
+    </div>
+
+    <div class="row" style="margin-bottom: 18px;">
+      <button id="abStartBtn">Start Phoneme A/B Test</button>
+    </div>
+
     <div class="grid">
       <div class="panel">
         <div class="row" style="justify-content: space-between;">
