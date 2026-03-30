@@ -141,7 +141,7 @@ function predictOurSpectrum(word: string): number[] {
 
 // ─── Main ───
 
-const REF_DIR = '/tmp/voder-ref/words'
+const REF_DIR = process.env.REF_DIR || '/tmp/voder-ref-mac/words'
 
 const TEST_WORDS = [
   'hello', 'world', 'the', 'beautiful', 'speech', 'robot',

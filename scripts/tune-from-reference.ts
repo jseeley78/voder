@@ -230,7 +230,7 @@ function comparePhoneme(phoneme: string, refBands: number[]): PhonemeComparison 
 
 // ─── Main ───
 
-const REF_DIR = '/tmp/voder-ref'
+const REF_DIR = process.env.REF_DIR || '/tmp/voder-ref-mac/vowels'
 
 // Map our phonemes to espeak WAV filenames
 const PHONEME_FILES: Record<string, string> = {
