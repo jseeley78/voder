@@ -270,6 +270,39 @@ export function speakPhonemeSequence(
         }
       }
 
+      // ── Source crossfade ──
+      // When the voiced/noise source changes between phonemes (like
+      // fricative→vowel or vowel→fricative), a real operator would rock
+      // the wrist bar smoothly, not snap it. We insert a brief crossfade
+      // frame where both sources are partially active.
+      if (prev && onsetMs > 8) {
+        const prevVoiced = prev.ph.voiced
+        const curVoiced = cur.ph.voiced
+        const prevNoise = prev.ph.noise
+        const curNoise = cur.ph.noise
+
+        // Detect source changes that need crossfade
+        const voiceAppearing = !prevVoiced && curVoiced && prevNoise > 0.3
+        const voiceDisappearing = prevVoiced && !curVoiced && curNoise > 0.3
+        const noiseAppearing = prevNoise < 0.1 && curNoise > 0.3
+        const noiseDisappearing = prevNoise > 0.3 && curNoise < 0.1
+
+        if (voiceAppearing || voiceDisappearing || noiseAppearing || noiseDisappearing) {
+          // Crossfade: blend both sources for ~20ms
+          const xfadeMs = Math.min(20, onsetMs * 0.4)
+          const xfadeBands = blendBands(prev.bands, cur.bands, 0.5)
+          engine.applyFrame({
+            voiced: true,  // keep buzz during crossfade
+            voicedAmp: (prev.ph.voicedAmp + cur.ph.voicedAmp) * 0.3,
+            noise: Math.max(prevNoise, curNoise) * 0.5,
+            pitchHz: cur.pitchHz,
+            bands: xfadeBands,
+          }, xfadeMs * 0.6)
+          await sleep(Math.max(5, xfadeMs - 3))
+          if (cancelled) break
+        }
+      }
+
       // ── Phase 1: Onset transition ──
       // Consonant clusters use tighter blending (jump to target faster)
 
@@ -355,16 +388,29 @@ export function speakPhonemeSequence(
         engine.applyFrame(offsetFrame, offsetMs)
         await sleep(Math.max(5, offsetMs - 5))
       } else if (offsetMs > 5) {
-        // No next phoneme — fade to silence
-        const fadeFrame: VoderFrame = {
-          voiced: cur.ph.voiced,
-          voicedAmp: cur.ph.voicedAmp * 0.3,
-          noise: cur.ph.noise * 0.3,
-          pitchHz: cur.pitchHz,
-          bands: cur.bands.map(g => g * 0.3),
+        // No next phoneme — word-final release
+        if (cur.ph.type === 'stop' && !cur.ph.voiced) {
+          // Word-final voiceless stop: add a tiny aspiration puff
+          // (operator trick: release the stop with a breath rather than silence)
+          engine.applyFrame({
+            voiced: false,
+            noise: 0.3,
+            pitchHz: cur.pitchHz,
+            bands: [0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.10, 0.15, 0.10, 0.05],
+          }, 8)
+          await sleep(15)
+        } else {
+          // Normal fade to silence
+          const fadeFrame: VoderFrame = {
+            voiced: cur.ph.voiced,
+            voicedAmp: cur.ph.voicedAmp * 0.3,
+            noise: cur.ph.noise * 0.3,
+            pitchHz: cur.pitchHz,
+            bands: cur.bands.map(g => g * 0.3),
+          }
+          engine.applyFrame(fadeFrame, offsetMs)
+          await sleep(Math.max(5, offsetMs - 5))
         }
-        engine.applyFrame(fadeFrame, offsetMs)
-        await sleep(Math.max(5, offsetMs - 5))
       }
 
       if (cancelled) break
