@@ -339,9 +339,12 @@ export class VoderEngine {
     //   expo:   tau = sec/3 → 95% complete in ~sec (default)
     //   smooth: use setValueCurveAtTime with S-curve
     //   slow:   tau = sec/1.5 → takes full duration to settle
-    const tau = shape === 'snap' ? sec / 6
-              : shape === 'slow' ? sec / 1.5
-              : sec / 3  // expo (default)
+    // Faster default transitions — analysis showed our F1-F2 dynamic range
+    // is half of eSpeak's because our transitions are too smooth.
+    // A skilled operator snaps between positions, not glides slowly.
+    const tau = shape === 'snap' ? sec / 8
+              : shape === 'slow' ? sec / 2
+              : sec / 5  // expo (default) — was sec/3, now snappier
 
     if (shape === 'smooth' && sec > 0.015) {
       // S-curve: slow start, fast middle, slow end (ease-in-out)
