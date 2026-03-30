@@ -91,11 +91,42 @@ export class VoderEngine {
     this.master = this.ctx.createGain()
     this.master.gain.value = this.masterValue
 
+    // Output EQ: models the frequency response of a 1939 horn speaker.
+    // The real Voder was demonstrated through PA speakers that had:
+    //   - Natural rolloff below ~150 Hz (no subwoofer)
+    //   - Presence peak at 2-4 kHz (horn resonance, aids intelligibility)
+    //   - Rolloff above ~6 kHz (speaker limitation)
+    // This actually HELPS clarity — the presence boost is in the range
+    // where consonant and vowel distinctions are most audible.
+
+    // Low shelf: gently cut below 200 Hz (-4 dB) to reduce rumble
+    const eqLow = this.ctx.createBiquadFilter()
+    eqLow.type = 'lowshelf'
+    eqLow.frequency.value = 200
+    eqLow.gain.value = -4
+
+    // Presence peak: boost 2.5 kHz (+5 dB) for clarity
+    const eqMid = this.ctx.createBiquadFilter()
+    eqMid.type = 'peaking'
+    eqMid.frequency.value = 2800
+    eqMid.Q.value = 0.8
+    eqMid.gain.value = 5
+
+    // High shelf: cut above 7 kHz (-3 dB) to soften harshness
+    const eqHigh = this.ctx.createBiquadFilter()
+    eqHigh.type = 'highshelf'
+    eqHigh.frequency.value = 7000
+    eqHigh.gain.value = -3
+
     this.analyser = this.ctx.createAnalyser()
     this.analyser.fftSize = 2048
     this.analyser.smoothingTimeConstant = 0.8
 
-    this.master.connect(this.analyser)
+    // Signal chain: master → EQ → analyser → speakers
+    this.master.connect(eqLow)
+    eqLow.connect(eqMid)
+    eqMid.connect(eqHigh)
+    eqHigh.connect(this.analyser)
     this.analyser.connect(this.ctx.destination)
 
     // Try AudioWorklet glottal pulse, fall back to PeriodicWave
