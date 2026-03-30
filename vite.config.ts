@@ -1,7 +1,15 @@
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { execSync } from 'child_process'
+
+const gitHash = execSync('git rev-parse --short HEAD').toString().trim()
+const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ')
 
 export default defineConfig({
+  define: {
+    __GIT_HASH__: JSON.stringify(gitHash),
+    __BUILD_TIME__: JSON.stringify(buildTime),
+  },
   plugins: [
     VitePWA({
       // Only enable SW in production — in dev it causes stale cache issues
