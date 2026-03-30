@@ -68,50 +68,50 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   // Gains derived from standard male formant frequencies (Peterson & Barney 1952)
 
   // IY "beat": F1≈270 F2≈2290 F3≈3010 — highest front vowel
-  IY: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 140,
+  IY: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 175,
         bands: [0.25, 0.85, 0.10, 0.05, 0.08, 0.12, 0.95, 0.65, 0.08, 0] },
 
   // IH "bit": F1≈390 F2≈1990 F3≈2550 — lower than IY
-  IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
+  IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 160,
         bands: [0.25, 0.72, 0.30, 0.12, 0.15, 0.40, 0.82, 0.50, 0.05, 0] },
 
   // EH "bet": F1≈530 F2≈1840 F3≈2480 — mid front
-  EH: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.02, durationMs: 130,
+  EH: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.02, durationMs: 170,
         bands: [0.25, 0.25, 0.85, 0.18, 0.12, 0.95, 0.45, 0.35, 0.04, 0] },
 
   // AE "bat": F1≈660 F2≈1720 F3≈2410 — open front
-  AE: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
+  AE: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
         bands: [0.25, 0.15, 0.50, 0.90, 0.18, 0.90, 0.40, 0.30, 0.04, 0] },
 
   // AA "bot/father": F1≈730 F2≈1090 F3≈2440 — open back
-  AA: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
+  AA: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
         bands: [0.25, 0.15, 0.30, 0.75, 0.90, 0.22, 0.40, 0.30, 0.03, 0] },
 
   // AO "bought": F1≈570 F2≈840 F3≈2410 — rounded back
   // AO: A/B tested — proposed was better (concentrate B3, reduce B5)
-  AO: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
+  AO: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
         bands: [0.30, 0.30, 0.96, 0.81, 0.05, 0.10, 0.38, 0.30, 0.03, 0] },
 
   // AH "but": F1≈640 F2≈1190 F3≈2390 — central mid (most common English vowel)
-  AH: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 130,
+  AH: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 170,
         bands: [0.25, 0.22, 0.55, 0.65, 0.88, 0.35, 0.42, 0.32, 0.03, 0] },
 
   // UH "book": F1≈440 F2≈1020 F3≈2240 — close back unrounded
-  UH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
+  UH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 160,
         bands: [0.30, 0.62, 0.38, 0.48, 0.70, 0.18, 0.40, 0.30, 0.03, 0] },
 
   // UW "boot": F1≈300 F2≈870 F3≈2240 — close back rounded
-  UW: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 170,
+  UW: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 200,
         bands: [0.30, 0.85, 0.20, 0.65, 0.40, 0.08, 0.38, 0.28, 0.03, 0] },
 
   // OW "boat": AO-like → UH-like glide
-  OW: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 160,
+  OW: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 195,
         bands:       [0.30, 0.35, 0.75, 0.30, 0.65, 0.12, 0.40, 0.30, 0.03, 0],
         onsetBands:  [0.30, 0.30, 0.75, 0.70, 0.30, 0.10, 0.40, 0.35, 0.04, 0],
         offsetBands: [0.30, 0.60, 0.40, 0.25, 0.60, 0.12, 0.40, 0.30, 0.03, 0] },
 
   // ER "bird": F1≈490 F2≈1350 F3≈1690
-  ER: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.02, durationMs: 140,
+  ER: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.02, durationMs: 175,
         bands: [0.25, 0.40, 0.65, 0.25, 0.55, 0.55, 0.20, 0.20, 0.03, 0] },
 
   // ─── Diphthongs ───
@@ -120,25 +120,25 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   // uses onset→offset for the actual glide.
 
   // AW "how/out": AA → UH
-  AW: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
+  AW: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 210,
         bands:       [0.28, 0.25, 0.45, 0.80, 0.55, 0.15, 0.40, 0.30, 0.03, 0],
         onsetBands:  [0.25, 0.20, 0.35, 0.90, 0.70, 0.20, 0.45, 0.35, 0.04, 0],
         offsetBands: [0.30, 0.60, 0.40, 0.25, 0.60, 0.12, 0.40, 0.30, 0.03, 0] },
 
   // AY "my/time": AA → IH
-  AY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
+  AY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 210,
         bands:       [0.25, 0.22, 0.40, 0.75, 0.45, 0.45, 0.55, 0.35, 0.04, 0],
         onsetBands:  [0.25, 0.20, 0.35, 0.90, 0.70, 0.20, 0.45, 0.35, 0.04, 0],
         offsetBands: [0.25, 0.70, 0.25, 0.10, 0.12, 0.30, 0.80, 0.50, 0.06, 0] },
 
   // EY "say/day": EH → IY
-  EY: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 170,
+  EY: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 200,
         bands:       [0.25, 0.30, 0.60, 0.30, 0.20, 0.65, 0.70, 0.45, 0.05, 0],
         onsetBands:  [0.25, 0.30, 0.85, 0.20, 0.15, 0.80, 0.50, 0.40, 0.05, 0],
         offsetBands: [0.25, 0.80, 0.15, 0.08, 0.10, 0.15, 0.90, 0.60, 0.08, 0] },
 
   // OY "boy/toy": AO → IY
-  OY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
+  OY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 210,
         bands:       [0.28, 0.30, 0.65, 0.50, 0.25, 0.30, 0.60, 0.40, 0.04, 0],
         onsetBands:  [0.30, 0.30, 0.75, 0.70, 0.30, 0.10, 0.40, 0.35, 0.04, 0],
         offsetBands: [0.25, 0.80, 0.15, 0.08, 0.10, 0.15, 0.90, 0.60, 0.08, 0] },
@@ -148,23 +148,23 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   // voicedAmp: unvoiced = 0, voiced fricatives = 0.50
 
-  HH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.80, durationMs: 80,
+  HH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.80, durationMs: 95,
         bands: [0.02, 0.05, 0.10, 0.15, 0.25, 0.30, 0.25, 0.20, 0.12, 0.05] },
   F:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.90, durationMs: 100,
         bands: [0, 0, 0.02, 0.05, 0.10, 0.30, 0.50, 0.70, 0.50, 0.20] },
-  S:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 110,
+  S:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 130,
         bands: [0, 0, 0, 0.02, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
-  SH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 120,
+  SH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 140,
         bands: [0, 0, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
-  TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 90,
+  TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 110,
         bands: [0, 0.02, 0.04, 0.08, 0.15, 0.30, 0.40, 0.35, 0.20, 0.10] },
-  V:  { type: 'fricative', voiced: true, voicedAmp: 0.62, noise: 0.48, durationMs: 95,
+  V:  { type: 'fricative', voiced: true, voicedAmp: 0.62, noise: 0.48, durationMs: 115,
         bands: [0.22, 0.18, 0.08, 0.08, 0.12, 0.32, 0.55, 0.75, 0.55, 0.22] },
-  Z:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
+  Z:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 120,
         bands: [0.20, 0.10, 0.03, 0.03, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
-  ZH: { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
+  ZH: { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 120,
         bands: [0.20, 0.10, 0.05, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
-  DH: { type: 'fricative', voiced: true, voicedAmp: 0.55, noise: 0.35, durationMs: 70,
+  DH: { type: 'fricative', voiced: true, voicedAmp: 0.55, noise: 0.35, durationMs: 90,
         bands: [0.25, 0.20, 0.08, 0.08, 0.15, 0.30, 0.40, 0.35, 0.20, 0.10] },
 
   // ─── Nasals ───
@@ -172,22 +172,22 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   // voicedAmp: 0.55 — sound exits through nose, lower energy
   // Nasals: each has a distinct anti-resonance location that separates them
-  M:  { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 100,
+  M:  { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 125,
         bands: [0.55, 0.75, 0.12, 0.04, 0.02, 0.02, 0.02, 0.02, 0, 0] },
-  N:  { type: 'nasal', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 105,
+  N:  { type: 'nasal', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 130,
         bands: [0.45, 0.62, 0.45, 0.18, 0.05, 0.03, 0.06, 0.04, 0, 0] },
-  NG: { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 100,
+  NG: { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 125,
         bands: [0.35, 0.40, 0.48, 0.28, 0.10, 0.04, 0.02, 0.02, 0, 0] },
 
   // ─── Liquids / glides ───
   // voicedAmp: liquids 0.65, glides 0.70
-  L:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 90,
+  L:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 115,
         bands: [0.30, 0.60, 0.30, 0.15, 0.55, 0.15, 0.10, 0.40, 0.03, 0] },
-  R:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 90,
+  R:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 115,
         bands: [0.25, 0.55, 0.40, 0.15, 0.50, 0.50, 0.10, 0.15, 0.03, 0] },
-  W:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 80,
+  W:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 100,
         bands: [0.30, 0.70, 0.50, 0.15, 0.08, 0.05, 0.03, 0.02, 0, 0] },
-  Y:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 70,
+  Y:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 90,
         bands: [0.25, 0.60, 0.15, 0.08, 0.10, 0.20, 0.80, 0.40, 0.05, 0] },
 
   // ─── Stops ───
@@ -198,44 +198,44 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   //   velar (K/G): burst energy at 1500-3000 Hz (varies with vowel context)
 
   // Voiced stops: low-frequency murmur during closure (voice bar)
-  B:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 60,
+  B:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 65,
         bands: [0.30, 0.35, 0.18, 0.08, 0.04, 0.02, 0.01, 0, 0, 0],
         transient: { durationMs: 12, noise: 0.80,
                      bands: [0.20, 0.40, 0.35, 0.25, 0.15, 0.08, 0.03, 0.01, 0, 0] } },
 
   // D: voiced alveolar — same high-frequency burst locus as T but with voicing
-  D:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.03, durationMs: 45,
+  D:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.03, durationMs: 50,
         bands: [0.25, 0.28, 0.15, 0.08, 0.06, 0.04, 0.02, 0.02, 0, 0],
         transient: { durationMs: 14, noise: 0.90,
                      bands: [0.02, 0.04, 0.08, 0.12, 0.20, 0.28, 0.35, 0.60, 0.70, 0.15] } },
 
-  G:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 55,
+  G:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 60,
         bands: [0.25, 0.28, 0.20, 0.10, 0.05, 0.03, 0.02, 0.01, 0, 0],
         transient: { durationMs: 14, noise: 0.85,
                      bands: [0.03, 0.05, 0.12, 0.20, 0.40, 0.50, 0.25, 0.08, 0.02, 0] } },
 
-  P:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.05, durationMs: 45,
+  P:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.05, durationMs: 50,
         bands: [0.05, 0.08, 0.05, 0.03, 0.02, 0.01, 0, 0, 0, 0],
         transient: { durationMs: 15, noise: 1.00,
                      bands: [0.20, 0.40, 0.35, 0.25, 0.15, 0.08, 0.03, 0.01, 0, 0] } },
 
   // T: strongest burst of all stops — sharp alveolar spike at 4000-5000 Hz
-  T:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.08, durationMs: 35,
+  T:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.08, durationMs: 40,
         bands: [0.03, 0.05, 0.04, 0.03, 0.03, 0.02, 0.01, 0.02, 0, 0],
         transient: { durationMs: 18, noise: 1.00,
                      bands: [0.02, 0.03, 0.06, 0.10, 0.18, 0.25, 0.35, 0.65, 0.80, 0.20] } },
 
-  K:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.06, durationMs: 45,
+  K:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.06, durationMs: 50,
         bands: [0.03, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0],
         transient: { durationMs: 22, noise: 1.00,
                      bands: [0.04, 0.06, 0.15, 0.25, 0.50, 0.65, 0.30, 0.10, 0.03, 0] } },
 
-  CH: { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 65,
+  CH: { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 70,
         bands: [0, 0, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15],
         transient: { durationMs: 18, noise: 1.00,
                      bands: [0.02, 0.05, 0.12, 0.20, 0.35, 0.50, 0.40, 0.20, 0.05, 0.01] } },
 
-  JH: { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.50, durationMs: 60,
+  JH: { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.50, durationMs: 65,
         bands: [0.15, 0.10, 0.05, 0.08, 0.20, 0.50, 0.85, 0.65, 0.30, 0.12],
         transient: { durationMs: 16, noise: 0.90,
                      bands: [0.02, 0.05, 0.12, 0.20, 0.35, 0.50, 0.40, 0.20, 0.05, 0.01] } },
