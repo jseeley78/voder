@@ -207,10 +207,12 @@ function drawWaveform(ctx: CanvasRenderingContext2D, analyser: AnalyserNode, w: 
   ctx.beginPath()
 
   const sliceWidth = w / bufLen
+  // Amplify 4x for a more dramatic visual — clips but looks better
+  const gain = 4.0
   let x = 0
   for (let i = 0; i < bufLen; i++) {
-    const v = data[i]
-    const y = (1 - v) * h / 2
+    const v = data[i] * gain
+    const y = Math.max(0, Math.min(h, (1 - v) * h / 2))
     if (i === 0) ctx.moveTo(x, y)
     else ctx.lineTo(x, y)
     x += sliceWidth
