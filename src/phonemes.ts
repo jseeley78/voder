@@ -100,7 +100,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         bands: [0.30, 0.62, 0.38, 0.48, 0.70, 0.18, 0.40, 0.30, 0.03, 0] },
 
   // UW "boot": F1≈300 F2≈870 F3≈2240 — close back rounded
-  UW: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 140,
+  UW: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 170,
         bands: [0.30, 0.85, 0.20, 0.65, 0.40, 0.08, 0.38, 0.28, 0.03, 0] },
 
   // OW "boat": AO-like → UH-like glide
@@ -157,8 +157,8 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         bands: [0, 0, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
   TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 90,
         bands: [0, 0.02, 0.04, 0.08, 0.15, 0.30, 0.40, 0.35, 0.20, 0.10] },
-  V:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.40, durationMs: 90,
-        bands: [0.20, 0.15, 0.05, 0.05, 0.10, 0.30, 0.50, 0.70, 0.50, 0.20] },
+  V:  { type: 'fricative', voiced: true, voicedAmp: 0.62, noise: 0.48, durationMs: 95,
+        bands: [0.22, 0.18, 0.08, 0.08, 0.12, 0.32, 0.55, 0.75, 0.55, 0.22] },
   Z:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
         bands: [0.20, 0.10, 0.03, 0.03, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
   ZH: { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
@@ -173,8 +173,8 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   // Nasals: each has a distinct anti-resonance location that separates them
   M:  { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 100,
         bands: [0.55, 0.75, 0.12, 0.04, 0.02, 0.02, 0.02, 0.02, 0, 0] },
-  N:  { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 90,
-        bands: [0.40, 0.55, 0.40, 0.15, 0.04, 0.03, 0.06, 0.04, 0, 0] },
+  N:  { type: 'nasal', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 105,
+        bands: [0.45, 0.62, 0.45, 0.18, 0.05, 0.03, 0.06, 0.04, 0, 0] },
   NG: { type: 'nasal', voiced: true, voicedAmp: 0.60, noise: 0.01, durationMs: 100,
         bands: [0.35, 0.40, 0.48, 0.28, 0.10, 0.04, 0.02, 0.02, 0, 0] },
 
@@ -224,10 +224,10 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         transient: { durationMs: 18, noise: 1.00,
                      bands: [0.02, 0.03, 0.06, 0.10, 0.18, 0.25, 0.35, 0.65, 0.80, 0.20] } },
 
-  K:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.05, durationMs: 45,
+  K:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.06, durationMs: 45,
         bands: [0.03, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0],
-        transient: { durationMs: 16, noise: 1.00,
-                     bands: [0.03, 0.05, 0.12, 0.20, 0.40, 0.55, 0.25, 0.08, 0.02, 0] } },
+        transient: { durationMs: 22, noise: 1.00,
+                     bands: [0.04, 0.06, 0.15, 0.25, 0.50, 0.65, 0.30, 0.10, 0.03, 0] } },
 
   CH: { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 65,
         bands: [0, 0, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15],
