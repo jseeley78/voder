@@ -31,12 +31,16 @@ let pb0=0,pb1=0,pb2=0;for(let i=0;i<pn.length;i++){const w=pn[i];pb0=0.99765*pb0
 
 function writeWav(path:string,samples:Float32Array,sr:number){const n=samples.length,ds=n*2,buf=Buffer.alloc(44+ds);buf.write('RIFF',0);buf.writeUInt32LE(36+ds,4);buf.write('WAVE',8);buf.write('fmt ',12);buf.writeUInt32LE(16,16);buf.writeUInt16LE(1,20);buf.writeUInt16LE(1,22);buf.writeUInt32LE(sr,24);buf.writeUInt32LE(sr*2,28);buf.writeUInt16LE(2,32);buf.writeUInt16LE(16,34);buf.write('data',36);buf.writeUInt32LE(ds,40);for(let i=0;i<n;i++)buf.writeInt16LE(Math.round(Math.max(-1,Math.min(1,samples[i]))*32767),44+i*2);fs.writeFileSync(path,buf)}
 
-// Mutable state
+// Mutable state — all tunable parameters per phoneme
 const gains: Record<string, number[]> = {}
 const durations: Record<string, number> = {}
+const voicedAmps: Record<string, number> = {}
+const noiseAmps: Record<string, number> = {}
 for (const [ph, cfg] of Object.entries(PHONEMES)) {
   gains[ph] = [...cfg.bands]
   durations[ph] = cfg.durationMs
+  voicedAmps[ph] = cfg.voicedAmp
+  noiseAmps[ph] = cfg.noise
 }
 
 function renderPhrase(text: string): Float32Array {
@@ -61,8 +65,10 @@ function renderPhrase(text: string): Float32Array {
     const n = Math.round(dur/1000*SAMPLE_RATE)
     const trans = Math.min(n, Math.round(0.030*SAMPLE_RATE))
     const chunk = new Float32Array(n)
-    const tgtVA = ph.voiced ? ph.voicedAmp*0.30 : 0
-    const tgtNA = ph.noise*0.10
+    const va = voicedAmps[pt.phoneme] ?? ph.voicedAmp
+    const na = noiseAmps[pt.phoneme] ?? ph.noise
+    const tgtVA = ph.voiced ? va*0.30 : 0
+    const tgtNA = na*0.10
     for (let i=0;i<n;i++){
       // Exponential approach: 1 - e^(-3i/trans) reaches ~95% at i=trans
       const t=i<trans? 1 - Math.exp(-3*i/trans) : 1.0
@@ -221,6 +227,42 @@ for (let si = 0; si < STEP_SIZES.length; si++) {
       }
       durations[ph] = origDur
     }
+
+    // Try voicedAmp change
+    const origVA = voicedAmps[ph]
+    for (const delta of [gainStep, -gainStep]) {
+      voicedAmps[ph] = Math.max(0, Math.min(1.0, origVA + delta))
+      const score = whisperScoreAll()
+      const logprob = [...score.details.values()].reduce((s, d) => s + d.logprob, 0)
+
+      if (score.correct > bestCorrect || (score.correct === bestCorrect && logprob > bestLogprob + 0.1)) {
+        bestCorrect = score.correct
+        bestLogprob = logprob
+        improved++
+        totalImprovements++
+        console.log(`  ${ph} voicedAmp ${delta>0?'+':''}${delta.toFixed(2)} (${origVA.toFixed(2)}→${voicedAmps[ph].toFixed(2)}): ${score.correct}/${score.total} correct, logprob=${logprob.toFixed(2)}`)
+        break
+      }
+      voicedAmps[ph] = origVA
+    }
+
+    // Try noise change
+    const origNA = noiseAmps[ph]
+    for (const delta of [gainStep, -gainStep]) {
+      noiseAmps[ph] = Math.max(0, Math.min(1.0, origNA + delta))
+      const score = whisperScoreAll()
+      const logprob = [...score.details.values()].reduce((s, d) => s + d.logprob, 0)
+
+      if (score.correct > bestCorrect || (score.correct === bestCorrect && logprob > bestLogprob + 0.1)) {
+        bestCorrect = score.correct
+        bestLogprob = logprob
+        improved++
+        totalImprovements++
+        console.log(`  ${ph} noise ${delta>0?'+':''}${delta.toFixed(2)} (${origNA.toFixed(2)}→${noiseAmps[ph].toFixed(2)}): ${score.correct}/${score.total} correct, logprob=${logprob.toFixed(2)}`)
+        break
+      }
+      noiseAmps[ph] = origNA
+    }
   }
 
   if (improved === 0) {
@@ -253,4 +295,18 @@ for (const ph of tunablePhonemes.sort()) {
   const orig = PHONEMES[ph].durationMs
   const opt = durations[ph]
   if (Math.abs(orig - opt) > 1) console.log(`  ${ph.padEnd(3)}: ${orig}→${opt}ms`)
+}
+
+console.log('\n=== CHANGED VOICED AMP ===')
+for (const ph of tunablePhonemes.sort()) {
+  const orig = PHONEMES[ph].voicedAmp
+  const opt = voicedAmps[ph]
+  if (Math.abs(orig - opt) > 0.01) console.log(`  ${ph.padEnd(3)}: ${orig.toFixed(2)}→${opt.toFixed(2)}`)
+}
+
+console.log('\n=== CHANGED NOISE ===')
+for (const ph of tunablePhonemes.sort()) {
+  const orig = PHONEMES[ph].noise
+  const opt = noiseAmps[ph]
+  if (Math.abs(orig - opt) > 0.01) console.log(`  ${ph.padEnd(3)}: ${orig.toFixed(2)}→${opt.toFixed(2)}`)
 }
