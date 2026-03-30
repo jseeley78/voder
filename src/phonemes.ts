@@ -59,7 +59,7 @@ export const BAND_Q = BAND_CENTERS.map((c, i) => c / BAND_WIDTHS[i])
 const minBW = Math.min(...BAND_WIDTHS)
 const basComp = BAND_WIDTHS.map(bw => Math.pow(minBW / bw, 0.7))
 // Empirical correction: subtract measured bias (clamped to reasonable range)
-const biasCor = [0.24, 0.04, 0.0, 0.0, 0.12, 0.10, 0.16, 0.18, 0.08, 0.04]
+const biasCor = [0.24, 0.04, 0.02, 0.10, 0.22, 0.10, 0.20, 0.18, 0.08, 0.04]
 export const BAND_COMPENSATION = basComp.map((c, i) => Math.max(0.05, c - biasCor[i]))
 
 //                                         B0    B1    B2    B3    B4    B5    B6    B7    B8    B9
@@ -147,54 +147,51 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         onsetBands:  [0.78, 0.30, 0.58, 0.65, 0.70, 0.10, 0.22, 0.30, 0.03, 0],
         offsetBands: [0.85, 0.70, 0.10, 0.05, 0.08, 0.12, 1.00, 1.00, 0.08, 0] },
 
-  // ─── Fricatives / aspirates ───
-  // These need strong noise and distinctive spectral shapes
-
-  // voicedAmp: unvoiced = 0, voiced fricatives = 0.50
+  // ─── Fricatives ───
+  // Tuned to reduce B6-B9 bias (word-level analysis showed these too hot).
+  // Fricative spectral shapes kept distinctive but scaled down in upper bands.
 
   HH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.80, durationMs: 80,
-        bands: [0.02, 0.05, 0.10, 0.15, 0.25, 0.30, 0.25, 0.20, 0.12, 0.05] },
+        bands: [0.05, 0.08, 0.12, 0.18, 0.25, 0.18, 0.12, 0.10, 0.06, 0.03] },
   F:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.90, durationMs: 100,
-        bands: [0, 0, 0.02, 0.05, 0.10, 0.30, 0.50, 0.70, 0.50, 0.20] },
+        bands: [0, 0, 0.02, 0.05, 0.10, 0.20, 0.30, 0.40, 0.30, 0.12] },
   S:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 110,
-        bands: [0, 0, 0, 0.02, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
+        bands: [0, 0, 0, 0.02, 0.05, 0.10, 0.25, 0.50, 0.70, 0.55] },
   SH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 120,
-        bands: [0, 0, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
+        bands: [0, 0, 0.03, 0.08, 0.15, 0.35, 0.60, 0.45, 0.22, 0.10] },
   TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 90,
-        bands: [0, 0.02, 0.04, 0.08, 0.15, 0.30, 0.40, 0.35, 0.20, 0.10] },
+        bands: [0, 0.02, 0.04, 0.08, 0.15, 0.22, 0.28, 0.22, 0.12, 0.06] },
   V:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.40, durationMs: 90,
-        bands: [0.20, 0.15, 0.05, 0.05, 0.10, 0.30, 0.50, 0.70, 0.50, 0.20] },
+        bands: [0.20, 0.12, 0.08, 0.08, 0.12, 0.20, 0.30, 0.40, 0.30, 0.12] },
   Z:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
-        bands: [0.20, 0.10, 0.03, 0.03, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
+        bands: [0.20, 0.08, 0.04, 0.04, 0.05, 0.10, 0.25, 0.50, 0.70, 0.55] },
   ZH: { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
-        bands: [0.20, 0.10, 0.05, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
+        bands: [0.20, 0.08, 0.05, 0.08, 0.15, 0.35, 0.60, 0.45, 0.22, 0.10] },
   DH: { type: 'fricative', voiced: true, voicedAmp: 0.55, noise: 0.35, durationMs: 70,
-        bands: [0.25, 0.20, 0.08, 0.08, 0.15, 0.30, 0.40, 0.35, 0.20, 0.10] },
+        bands: [0.25, 0.18, 0.10, 0.10, 0.15, 0.22, 0.28, 0.22, 0.12, 0.06] },
 
   // ─── Nasals ───
-  // Strong low-frequency voicing, anti-resonance dip in mid-range
+  // Samantha shows nasals need much more B1 (fundamental), B3-B5 presence.
+  // B2 was too dominant before.
 
-  // voicedAmp: 0.55 — sound exits through nose, lower energy
-  // Nasals: distinct anti-resonance locations, boosted for word-final presence
-  M:  { type: 'nasal', voiced: true, voicedAmp: 0.68, noise: 0.01, durationMs: 100,
-        bands: [0.55, 0.78, 0.14, 0.05, 0.03, 0.02, 0.02, 0.02, 0, 0] },
-  N:  { type: 'nasal', voiced: true, voicedAmp: 0.68, noise: 0.01, durationMs: 90,
-        bands: [0.42, 0.60, 0.45, 0.18, 0.05, 0.03, 0.06, 0.04, 0, 0] },
-  NG: { type: 'nasal', voiced: true, voicedAmp: 0.65, noise: 0.01, durationMs: 100,
-        bands: [0.38, 0.45, 0.52, 0.30, 0.12, 0.04, 0.02, 0.02, 0, 0] },
+  M:  { type: 'nasal', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 100,
+        bands: [0.85, 0.52, 0.42, 0.35, 0.55, 0.02, 0.02, 0.02, 0, 0] },
+  N:  { type: 'nasal', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 90,
+        bands: [0.70, 0.48, 0.50, 0.30, 0.32, 0.12, 0.06, 0.04, 0, 0] },
+  NG: { type: 'nasal', voiced: true, voicedAmp: 0.68, noise: 0.01, durationMs: 100,
+        bands: [0.58, 0.42, 0.48, 0.32, 0.15, 0.05, 0.02, 0.02, 0, 0] },
 
   // ─── Liquids / glides ───
-  // voicedAmp: liquids 0.65, glides 0.70
-  L:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 90,
-        bands: [0.30, 0.60, 0.30, 0.15, 0.55, 0.15, 0.10, 0.40, 0.03, 0] },
-  R:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 90,
-        bands: [0.25, 0.55, 0.40, 0.15, 0.50, 0.50, 0.10, 0.15, 0.03, 0] },
-  // W "we": F1≈300, F2≈600 — needs enough mid-frequency energy
-  // to transition smoothly into following vowels
-  W:  { type: 'glide', voiced: true, voicedAmp: 0.75, noise: 0.01, durationMs: 70,
-        bands: [0.30, 0.65, 0.45, 0.20, 0.12, 0.06, 0.03, 0.02, 0, 0] },
-  Y:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 70,
-        bands: [0.25, 0.60, 0.15, 0.08, 0.10, 0.20, 0.80, 0.40, 0.05, 0] },
+  // Samantha shows these need strong B1, B4, B5 — not B2-dominant.
+
+  L:  { type: 'liquid', voiced: true, voicedAmp: 0.75, noise: 0.01, durationMs: 90,
+        bands: [0.60, 0.48, 0.42, 0.55, 0.78, 0.15, 0.10, 0.25, 0.03, 0] },
+  R:  { type: 'liquid', voiced: true, voicedAmp: 0.75, noise: 0.01, durationMs: 90,
+        bands: [0.55, 0.42, 0.50, 0.48, 0.70, 0.30, 0.10, 0.12, 0.03, 0] },
+  W:  { type: 'glide', voiced: true, voicedAmp: 0.78, noise: 0.01, durationMs: 70,
+        bands: [0.62, 0.50, 0.52, 0.55, 0.55, 0.06, 0.03, 0.02, 0, 0] },
+  Y:  { type: 'glide', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 70,
+        bands: [0.60, 0.50, 0.25, 0.30, 0.20, 0.20, 0.55, 0.30, 0.05, 0] },
 
   // ─── Stops ───
   // Burst then brief voiced/silent steady state
