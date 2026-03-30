@@ -185,8 +185,9 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         bands: [0.30, 0.60, 0.30, 0.15, 0.55, 0.15, 0.10, 0.40, 0.03, 0] },
   R:  { type: 'liquid', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 115,
         bands: [0.25, 0.55, 0.40, 0.15, 0.50, 0.50, 0.10, 0.15, 0.03, 0] },
+  // W: A/B tested — proposed was better (concentrate B2-B3, zero upper bands)
   W:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 100,
-        bands: [0.30, 0.70, 0.50, 0.15, 0.08, 0.05, 0.03, 0.02, 0, 0] },
+        bands: [0.30, 0.76, 0.56, 0.15, 0.00, 0.00, 0.03, 0.02, 0, 0] },
   Y:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 90,
         bands: [0.25, 0.60, 0.15, 0.08, 0.10, 0.20, 0.80, 0.40, 0.05, 0] },
 
