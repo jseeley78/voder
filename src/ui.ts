@@ -432,11 +432,22 @@ export function initUI(): void {
   $input('jitter').addEventListener('input', () => {
     if (engine) engine.jitterValue = parseFloat($input('jitter').value)
   })
-  $input('vibratoRate').addEventListener('input', () => {
-    engine?.setVibratoRate(parseFloat($input('vibratoRate').value))
+  // Vibrato toggle + sliders
+  const vibratoToggle = $('vibratoToggle') as HTMLInputElement
+  const vibratoRateSlider = $input('vibratoRate')
+  const vibratoDepthSlider = $input('vibratoDepth')
+
+  vibratoToggle.addEventListener('change', () => {
+    const on = vibratoToggle.checked
+    vibratoRateSlider.disabled = !on
+    vibratoDepthSlider.disabled = !on
+    engine?.setVibratoDepth(on ? parseFloat(vibratoDepthSlider.value) : 0)
   })
-  $input('vibratoDepth').addEventListener('input', () => {
-    engine?.setVibratoDepth(parseFloat($input('vibratoDepth').value))
+  vibratoRateSlider.addEventListener('input', () => {
+    if (vibratoToggle.checked) engine?.setVibratoRate(parseFloat(vibratoRateSlider.value))
+  })
+  vibratoDepthSlider.addEventListener('input', () => {
+    if (vibratoToggle.checked) engine?.setVibratoDepth(parseFloat(vibratoDepthSlider.value))
   })
 
   // Manual mode buttons

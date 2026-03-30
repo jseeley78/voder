@@ -79,7 +79,7 @@ export class VoderEngine {
   masterValue = 1.0
   jitterValue = 0.8
   vibratoRate = 5.2
-  vibratoDepth = 2.5
+  vibratoDepth = 0    // Off by default — original Voder had no auto-vibrato
 
   get started(): boolean {
     return this._started
