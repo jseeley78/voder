@@ -323,8 +323,10 @@ export class VoderEngine {
     const now = this.ctx.currentTime
     const sec = Math.max(transitionMs / 1000, 0.005)
 
-    const voicedAmp = frame.voiced ? (frame.voicedAmp ?? 0.8) * 0.30 : 0.0
-    const noiseAmp = (frame.noise ?? 0.0) * 0.10
+    // Drive the sources to match eSpeak's output level (~0.10 RMS).
+    // Was 0.30/0.10 giving only 0.016 RMS — 5x too quiet.
+    const voicedAmp = frame.voiced ? (frame.voicedAmp ?? 0.8) * 1.50 : 0.0
+    const noiseAmp = (frame.noise ?? 0.0) * 0.45
     this._currentVoiced = frame.voiced
     this._currentPitch = frame.pitchHz
 
