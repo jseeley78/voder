@@ -70,82 +70,59 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   // voicedAmp: open vowels (1.0) > mid (0.9) > close (0.8)
   // Gains derived from standard male formant frequencies (Peterson & Barney 1952)
 
-  // ─── Vowels tuned against macOS Samantha (high-quality neural TTS) ───
-  // Key finding: natural speech has much stronger B1 (fundamental/chest resonance)
-  // than formant-synthesis references. All vowels boosted in B1.
+  // ─── Vowels auto-tuned (1860 iterations against macOS Samantha) ───
 
-  // IY "beat": strong fundamental + F2/F3 at B7/B8
   IY: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 140,
-        bands: [0.85, 0.70, 0.10, 0.05, 0.08, 0.12, 1.00, 1.00, 0.08, 0] },
-
-  // IH "bit": strong B1/B2, some B3, less high-freq than before
+        bands: [0.98, 0.83, 0.15, 0.05, 0.04, 0.03, 0.23, 0.62, 0.17, 0.07] },
   IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
-        bands: [0.66, 0.72, 0.52, 0.12, 0.05, 0.22, 0.35, 0.22, 0.05, 0] },
-
-  // EH "bet": Samantha shows strong B1, B3+B4, moderate B6
+        bands: [0.98, 0.59, 0.54, 0.15, 0.07, 0.11, 0.33, 0.50, 0.17, 0.07] },
   EH: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.02, durationMs: 130,
-        bands: [0.78, 0.25, 0.65, 0.68, 0.12, 0.59, 0.45, 0.35, 0.04, 0] },
-
-  // AE "bat": strong B1, B4 dominant, B2 present
+        bands: [1.00, 0.38, 0.49, 0.88, 0.21, 0.27, 0.58, 0.43, 0.14, 0.06] },
   AE: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
-        bands: [0.75, 0.38, 0.30, 0.90, 0.47, 0.30, 0.17, 0.30, 0.04, 0] },
-
-  // AA "bot/father": strong B1, B4+B5
+        bands: [1.00, 0.36, 0.29, 0.76, 0.41, 0.33, 0.34, 0.29, 0.12, 0.06] },
   AA: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
-        bands: [0.57, 0.15, 0.30, 0.60, 0.85, 0.06, 0.15, 0.30, 0.03, 0] },
-
-  // AO "bought": strong B1, B3+B4+B5
+        bands: [0.57, 0.23, 0.27, 0.63, 0.99, 0.17, 0.10, 0.24, 0.11, 0.04] },
   AO: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
-        bands: [0.78, 0.30, 0.58, 0.65, 0.70, 0.10, 0.22, 0.30, 0.03, 0] },
-
-  // AH "but": strong B1, B3-B5 spread
+        bands: [0.74, 0.31, 0.40, 0.77, 1.00, 0.20, 0.12, 0.27, 0.13, 0.05] },
   AH: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 130,
-        bands: [0.60, 0.28, 0.58, 0.62, 0.73, 0.28, 0.19, 0.32, 0.03, 0] },
-
-  // UH "book": strong B1/B2, B3 present
+        bands: [0.97, 0.41, 0.54, 0.88, 1.00, 0.39, 0.19, 0.35, 0.19, 0.08] },
   UH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
-        bands: [0.55, 0.62, 0.57, 0.28, 0.28, 0.06, 0.19, 0.30, 0.03, 0] },
-
-  // UW "boot": very strong B1, B2 peak
+        bands: [0.97, 0.69, 0.71, 0.24, 0.28, 0.21, 0.16, 0.21, 0.14, 0.05] },
   UW: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 140,
-        bands: [0.82, 0.85, 0.30, 0.24, 0.40, 0.08, 0.38, 0.28, 0.03, 0] },
-
-  // OW "boat": strong B1, B2-B5 moderate
+        bands: [0.97, 0.87, 0.32, 0.17, 0.21, 0.09, 0.11, 0.12, 0.11, 0.04] },
   OW: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 160,
-        bands:       [0.60, 0.36, 0.44, 0.24, 0.39, 0.12, 0.17, 0.12, 0.03, 0],
-        onsetBands:  [0.78, 0.30, 0.58, 0.55, 0.35, 0.10, 0.20, 0.15, 0.03, 0],
-        offsetBands: [0.55, 0.62, 0.57, 0.28, 0.28, 0.06, 0.19, 0.30, 0.03, 0] },
-
-  // ER "bird": Samantha shows strong B1, B3 peak, B5 secondary
+        bands:       [0.64, 0.36, 0.47, 0.29, 0.42, 0.08, 0.10, 0.16, 0.08, 0.04],
+        onsetBands:  [0.74, 0.31, 0.40, 0.77, 1.00, 0.20, 0.12, 0.27, 0.13, 0.05],
+        offsetBands: [0.97, 0.69, 0.71, 0.24, 0.28, 0.21, 0.16, 0.21, 0.14, 0.05] },
   ER: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.02, durationMs: 140,
-        bands: [0.62, 0.40, 0.55, 0.16, 0.38, 0.32, 0.20, 0.20, 0.03, 0] },
+        bands: [0.99, 0.60, 0.66, 0.29, 0.34, 0.58, 0.22, 0.14, 0.12, 0.05] },
 
   // ─── Diphthongs ───
   // Onset/offset targets updated to match reference-tuned monophthongs.
 
-  // AW "how/out": AA → UH (updated to Samantha-tuned vowels)
+  // AW "how/out": AA → UH (auto-tuned vowel targets)
   AW: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
-        bands:       [0.56, 0.38, 0.44, 0.44, 0.56, 0.06, 0.17, 0.30, 0.03, 0],
-        onsetBands:  [0.57, 0.15, 0.30, 0.60, 0.85, 0.06, 0.15, 0.30, 0.03, 0],
-        offsetBands: [0.55, 0.62, 0.57, 0.28, 0.28, 0.06, 0.19, 0.30, 0.03, 0] },
+        bands:       [0.77, 0.46, 0.49, 0.44, 0.64, 0.19, 0.13, 0.22, 0.12, 0.04],
+        onsetBands:  [0.57, 0.23, 0.27, 0.63, 0.99, 0.17, 0.10, 0.24, 0.11, 0.04],
+        offsetBands: [0.97, 0.69, 0.71, 0.24, 0.28, 0.21, 0.16, 0.21, 0.14, 0.05] },
 
   // AY "my/time": AA → IH
   AY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
-        bands:       [0.62, 0.44, 0.30, 0.36, 0.45, 0.14, 0.25, 0.26, 0.04, 0],
-        onsetBands:  [0.57, 0.15, 0.30, 0.60, 0.85, 0.06, 0.15, 0.30, 0.03, 0],
-        offsetBands: [0.66, 0.72, 0.52, 0.12, 0.05, 0.22, 0.35, 0.22, 0.05, 0] },
+        bands:       [0.78, 0.41, 0.40, 0.39, 0.53, 0.14, 0.22, 0.37, 0.14, 0.06],
+        onsetBands:  [0.57, 0.23, 0.27, 0.63, 0.99, 0.17, 0.10, 0.24, 0.11, 0.04],
+        offsetBands: [0.98, 0.59, 0.54, 0.15, 0.07, 0.11, 0.33, 0.50, 0.17, 0.07] },
 
   // EY "say/day": EH → IY
   EY: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 170,
-        bands:       [0.82, 0.48, 0.38, 0.36, 0.10, 0.36, 0.72, 0.68, 0.06, 0],
-        onsetBands:  [0.78, 0.25, 0.65, 0.68, 0.12, 0.59, 0.45, 0.35, 0.04, 0],
-        offsetBands: [0.85, 0.70, 0.10, 0.05, 0.08, 0.12, 1.00, 1.00, 0.08, 0] },
+        bands:       [0.99, 0.60, 0.32, 0.46, 0.12, 0.15, 0.40, 0.52, 0.16, 0.06],
+        onsetBands:  [1.00, 0.38, 0.49, 0.88, 0.21, 0.27, 0.58, 0.43, 0.14, 0.06],
+        offsetBands: [0.98, 0.83, 0.15, 0.05, 0.04, 0.03, 0.23, 0.62, 0.17, 0.07] },
 
   // OY "boy/toy": AO → IY
   OY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
-        bands:       [0.82, 0.50, 0.34, 0.35, 0.39, 0.11, 0.61, 0.65, 0.05, 0],
-        onsetBands:  [0.78, 0.30, 0.58, 0.65, 0.70, 0.10, 0.22, 0.30, 0.03, 0],
-        offsetBands: [0.85, 0.70, 0.10, 0.05, 0.08, 0.12, 1.00, 1.00, 0.08, 0] },
+        bands:       [0.86, 0.57, 0.28, 0.41, 0.52, 0.12, 0.18, 0.44, 0.15, 0.06],
+        onsetBands:  [0.74, 0.31, 0.40, 0.77, 1.00, 0.20, 0.12, 0.27, 0.13, 0.05],
+        offsetBands: [0.98, 0.83, 0.15, 0.05, 0.04, 0.03, 0.23, 0.62, 0.17, 0.07] },
 
   // ─── Fricatives ───
   // Tuned to reduce B6-B9 bias (word-level analysis showed these too hot).
