@@ -52,12 +52,15 @@ export const BAND_WIDTHS  = [225, 225, 250, 300,  400,  600,  700, 1100, 1600, 2
 export const BAND_Q = BAND_CENTERS.map((c, i) => c / BAND_WIDTHS[i])
 
 // Band energy compensation: wider bands pass more energy for the same gain.
-// Normalize so that equal gain values produce equal perceived loudness.
-// We scale inversely with sqrt(bandwidth) — sqrt because power scales with
-// bandwidth but perceived loudness scales roughly with amplitude.
-// Normalized so the narrowest band (225 Hz) = 1.0.
+// Calibrated against eSpeak reference TTS: word-level spectral analysis showed
+// bands 5-9 were systematically too hot with sqrt(bandwidth) compensation.
+// Using power of 0.7 (more aggressive than sqrt=0.5) plus empirical correction
+// from the systematic bias measured across 38 common words.
 const minBW = Math.min(...BAND_WIDTHS)
-export const BAND_COMPENSATION = BAND_WIDTHS.map(bw => Math.sqrt(minBW / bw))
+const basComp = BAND_WIDTHS.map(bw => Math.pow(minBW / bw, 0.7))
+// Empirical correction: subtract measured bias (clamped to reasonable range)
+const biasCor = [0.24, 0.04, 0.0, 0.0, 0.12, 0.10, 0.16, 0.18, 0.08, 0.04]
+export const BAND_COMPENSATION = basComp.map((c, i) => Math.max(0.05, c - biasCor[i]))
 
 //                                         B0    B1    B2    B3    B4    B5    B6    B7    B8    B9
 //                                        112   338   575   850  1200  1700  2350  3250  4600  6450
@@ -69,9 +72,9 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   // ─── Vowels tuned against eSpeak reference (70% blend toward ref) ───
 
-  // IY "beat": ref shows strong B1 + B7/B8 (F2+F3 region)
+  // IY "beat": needs strong B1 + B7/B8 — B7/B8 boosted to compensate for band attenuation
   IY: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 140,
-        bands: [0.67, 0.76, 0.10, 0.05, 0.08, 0.12, 0.95, 0.90, 0.08, 0] },
+        bands: [0.85, 0.70, 0.10, 0.05, 0.08, 0.12, 1.00, 1.00, 0.08, 0] },
 
   // IH "bit": ref shows concentrated B2 with much less high-freq energy
   IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
