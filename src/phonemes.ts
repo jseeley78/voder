@@ -88,8 +88,9 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         bands: [0.25, 0.15, 0.30, 0.75, 0.90, 0.22, 0.40, 0.30, 0.03, 0] },
 
   // AO "bought": F1≈570 F2≈840 F3≈2410 — rounded back
+  // AO: A/B tested — proposed was better (concentrate B3, reduce B5)
   AO: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
-        bands: [0.30, 0.30, 0.80, 0.65, 0.25, 0.10, 0.38, 0.30, 0.03, 0] },
+        bands: [0.30, 0.30, 0.96, 0.81, 0.05, 0.10, 0.38, 0.30, 0.03, 0] },
 
   // AH "but": F1≈640 F2≈1190 F3≈2390 — central mid (most common English vowel)
   AH: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 130,
