@@ -192,8 +192,10 @@
           <button id="manualSilence">Silence</button>
           <button id="applyManual">Apply current sliders</button>
         </div>
+      </div>
 
-        <h3 style="margin-top: 18px;">Scope</h3>
+      <div class="panel">
+        <h3>Scope</h3>
         <div class="scope-container">
           <div class="current-word" id="currentWord"></div>
           <canvas id="scopeCanvas" width="560" height="140"></canvas>
@@ -202,10 +204,11 @@
             <span class="scope-legend-item"><span class="scope-dot spec"></span>spectrum</span>
           </div>
         </div>
-      </div>
 
-      <div class="panel">
-        <h2>Phoneme input</h2>
+        <h3 style="margin-top: 18px;">Status</h3>
+        <div class="status" id="status">Idle.</div>
+
+        <h3 style="margin-top: 18px;">Phoneme input</h3>
         <label for="phonemeInput">Phoneme sequence (direct)</label>
         <textarea id="phonemeInput">HH AH0 L OW1 , | HH AW1 | AA1 R | Y UW1 ?</textarea>
         <div class="small">
@@ -217,9 +220,6 @@
 
         <h3 style="margin-top: 18px;">Phoneme presets</h3>
         <div class="presets" id="presetButtons"></div>
-
-        <h3 style="margin-top: 18px;">Status</h3>
-        <div class="status" id="status">Idle.</div>
       </div>
     </div>
   </div>
