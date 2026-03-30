@@ -4,6 +4,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
     VitePWA({
+      // Only enable SW in production — in dev it causes stale cache issues
+      devOptions: { enabled: false },
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
