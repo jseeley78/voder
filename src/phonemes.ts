@@ -59,7 +59,8 @@ export const BAND_Q = BAND_CENTERS.map((c, i) => c / BAND_WIDTHS[i])
 const minBW = Math.min(...BAND_WIDTHS)
 const basComp = BAND_WIDTHS.map(bw => Math.pow(minBW / bw, 0.7))
 // Empirical correction: subtract measured bias (clamped to reasonable range)
-const biasCor = [0.24, 0.04, 0.02, 0.10, 0.22, 0.10, 0.20, 0.18, 0.08, 0.04]
+// Optimized by auto-tune-full.ts (763 improvements across 77 training words)
+const biasCor = [0.210, 0.000, 0.000, 0.130, 0.340, 0.250, 0.350, 0.270, 0.200, 0.160]
 export const BAND_COMPENSATION = basComp.map((c, i) => Math.max(0.05, c - biasCor[i]))
 
 //                                         B0    B1    B2    B3    B4    B5    B6    B7    B8    B9
@@ -70,103 +71,106 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   // voicedAmp: open vowels (1.0) > mid (0.9) > close (0.8)
   // Gains derived from standard male formant frequencies (Peterson & Barney 1952)
 
-  // ─── Vowels auto-tuned (1860 iterations against macOS Samantha) ───
+  // ─── Vowels (word-level auto-tuned: 77 training words, 763 improvements) ───
 
   IY: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 140,
-        bands: [0.98, 0.83, 0.15, 0.05, 0.04, 0.03, 0.23, 0.62, 0.17, 0.07] },
+        bands: [0.86, 1.00, 0.09, 0.00, 0.04, 0.15, 0.59, 1.00, 0.65, 0.55] },
   IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
-        bands: [0.98, 0.59, 0.54, 0.15, 0.07, 0.11, 0.33, 0.50, 0.17, 0.07] },
+        bands: [0.98, 0.65, 0.66, 0.15, 0.07, 0.11, 0.33, 0.62, 0.29, 0.31] },
   EH: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.02, durationMs: 130,
-        bands: [1.00, 0.38, 0.49, 0.88, 0.21, 0.27, 0.58, 0.43, 0.14, 0.06] },
+        bands: [1.00, 0.50, 0.61, 0.76, 0.33, 0.39, 0.70, 0.55, 0.26, 0.18] },
   AE: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
-        bands: [1.00, 0.36, 0.29, 0.76, 0.41, 0.33, 0.34, 0.29, 0.12, 0.06] },
+        bands: [0.88, 0.42, 0.29, 0.88, 0.53, 0.45, 0.46, 0.41, 0.24, 0.18] },
   AA: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
         bands: [0.57, 0.23, 0.27, 0.63, 0.99, 0.17, 0.10, 0.24, 0.11, 0.04] },
   AO: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 150,
-        bands: [0.74, 0.31, 0.40, 0.77, 1.00, 0.20, 0.12, 0.27, 0.13, 0.05] },
+        bands: [0.98, 0.43, 0.64, 1.00, 1.00, 0.32, 0.24, 0.51, 0.37, 0.29] },
   AH: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 130,
-        bands: [0.97, 0.41, 0.54, 0.88, 1.00, 0.39, 0.19, 0.35, 0.19, 0.08] },
+        bands: [1.00, 0.53, 0.54, 1.00, 0.94, 0.21, 0.25, 0.53, 0.25, 0.26] },
   UH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
-        bands: [0.97, 0.69, 0.71, 0.24, 0.28, 0.21, 0.16, 0.21, 0.14, 0.05] },
+        bands: [0.85, 0.63, 1.00, 0.24, 0.52, 0.57, 0.52, 0.45, 0.38, 0.41] },
   UW: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 140,
-        bands: [0.97, 0.87, 0.32, 0.17, 0.21, 0.09, 0.11, 0.12, 0.11, 0.04] },
+        bands: [0.85, 0.99, 0.38, 0.11, 0.21, 0.09, 0.23, 0.48, 0.35, 0.28] },
   OW: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 160,
-        bands:       [0.64, 0.36, 0.47, 0.29, 0.42, 0.08, 0.10, 0.16, 0.08, 0.04],
-        onsetBands:  [0.74, 0.31, 0.40, 0.77, 1.00, 0.20, 0.12, 0.27, 0.13, 0.05],
-        offsetBands: [0.97, 0.69, 0.71, 0.24, 0.28, 0.21, 0.16, 0.21, 0.14, 0.05] },
+        bands:       [0.58, 0.36, 0.47, 0.59, 0.66, 0.14, 0.28, 0.34, 0.38, 0.34],
+        onsetBands:  [0.98, 0.43, 0.64, 1.00, 1.00, 0.32, 0.24, 0.51, 0.37, 0.29],
+        offsetBands: [0.85, 0.63, 1.00, 0.24, 0.52, 0.57, 0.52, 0.45, 0.38, 0.41] },
   ER: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.02, durationMs: 140,
-        bands: [0.99, 0.60, 0.66, 0.29, 0.34, 0.58, 0.22, 0.14, 0.12, 0.05] },
+        bands: [0.99, 0.60, 0.78, 0.29, 0.34, 0.58, 0.22, 0.26, 0.12, 0.17] },
 
   // ─── Diphthongs ───
   // Onset/offset targets updated to match reference-tuned monophthongs.
 
-  // AW "how/out": AA → UH (auto-tuned vowel targets)
+  // AW "how/out": AA → UH (word-level auto-tuned)
   AW: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
-        bands:       [0.77, 0.46, 0.49, 0.44, 0.64, 0.19, 0.13, 0.22, 0.12, 0.04],
+        bands:       [0.65, 0.46, 0.37, 0.56, 0.82, 0.25, 0.31, 0.28, 0.18, 0.22],
         onsetBands:  [0.57, 0.23, 0.27, 0.63, 0.99, 0.17, 0.10, 0.24, 0.11, 0.04],
-        offsetBands: [0.97, 0.69, 0.71, 0.24, 0.28, 0.21, 0.16, 0.21, 0.14, 0.05] },
+        offsetBands: [0.85, 0.63, 1.00, 0.24, 0.52, 0.57, 0.52, 0.45, 0.38, 0.41] },
 
   // AY "my/time": AA → IH
   AY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
-        bands:       [0.78, 0.41, 0.40, 0.39, 0.53, 0.14, 0.22, 0.37, 0.14, 0.06],
+        bands:       [0.78, 0.41, 0.40, 0.51, 0.83, 0.44, 0.52, 0.67, 0.44, 0.36],
         onsetBands:  [0.57, 0.23, 0.27, 0.63, 0.99, 0.17, 0.10, 0.24, 0.11, 0.04],
-        offsetBands: [0.98, 0.59, 0.54, 0.15, 0.07, 0.11, 0.33, 0.50, 0.17, 0.07] },
+        offsetBands: [0.98, 0.65, 0.66, 0.15, 0.07, 0.11, 0.33, 0.62, 0.29, 0.31] },
 
   // EY "say/day": EH → IY
   EY: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 170,
-        bands:       [0.99, 0.60, 0.32, 0.46, 0.12, 0.15, 0.40, 0.52, 0.16, 0.06],
-        onsetBands:  [1.00, 0.38, 0.49, 0.88, 0.21, 0.27, 0.58, 0.43, 0.14, 0.06],
-        offsetBands: [0.98, 0.83, 0.15, 0.05, 0.04, 0.03, 0.23, 0.62, 0.17, 0.07] },
+        bands:       [0.99, 0.60, 0.56, 0.34, 0.24, 0.27, 0.64, 0.64, 0.40, 0.18],
+        onsetBands:  [1.00, 0.50, 0.61, 0.76, 0.33, 0.39, 0.70, 0.55, 0.26, 0.18],
+        offsetBands: [0.86, 1.00, 0.09, 0.00, 0.04, 0.15, 0.59, 1.00, 0.65, 0.55] },
 
   // OY "boy/toy": AO → IY
   OY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 180,
-        bands:       [0.86, 0.57, 0.28, 0.41, 0.52, 0.12, 0.18, 0.44, 0.15, 0.06],
-        onsetBands:  [0.74, 0.31, 0.40, 0.77, 1.00, 0.20, 0.12, 0.27, 0.13, 0.05],
-        offsetBands: [0.98, 0.83, 0.15, 0.05, 0.04, 0.03, 0.23, 0.62, 0.17, 0.07] },
+        bands:       [0.92, 0.72, 0.36, 0.50, 0.52, 0.24, 0.42, 0.76, 0.51, 0.42],
+        onsetBands:  [0.98, 0.43, 0.64, 1.00, 1.00, 0.32, 0.24, 0.51, 0.37, 0.29],
+        offsetBands: [0.86, 1.00, 0.09, 0.00, 0.04, 0.15, 0.59, 1.00, 0.65, 0.55] },
 
   // ─── Fricatives ───
   // Tuned to reduce B6-B9 bias (word-level analysis showed these too hot).
   // Fricative spectral shapes kept distinctive but scaled down in upper bands.
 
+  // ─── Fricatives (word-level auto-tuned) ───
   HH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.80, durationMs: 80,
-        bands: [0.05, 0.08, 0.12, 0.18, 0.25, 0.18, 0.12, 0.10, 0.06, 0.03] },
+        bands: [0.00, 0.20, 0.24, 0.18, 0.25, 0.30, 0.12, 0.22, 0.18, 0.15] },
   F:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.90, durationMs: 100,
-        bands: [0, 0, 0.02, 0.05, 0.10, 0.20, 0.30, 0.40, 0.30, 0.12] },
+        bands: [0.00, 0.12, 0.14, 0.00, 0.06, 0.26, 0.36, 0.58, 0.48, 0.30] },
   S:  { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 110,
-        bands: [0, 0, 0, 0.02, 0.05, 0.10, 0.25, 0.50, 0.70, 0.55] },
+        bands: [0.06, 0.06, 0.18, 0.14, 0.06, 0.22, 0.25, 0.62, 0.94, 0.55] },
   SH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 120,
-        bands: [0, 0, 0.03, 0.08, 0.15, 0.35, 0.60, 0.45, 0.22, 0.10] },
+        bands: [0.00, 0.06, 0.00, 0.02, 0.21, 0.29, 0.66, 0.51, 0.28, 0.16] },
   TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 90,
         bands: [0, 0.02, 0.04, 0.08, 0.15, 0.22, 0.28, 0.22, 0.12, 0.06] },
   V:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.40, durationMs: 90,
         bands: [0.20, 0.12, 0.08, 0.08, 0.12, 0.20, 0.30, 0.40, 0.30, 0.12] },
   Z:  { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
-        bands: [0.20, 0.08, 0.04, 0.04, 0.05, 0.10, 0.25, 0.50, 0.70, 0.55] },
+        bands: [0.14, 0.14, 0.10, 0.10, 0.11, 0.16, 0.31, 0.56, 0.76, 0.61] },
   ZH: { type: 'fricative', voiced: true, voicedAmp: 0.50, noise: 0.55, durationMs: 100,
         bands: [0.20, 0.08, 0.05, 0.08, 0.15, 0.35, 0.60, 0.45, 0.22, 0.10] },
   DH: { type: 'fricative', voiced: true, voicedAmp: 0.55, noise: 0.35, durationMs: 70,
-        bands: [0.25, 0.18, 0.10, 0.10, 0.15, 0.22, 0.28, 0.22, 0.12, 0.06] },
+        bands: [0.19, 0.24, 0.22, 0.10, 0.27, 0.34, 0.28, 0.34, 0.24, 0.18] },
 
   // ─── Nasals ───
   // Samantha shows nasals need much more B1 (fundamental), B3-B5 presence.
   // B2 was too dominant before.
 
+  // ─── Nasals (word-level auto-tuned) ───
   M:  { type: 'nasal', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 100,
         bands: [0.85, 0.52, 0.42, 0.35, 0.55, 0.02, 0.02, 0.02, 0, 0] },
   N:  { type: 'nasal', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 90,
-        bands: [0.70, 0.48, 0.50, 0.30, 0.32, 0.12, 0.06, 0.04, 0, 0] },
+        bands: [0.76, 0.54, 0.56, 0.00, 0.62, 0.30, 0.24, 0.34, 0.18, 0.18] },
   NG: { type: 'nasal', voiced: true, voicedAmp: 0.68, noise: 0.01, durationMs: 100,
-        bands: [0.58, 0.42, 0.48, 0.32, 0.15, 0.05, 0.02, 0.02, 0, 0] },
+        bands: [0.64, 0.48, 0.30, 0.26, 0.33, 0.23, 0.12, 0.20, 0.18, 0.12] },
 
   // ─── Liquids / glides ───
   // Samantha shows these need strong B1, B4, B5 — not B2-dominant.
 
+  // ─── Liquids / glides (word-level auto-tuned) ───
   L:  { type: 'liquid', voiced: true, voicedAmp: 0.75, noise: 0.01, durationMs: 90,
-        bands: [0.60, 0.48, 0.42, 0.55, 0.78, 0.15, 0.10, 0.25, 0.03, 0] },
+        bands: [0.60, 0.48, 0.48, 0.49, 0.72, 0.21, 0.16, 0.31, 0.09, 0.06] },
   R:  { type: 'liquid', voiced: true, voicedAmp: 0.75, noise: 0.01, durationMs: 90,
-        bands: [0.55, 0.42, 0.50, 0.48, 0.70, 0.30, 0.10, 0.12, 0.03, 0] },
+        bands: [0.73, 0.60, 0.68, 0.24, 0.58, 0.66, 0.46, 0.48, 0.39, 0.36] },
   W:  { type: 'glide', voiced: true, voicedAmp: 0.78, noise: 0.01, durationMs: 70,
-        bands: [0.62, 0.50, 0.52, 0.55, 0.55, 0.06, 0.03, 0.02, 0, 0] },
+        bands: [0.62, 0.50, 0.52, 0.37, 0.37, 0.24, 0.21, 0.20, 0.18, 0.18] },
   Y:  { type: 'glide', voiced: true, voicedAmp: 0.72, noise: 0.01, durationMs: 70,
         bands: [0.60, 0.50, 0.25, 0.30, 0.20, 0.20, 0.55, 0.30, 0.05, 0] },
 
@@ -179,13 +183,13 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   // Voiced stops: low-frequency murmur during closure (voice bar)
   B:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 60,
-        bands: [0.30, 0.35, 0.18, 0.08, 0.04, 0.02, 0.01, 0, 0, 0],
+        bands: [0.24, 0.41, 0.24, 0.14, 0.10, 0.08, 0.07, 0.06, 0.06, 0.06],
         transient: { durationMs: 12, noise: 0.80,
                      bands: [0.20, 0.40, 0.35, 0.25, 0.15, 0.08, 0.03, 0.01, 0, 0] } },
 
   // D: voiced alveolar — same high-frequency burst locus as T but with voicing
   D:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.03, durationMs: 45,
-        bands: [0.25, 0.28, 0.15, 0.08, 0.06, 0.04, 0.02, 0.02, 0, 0],
+        bands: [0.25, 0.28, 0.21, 0.02, 0.12, 0.10, 0.08, 0.08, 0.06, 0.06],
         transient: { durationMs: 14, noise: 0.90,
                      bands: [0.02, 0.04, 0.08, 0.12, 0.20, 0.28, 0.35, 0.60, 0.70, 0.15] } },
 
@@ -206,7 +210,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
                      bands: [0.02, 0.03, 0.06, 0.10, 0.18, 0.25, 0.35, 0.65, 0.80, 0.20] } },
 
   K:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.05, durationMs: 45,
-        bands: [0.03, 0.05, 0.04, 0.03, 0.02, 0.01, 0, 0, 0, 0],
+        bands: [0.09, 0.00, 0.10, 0.00, 0.08, 0.00, 0.06, 0.00, 0.00, 0.06],
         transient: { durationMs: 16, noise: 1.00,
                      bands: [0.03, 0.05, 0.12, 0.20, 0.40, 0.55, 0.25, 0.08, 0.02, 0] } },
 
