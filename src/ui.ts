@@ -141,19 +141,36 @@ function updateWristBar(voiced: boolean, noise: number): void {
   // else: no class = idle/grey
 }
 
+// Smooth foot pedal animation
+let fpTarget = 50  // target percentage
+let fpCurrent = 50
+let fpAnimRunning = false
+
 function updateFootPedal(pitchHz: number): void {
-  const fill = $('fpFill')
-  const label = $('fpValue')
   const basePitch = parseFloat($input('pitch').value)
-  // Show pitch as deviation from the base.
-  // Center = 50%, full range = base * 0.7 to base * 1.4
-  // (matching the prosody engine's max range of ~0.75x to ~1.35x)
   const ratio = pitchHz / basePitch
-  const pct = Math.max(0, Math.min(100, ((ratio - 0.7) / (1.4 - 0.7)) * 100))
-  fill.style.width = `${pct}%`
+  fpTarget = Math.max(0, Math.min(100, ((ratio - 0.7) / (1.4 - 0.7)) * 100))
   const cents = Math.round(1200 * Math.log2(ratio))
   const sign = cents >= 0 ? '+' : ''
-  label.textContent = `${Math.round(pitchHz)} Hz (${sign}${cents}¢)`
+  $('fpValue').textContent = `${Math.round(pitchHz)} Hz (${sign}${cents}¢)`
+  if (!fpAnimRunning) startFpAnim()
+}
+
+function startFpAnim(): void {
+  fpAnimRunning = true
+  function tick() {
+    const diff = fpTarget - fpCurrent
+    if (Math.abs(diff) > 0.3) {
+      fpCurrent += diff * 0.15
+      $('fpFill').style.width = `${fpCurrent}%`
+      requestAnimationFrame(tick)
+    } else {
+      fpCurrent = fpTarget
+      $('fpFill').style.width = `${fpCurrent}%`
+      fpAnimRunning = false
+    }
+  }
+  requestAnimationFrame(tick)
 }
 
 function updateStopKeys(key: StopKey): void {
@@ -471,27 +488,24 @@ export function initUI(): void {
   })
 
   // ── Example text buttons ──
-  $('exHello').addEventListener('click', () => {
-    $input('textInput').value = 'Hello, how are you?'
-    speakText('Hello, how are you?')
-  })
-  $('exRobot').addEventListener('click', () => {
-    $input('textInput').value = 'I am a robot.'
-    speakText('I am a robot.')
-  })
-  $('exVoder').addEventListener('click', () => {
-    $input('textInput').value = 'The Voder can speak.'
-    speakText('The Voder can speak.')
-  })
-  $('exLong').addEventListener('click', () => {
-    $input('textInput').value = 'She saw him running through the park.'
-    speakText('She saw him running through the park.')
-  })
-  $('exRainbow').addEventListener('click', () => {
-    const text = 'When the sunlight strikes raindrops in the air, they act as a prism and form a rainbow. The rainbow is a division of white light into many beautiful colors.'
-    $input('textInput').value = text
-    speakText(text)
-  })
+  // Helper to wire up example buttons
+  function exBtn(id: string, text: string) {
+    $(id).addEventListener('click', () => {
+      $input('textInput').value = text
+      speakText(text)
+    })
+  }
+
+  exBtn('exHello', 'Hello, how are you?')
+  exBtn('exRobot', 'I am a robot.')
+  exBtn('exRainbow', 'When the sunlight strikes raindrops in the air, they act as a prism and form a rainbow. The rainbow is a division of white light into many beautiful colors.')
+
+  // Original 1939 World's Fair Voder demonstration phrases
+  exBtn('exSheSaw', 'She saw me.')
+  exBtn('exGreeting', 'Good afternoon, radio audience.')
+  exBtn('exConcentration', 'Concentration.')
+  exBtn('exMary', 'Mary had a little lamb, its fleece was white as snow.')
+  exBtn('exSF', 'Hello, San Francisco. This is New York speaking. Greetings to you.')
 
   // ── A/B Test ──
   let abState: ABTestState | null = null

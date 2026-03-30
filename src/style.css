@@ -215,7 +215,7 @@ code {
   height: 24px;
   border-radius: 6px;
   background: var(--line);
-  transition: background 0.08s, box-shadow 0.08s;
+  transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .wb-indicator.buzz {
@@ -268,7 +268,6 @@ code {
   width: 0%;
   background: #2a4a6b;
   border-radius: 5px;
-  transition: width 0.06s, background 0.06s;
   box-shadow: 0 0 6px rgba(60, 120, 200, 0.3);
 }
 
