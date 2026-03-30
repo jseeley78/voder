@@ -493,6 +493,75 @@ export function initUI(): void {
     }
   })
 
+  // ── Record button ──
+  let mediaRecorder: MediaRecorder | null = null
+  let recordChunks: Blob[] = []
+
+  $('recordBtn').addEventListener('click', async () => {
+    const eng = await ensureStarted()
+    const btn = $('recordBtn') as HTMLButtonElement
+
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      // Stop recording
+      mediaRecorder.stop()
+      btn.textContent = 'Record'
+      btn.style.borderColor = ''
+      return
+    }
+
+    // Start recording
+    if (!eng.recordDest) { setStatus('No record destination'); return }
+
+    recordChunks = []
+    mediaRecorder = new MediaRecorder(eng.recordDest.stream, { mimeType: 'audio/webm' })
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordChunks.push(e.data)
+    }
+
+    mediaRecorder.onstop = async () => {
+      const webmBlob = new Blob(recordChunks, { type: 'audio/webm' })
+
+      // Convert to WAV for Whisper compatibility
+      const arrayBuf = await webmBlob.arrayBuffer()
+      const audioCtx = new AudioContext()
+      const decoded = await audioCtx.decodeAudioData(arrayBuf)
+      const samples = decoded.getChannelData(0)
+      const sr = decoded.sampleRate
+
+      // Build WAV
+      const numSamples = samples.length
+      const dataSize = numSamples * 2
+      const buffer = new ArrayBuffer(44 + dataSize)
+      const view = new DataView(buffer)
+      const writeStr = (off: number, str: string) => { for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i)) }
+      writeStr(0, 'RIFF'); view.setUint32(4, 36 + dataSize, true); writeStr(8, 'WAVE')
+      writeStr(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true)
+      view.setUint16(22, 1, true); view.setUint32(24, sr, true); view.setUint32(28, sr * 2, true)
+      view.setUint16(32, 2, true); view.setUint16(34, 16, true)
+      writeStr(36, 'data'); view.setUint32(40, dataSize, true)
+      for (let i = 0; i < numSamples; i++) {
+        view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, samples[i])) * 32767), true)
+      }
+
+      const wavBlob = new Blob([buffer], { type: 'audio/wav' })
+      const url = URL.createObjectURL(wavBlob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'voder-recording.wav'
+      a.click()
+      URL.revokeObjectURL(url)
+      audioCtx.close()
+
+      setStatus(`Recorded ${(numSamples / sr).toFixed(1)}s → voder-recording.wav`)
+    }
+
+    mediaRecorder.start()
+    btn.textContent = 'Stop'
+    btn.style.borderColor = '#cc4422'
+    setStatus('Recording... click Stop when done')
+  })
+
   // ── Phoneme input (direct) ──
   $('speakBtn').addEventListener('click', () => {
     speakPhonemes($input('phonemeInput').value)

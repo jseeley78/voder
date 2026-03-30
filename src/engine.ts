@@ -74,6 +74,8 @@ export class VoderEngine {
 
   /** Exposed for waveform/spectrum visualization */
   analyser: AnalyserNode | null = null
+  /** For recording the output as WAV */
+  recordDest: MediaStreamAudioDestinationNode | null = null
 
   pitchValue = 110
   masterValue = 1.0
@@ -128,6 +130,10 @@ export class VoderEngine {
     eqMid.connect(eqHigh)
     eqHigh.connect(this.analyser)
     this.analyser.connect(this.ctx.destination)
+
+    // Recording tap — captures the same signal the speakers get
+    this.recordDest = this.ctx.createMediaStreamDestination()
+    this.analyser.connect(this.recordDest)
 
     // Try AudioWorklet glottal pulse, fall back to PeriodicWave
     this._useWorklet = await registerGlottalWorklet(this.ctx)
