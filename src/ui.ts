@@ -17,11 +17,42 @@ function setStatus(msg: string): void {
   $('status').textContent = msg
 }
 
+// Smooth slider animation — lerps toward target values each frame
+const bandTargets = new Float64Array(10)
+const bandCurrent = new Float64Array(10)
+let bandAnimRunning = false
+
 function loadBandsToUI(bands: number[]): void {
-  sliderEls.forEach((el, i) => {
-    el.value = String(bands[i] || 0)
-    $(`bval${i}`).textContent = Number(el.value).toFixed(2)
-  })
+  for (let i = 0; i < 10; i++) {
+    bandTargets[i] = bands[i] || 0
+  }
+  if (!bandAnimRunning) startBandAnim()
+}
+
+function startBandAnim(): void {
+  bandAnimRunning = true
+  function tick() {
+    if (!bandAnimRunning) return
+    let settled = true
+    for (let i = 0; i < 10; i++) {
+      // Exponential approach matching the engine's setTargetAtTime
+      const diff = bandTargets[i] - bandCurrent[i]
+      if (Math.abs(diff) > 0.005) {
+        bandCurrent[i] += diff * 0.18  // ~5-6 frames to settle
+        settled = false
+      } else {
+        bandCurrent[i] = bandTargets[i]
+      }
+      sliderEls[i].value = String(bandCurrent[i])
+      $(`bval${i}`).textContent = bandCurrent[i].toFixed(2)
+    }
+    if (!settled) {
+      requestAnimationFrame(tick)
+    } else {
+      bandAnimRunning = false
+    }
+  }
+  requestAnimationFrame(tick)
 }
 
 function getBandsFromUI(): number[] {
