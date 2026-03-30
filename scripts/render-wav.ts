@@ -215,7 +215,8 @@ function renderFrames(frames: RenderFrame[], sampleRate: number): Float32Array {
 
     for (let i = 0; i < numSamples; i++) {
       // Smooth transition from previous frame
-      const t = i < transitionSamples ? i / transitionSamples : 1.0
+      // Exponential approach curve (matches browser engine's setTargetAtTime)
+      const t = i < transitionSamples ? 1 - Math.exp(-3 * i / transitionSamples) : 1.0
       const curVoicedAmp = frame.voiced ? frame.voicedAmp * 0.30 : 0
       const curNoiseAmp = frame.noise * 0.10
 

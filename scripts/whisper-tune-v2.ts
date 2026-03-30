@@ -64,7 +64,8 @@ function renderPhrase(text: string): Float32Array {
     const tgtVA = ph.voiced ? ph.voicedAmp*0.30 : 0
     const tgtNA = ph.noise*0.10
     for (let i=0;i<n;i++){
-      const t=i<trans?i/trans:1.0
+      // Exponential approach: 1 - e^(-3i/trans) reaches ~95% at i=trans
+      const t=i<trans? 1 - Math.exp(-3*i/trans) : 1.0
       const va=prevVA*(1-t)+tgtVA*t, na=prevNA*(1-t)+tgtNA*t, p=prevPitch*(1-t)+pitch*t
       const exc=tilt.p(gl.g(p,SAMPLE_RATE))*va + pn[ni++%pn.length]*na
       let sum=0;for(let b=0;b<10;b++){const bg=Math.max(0,Math.min(1.5,(prevB[b]*(1-t)+(g[b]*pt.ampMul)*t)*BAND_COMPENSATION[b]));sum+=filters[b].p(exc)*bg}

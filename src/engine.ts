@@ -304,17 +304,20 @@ export class VoderEngine {
     }
   }
 
-  applyFrame(frame: VoderFrame, transitionMs = 35): void {
+  /**
+   * Transition shape controls how the parameter ramp behaves.
+   * Models different operator movements:
+   *   'snap'   — very fast attack (stop burst release, ~95% in 1/5 of time)
+   *   'expo'   — fast start, slow finish (default finger movement)
+   *   'smooth' — S-curve ease-in-out (vowel-to-vowel glide)
+   *   'slow'   — gradual onset (nasal/liquid fade-in)
+   */
+  applyFrame(frame: VoderFrame, transitionMs = 35, shape: 'snap' | 'expo' | 'smooth' | 'slow' = 'expo'): void {
     if (!this._started || !this.ctx) return
     const now = this.ctx.currentTime
     const sec = Math.max(transitionMs / 1000, 0.005)
 
-    // voicedAmp is 0-1 from the phoneme table (open vowels=1.0, nasals=0.55, etc.)
-    // Scale to a reasonable output level. No extra dampening — the phoneme
-    // table already encodes the relative loudness hierarchy.
     const voicedAmp = frame.voiced ? (frame.voicedAmp ?? 0.8) * 0.30 : 0.0
-    // Noise scaled lower — it's perceptually louder than buzz because
-    // it's broadband and the ear is most sensitive at 2-5 kHz.
     const noiseAmp = (frame.noise ?? 0.0) * 0.10
     this._currentVoiced = frame.voiced
     this._currentPitch = frame.pitchHz
@@ -323,15 +326,65 @@ export class VoderEngine {
     this.noiseGain!.gain.cancelScheduledValues(now)
     this.oscFreqParam!.cancelScheduledValues(now)
 
-    this.oscGain!.gain.linearRampToValueAtTime(voicedAmp, now + sec)
-    this.noiseGain!.gain.linearRampToValueAtTime(noiseAmp, now + sec)
-    this.oscFreqParam!.linearRampToValueAtTime(this._currentPitch, now + sec)
+    // Time constant varies by transition shape:
+    //   snap:   tau = sec/6 → 95% complete in ~sec/2 (very fast)
+    //   expo:   tau = sec/3 → 95% complete in ~sec (default)
+    //   smooth: use setValueCurveAtTime with S-curve
+    //   slow:   tau = sec/1.5 → takes full duration to settle
+    const tau = shape === 'snap' ? sec / 6
+              : shape === 'slow' ? sec / 1.5
+              : sec / 3  // expo (default)
 
-    const bands = frame.bands || []
-    for (let i = 0; i < this.bandGains.length; i++) {
-      const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
-      this.bandGains[i].gain.cancelScheduledValues(now)
-      this.bandGains[i].gain.linearRampToValueAtTime(v, now + sec)
+    if (shape === 'smooth' && sec > 0.015) {
+      // S-curve: slow start, fast middle, slow end (ease-in-out)
+      // Use setValueCurveAtTime with a computed cosine curve
+      const steps = Math.max(4, Math.round(sec * 200))  // ~200 steps/sec
+      const bands = frame.bands || []
+
+      // For source gains, use S-curve
+      const oscCurve = new Float32Array(steps)
+      const noiseCurve = new Float32Array(steps)
+      const pitchCurve = new Float32Array(steps)
+      const prevOsc = this.oscGain!.gain.value
+      const prevNoise = this.noiseGain!.gain.value
+      const prevPitch = this.oscFreqParam!.value
+
+      for (let i = 0; i < steps; i++) {
+        // Cosine interpolation: 0→1 with ease-in-out
+        const t = 0.5 * (1 - Math.cos(Math.PI * i / (steps - 1)))
+        oscCurve[i] = prevOsc * (1 - t) + voicedAmp * t
+        noiseCurve[i] = prevNoise * (1 - t) + noiseAmp * t
+        pitchCurve[i] = prevPitch * (1 - t) + this._currentPitch * t
+      }
+
+      this.oscGain!.gain.setValueCurveAtTime(oscCurve, now, sec)
+      this.noiseGain!.gain.setValueCurveAtTime(noiseCurve, now, sec)
+      this.oscFreqParam!.setValueCurveAtTime(pitchCurve, now, sec)
+
+      // Band gains also get S-curves
+      for (let i = 0; i < this.bandGains.length; i++) {
+        const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
+        const prevV = this.bandGains[i].gain.value
+        const curve = new Float32Array(steps)
+        for (let j = 0; j < steps; j++) {
+          const t = 0.5 * (1 - Math.cos(Math.PI * j / (steps - 1)))
+          curve[j] = prevV * (1 - t) + v * t
+        }
+        this.bandGains[i].gain.cancelScheduledValues(now)
+        this.bandGains[i].gain.setValueCurveAtTime(curve, now, sec)
+      }
+    } else {
+      // Exponential approach for snap/expo/slow
+      this.oscGain!.gain.setTargetAtTime(voicedAmp, now, tau)
+      this.noiseGain!.gain.setTargetAtTime(noiseAmp, now, tau)
+      this.oscFreqParam!.setTargetAtTime(this._currentPitch, now, tau)
+
+      const bands = frame.bands || []
+      for (let i = 0; i < this.bandGains.length; i++) {
+        const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
+        this.bandGains[i].gain.cancelScheduledValues(now)
+        this.bandGains[i].gain.setTargetAtTime(v, now, tau)
+      }
     }
   }
 
