@@ -195,7 +195,7 @@ export class VoderEngine {
       const filter = this.ctx.createBiquadFilter()
       filter.type = 'bandpass'
       filter.frequency.value = BAND_CENTERS[i]
-      filter.Q.value = BAND_Q[i]
+      filter.Q.value = BAND_Q[i] * 2.0 // sharper formants for clearer vowels
 
       const gain = this.ctx.createGain()
       gain.gain.value = 0
