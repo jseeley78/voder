@@ -307,6 +307,15 @@ export class VoderEngine {
   }
 
   /** Change waveform on a running engine */
+  setPitch(hz: number): void {
+    this.pitchValue = hz
+    this._currentPitch = hz
+    this._lastPitch = hz
+    if (this._started && this.oscFreqParam) {
+      this.oscFreqParam.value = hz
+    }
+  }
+
   setWaveform(type: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
     this.waveformType = type
     if (this._started && this.oscNode) {

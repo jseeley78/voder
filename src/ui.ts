@@ -416,6 +416,10 @@ export function initUI(): void {
   buildPresetButtons()
 
   bindSliderDisplay('pitch', 'pitchVal')
+  // Live pitch update — changes the oscillator frequency immediately
+  $input('pitch').addEventListener('input', () => {
+    engine?.setPitch(parseFloat($input('pitch').value))
+  })
   bindSliderDisplay('master', 'masterVal', v => Number(v).toFixed(2))
   bindSliderDisplay('transitionMs', 'transitionVal')
   bindSliderDisplay('jitter', 'jitterVal', v => Number(v).toFixed(1))
