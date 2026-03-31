@@ -511,16 +511,6 @@ export function initUI(): void {
   })
 
   // Convert button (show phonemes without speaking)
-  $('convertBtn').addEventListener('click', () => {
-    const result = textToPhonemes($input('textInput').value)
-    $input('phonemeInput').value = result.phonemes
-    if (result.unknownWords.length > 0) {
-      setStatus(`Unknown: ${result.unknownWords.join(', ')}`)
-    } else {
-      setStatus('Converted to phonemes.')
-    }
-  })
-
   // ── Record button ──
   let mediaRecorder: MediaRecorder | null = null
   let recordChunks: Blob[] = []
