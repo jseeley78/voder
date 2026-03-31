@@ -57,7 +57,7 @@ export class VoderEngine {
   vibratoDepth = 0    // Off by default — original Voder had no auto-vibrato
 
   /** Buzz source waveform type */
-  waveformType: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' = 'damped-pulse'
+  waveformType: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' | 'sine' = 'damped-pulse'
 
   // Track last scheduled values (needed for offline mode where .value
   // doesn't reflect scheduled ramps — it always returns the initial value)
@@ -307,7 +307,7 @@ export class VoderEngine {
   }
 
   /** Change waveform on a running engine */
-  setWaveform(type: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle'): void {
+  setWaveform(type: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
     this.waveformType = type
     if (this._started && this.oscNode && this.oscNode instanceof OscillatorNode) {
       this._applyWaveform(this.oscNode)
