@@ -297,6 +297,9 @@ export class VoderEngine {
       case 'square':
         osc.type = 'square'
         break
+      case 'sine':
+        osc.type = 'sine'
+        break
       case 'triangle':
         osc.type = 'triangle'
         break
