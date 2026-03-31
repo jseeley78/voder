@@ -569,6 +569,23 @@ export function initUI(): void {
   })
 
   // ── Example text buttons ──
+  function exBtn(id: string, text: string) {
+    $(id).addEventListener('click', () => {
+      $input('textInput').value = text
+      speakText(text)
+    })
+  }
+
+  exBtn('exHello', 'Hello, how are you?')
+  exBtn('exRobot', 'I am a robot.')
+  exBtn('exRainbow', 'When the sunlight strikes raindrops in the air, they act as a prism and form a rainbow. The rainbow is a division of white light into many beautiful colors.')
+  exBtn('exSheSaw', 'She saw me.')
+  exBtn('exGreeting', 'Good afternoon, radio audience.')
+  exBtn('exConcentration', 'Concentration.')
+  exBtn('exMary', 'Mary had a little lamb, its fleece was white as snow.')
+  exBtn('exSF', 'Hello, San Francisco. This is New York speaking. Greetings to you.')
+
+  // ── Example text buttons ──
   // Helper to wire up example buttons
   function exBtn(id: string, text: string) {
     $(id).addEventListener('click', () => {
