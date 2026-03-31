@@ -127,6 +127,7 @@ export class VoderEngine {
     // Create the buzz oscillator with the selected waveform
     const osc = this.ctx.createOscillator()
     this._applyWaveform(osc)
+    this._initialPitch = this.pitchValue
     osc.frequency.value = this.pitchValue
     this.oscNode = osc
     this.oscFreqParam = osc.frequency
@@ -307,15 +308,27 @@ export class VoderEngine {
   }
 
   /** Change waveform on a running engine */
+  /**
+   * Change the base pitch. Uses the oscillator's `detune` parameter
+   * (in cents) so it works ALONGSIDE the sequencer's frequency
+   * automation without conflicting. The sequencer schedules absolute
+   * frequencies; detune shifts them all up or down.
+   */
+  /** Initial pitch when engine started — detune is relative to this */
+  private _initialPitch = 110
+
+  /**
+   * Change the base pitch live. Uses oscillator.detune (in cents) which
+   * stacks ON TOP of the sequencer's frequency automation. This means
+   * all scheduled pitch contours shift proportionally — like the original
+   * Voder operator pressing the foot pedal harder shifts everything up.
+   */
   setPitch(hz: number): void {
     this.pitchValue = hz
-    this._currentPitch = hz
-    this._lastPitch = hz
-    if (this._started && this.oscFreqParam && this.ctx) {
-      // Cancel any scheduled pitch automation so we can override it
-      const now = this.ctx.currentTime
-      this.oscFreqParam.cancelScheduledValues(now)
-      this.oscFreqParam.setValueAtTime(hz, now)
+    if (this._started && this.oscNode) {
+      const osc = this.oscNode as OscillatorNode
+      const cents = 1200 * Math.log2(hz / this._initialPitch)
+      osc.detune.value = cents
     }
   }
 
