@@ -136,7 +136,9 @@ export class VoderEngine {
     this.analyser.connect(this.recordDest)
 
     // Try AudioWorklet glottal pulse, fall back to PeriodicWave
-    this._useWorklet = await registerGlottalWorklet(this.ctx)
+    // Sawtooth is more accurate to the original relaxation oscillator
+    // and produces better Whisper recognition than the custom AudioWorklet pulse.
+    this._useWorklet = false
 
     let buzzOutput: AudioNode
     if (this._useWorklet) {
@@ -149,7 +151,7 @@ export class VoderEngine {
     } else {
       // Fallback: PeriodicWave on standard OscillatorNode
       const osc = this.ctx.createOscillator()
-      osc.setPeriodicWave(createGlottalWave(this.ctx))
+      osc.type = "sawtooth" // Closest to the original gas triode relaxation oscillator
       osc.frequency.value = this.pitchValue
       this.oscNode = osc
       this.oscFreqParam = osc.frequency
@@ -344,7 +346,7 @@ export class VoderEngine {
     // A skilled operator snaps between positions, not glides slowly.
     const tau = shape === 'snap' ? sec / 8
               : shape === 'slow' ? sec / 2
-              : sec / 5  // expo (default) — was sec/3, now snappier
+              : sec / 8  // expo — snappier, matches operator finger speed — was sec/3, now snappier
 
     if (shape === 'smooth' && sec > 0.015) {
       // S-curve: slow start, fast middle, slow end (ease-in-out)
