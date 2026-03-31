@@ -53,8 +53,8 @@ export class VoderEngine {
   pitchValue = 110
   masterValue = 1.0
   jitterValue = 0.8
-  vibratoRate = 5.2
-  vibratoDepth = 0    // Off by default — original Voder had no auto-vibrato
+  vibratoRate = 6.0   // Whitepaper: 6 cycles per second
+  vibratoDepth = 2.75  // Whitepaper: 2-3% fluctuation at 6Hz — original Voder had no auto-vibrato
 
   /** Buzz source waveform type */
   waveformType: 'damped-pulse' | 'rosenberg' | 'impulse' | 'sawtooth' | 'square' | 'triangle' | 'sine' = 'damped-pulse'
