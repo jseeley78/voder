@@ -325,10 +325,9 @@ export class VoderEngine {
    */
   setPitch(hz: number): void {
     this.pitchValue = hz
-    if (this._started && this.oscNode) {
-      const osc = this.oscNode as OscillatorNode
+    if (this._started && this.oscNode && this._initialPitch > 0) {
       const cents = 1200 * Math.log2(hz / this._initialPitch)
-      osc.detune.value = cents
+      ;(this.oscNode as any).detune.value = cents
     }
   }
 
