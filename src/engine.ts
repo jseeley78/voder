@@ -311,8 +311,11 @@ export class VoderEngine {
     this.pitchValue = hz
     this._currentPitch = hz
     this._lastPitch = hz
-    if (this._started && this.oscFreqParam) {
-      this.oscFreqParam.value = hz
+    if (this._started && this.oscFreqParam && this.ctx) {
+      // Cancel any scheduled pitch automation so we can override it
+      const now = this.ctx.currentTime
+      this.oscFreqParam.cancelScheduledValues(now)
+      this.oscFreqParam.setValueAtTime(hz, now)
     }
   }
 
