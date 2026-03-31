@@ -12,7 +12,7 @@ import { BAND_CENTERS, BAND_WIDTHS, BAND_Q, BAND_COMPENSATION, PHONEMES } from '
 import { textToPhonemes } from '../src/text-to-phoneme'
 import { applyProsody } from '../src/prosody'
 
-const SAMPLE_RATE = 22050  // Whisper's native rate
+const SAMPLE_RATE = 48000  // Whisper's native rate
 const TWO_PI = 2 * Math.PI
 
 // ─── Simple biquad bandpass filter ───
@@ -197,12 +197,12 @@ function renderFrames(frames: RenderFrame[], sampleRate: number): Float32Array {
   const output = new Float32Array(totalSamples)
 
   // Create filter bank
-  const filters = BAND_CENTERS.map((c, i) => new BiquadBandpass(c, BAND_Q[i], sampleRate))
+  const filters = BAND_CENTERS.map((c, i) => new BiquadBandpass(c, BAND_Q[i] * 2.0, sampleRate))
   const tilt = new BiquadLowpass(3400, 0.65, sampleRate)
   // Output EQ (1939 speaker model)
   const eqMid = new BiquadPeaking(2800, 0.8, 5, sampleRate)
 
-  const glottal = new GlottalPulse()
+  let sawPhase = 0 // sawtooth phase
   const noise = generatePinkNoise(totalSamples + 1000)
   let noiseIdx = 0
 
@@ -240,7 +240,10 @@ function renderFrames(frames: RenderFrame[], sampleRate: number): Float32Array {
       }
 
       // Generate sources
-      const buzzSample = tilt.process(glottal.generate(pitch, sampleRate)) * voicedAmp
+      // Sawtooth oscillator (matches browser engine)
+      sawPhase += pitch / sampleRate
+      if (sawPhase >= 1) sawPhase -= 1
+      const buzzSample = tilt.process(2 * sawPhase - 1) * voicedAmp
       const noiseSample = noise[noiseIdx++ % noise.length] * noiseAmp
       const excitation = buzzSample + noiseSample
 

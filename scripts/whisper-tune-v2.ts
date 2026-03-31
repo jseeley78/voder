@@ -15,7 +15,7 @@ import { BAND_CENTERS, BAND_WIDTHS, BAND_Q, BAND_COMPENSATION, PHONEMES } from '
 import { textToPhonemes } from '../src/text-to-phoneme'
 import { applyProsody } from '../src/prosody'
 
-const SAMPLE_RATE = 16000
+const SAMPLE_RATE = 48000
 const TWO_PI = 2 * Math.PI
 const OUTPUT_DIR = '/tmp/voder-whisper-v2'
 fs.mkdirSync(OUTPUT_DIR, { recursive: true })
