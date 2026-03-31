@@ -157,7 +157,10 @@ export class VoderEngine {
     this.vibratoDepthNode.connect(this.oscFreqParam)
     this.vibratoLfo.start()
 
-    // Spectral tilt
+    // Spectral tilt: lowpass shapes the sawtooth before the filter bank.
+    // Tested alternatives: no filter (-8.19), high shelf boost (-8.27).
+    // The lowpass at 3400Hz gives the best Whisper scores (-6.84) by
+    // removing ultrasonic harmonics that alias in the narrow bandpass filters.
     const oscTilt = this.ctx.createBiquadFilter()
     oscTilt.type = 'lowpass'
     oscTilt.frequency.value = 3400

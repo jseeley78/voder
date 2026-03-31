@@ -323,12 +323,21 @@ function speakOpts() {
     expressiveness: parseFloat($input('expressiveness').value),
     humanize: parseFloat($input('humanize').value),
     onToken: (evt: TokenEvent) => {
-      loadBandsToUI(evt.bands)
-      updateWristBar(evt.voiced, evt.noise)
-      updateFootPedal(evt.pitchHz)
-      updateStopKeys(evt.stopKey)
-      const stressLabel = evt.stress >= 0 ? ` s${evt.stress}` : ''
-      setStatus(`${evt.phoneme}${stressLabel}  ${evt.pitchHz.toFixed(0)}Hz  ${evt.durationMs.toFixed(0)}ms`)
+      // Schedule UI update at the token's absolute start time.
+      // With absolute-time scheduling, all callbacks fire immediately
+      // during the scheduling loop. Use setTimeout to sync with audio.
+      const audioCtx = engine?.ctx
+      const now = audioCtx ? audioCtx.currentTime : 0
+      const delayMs = Math.max(0, (evt.startTime - now) * 1000)
+
+      setTimeout(() => {
+        loadBandsToUI(evt.bands)
+        updateWristBar(evt.voiced, evt.noise)
+        updateFootPedal(evt.pitchHz)
+        updateStopKeys(evt.stopKey)
+        const stressLabel = evt.stress >= 0 ? ` s${evt.stress}` : ''
+        setStatus(`${evt.phoneme}${stressLabel}  ${evt.pitchHz.toFixed(0)}Hz  ${evt.durationMs.toFixed(0)}ms`)
+      }, delayMs)
     },
     onDone: () => {
       setStatus('Done.')
@@ -383,9 +392,14 @@ async function speakText(text: string): Promise<void> {
   const baseOnToken = opts.onToken
   opts.onToken = (evt: TokenEvent) => {
     baseOnToken?.(evt)
-    // Show current word in the word display
-    const word = tokenToWord(result.wordSpans, evt.index)
-    $('currentWord').textContent = word
+    // Show current word — delayed to sync with audio playback
+    const audioCtx = engine?.ctx
+    const now = audioCtx ? audioCtx.currentTime : 0
+    const delayMs = Math.max(0, (evt.startTime - now) * 1000)
+    setTimeout(() => {
+      const word = tokenToWord(result.wordSpans, evt.index)
+      $('currentWord').textContent = word
+    }, delayMs)
   }
   const baseOnDone = opts.onDone
   opts.onDone = () => {
