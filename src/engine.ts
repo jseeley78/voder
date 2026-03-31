@@ -37,7 +37,6 @@ export class VoderEngine {
   private _started = false
   private _currentPitch = 110
   private _currentVoiced = true
-  private _useWorklet = false
 
   // Vibrato LFO
   private vibratoLfo: OscillatorNode | null = null
@@ -56,6 +55,9 @@ export class VoderEngine {
   jitterValue = 0.8
   vibratoRate = 5.2
   vibratoDepth = 0    // Off by default — original Voder had no auto-vibrato
+
+  /** Buzz source waveform type */
+  waveformType: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' = 'damped-pulse'
 
   // Track last scheduled values (needed for offline mode where .value
   // doesn't reflect scheduled ramps — it always returns the initial value)
@@ -122,28 +124,14 @@ export class VoderEngine {
     }
 
     // Try AudioWorklet glottal pulse, fall back to PeriodicWave
-    // Sawtooth is more accurate to the original relaxation oscillator
-    // and produces better Whisper recognition than the custom AudioWorklet pulse.
-    this._useWorklet = false
-
-    let buzzOutput: AudioNode
-    if (this._useWorklet) {
-      // AudioWorklet: asymmetric pulse train with cycle-to-cycle jitter
-      const workletNode = new AudioWorkletNode(this.ctx, 'glottal-pulse')
-      this.oscNode = workletNode
-      this.oscFreqParam = workletNode.parameters.get('frequency')!
-      this.oscFreqParam.value = this.pitchValue
-      buzzOutput = workletNode
-    } else {
-      // Fallback: PeriodicWave on standard OscillatorNode
-      const osc = this.ctx.createOscillator()
-      osc.type = "sawtooth" // Closest to the original gas triode relaxation oscillator
-      osc.frequency.value = this.pitchValue
-      this.oscNode = osc
-      this.oscFreqParam = osc.frequency
-      osc.start()
-      buzzOutput = osc
-    }
+    // Create the buzz oscillator with the selected waveform
+    const osc = this.ctx.createOscillator()
+    this._applyWaveform(osc)
+    osc.frequency.value = this.pitchValue
+    this.oscNode = osc
+    this.oscFreqParam = osc.frequency
+    osc.start()
+    const buzzOutput: AudioNode = osc
 
     // Vibrato LFO → frequency param (works for both node types)
     this.vibratoLfo = this.ctx.createOscillator()
@@ -268,6 +256,59 @@ export class VoderEngine {
     this.ctx = null
     this._started = false
     this.bandGains = []
+  }
+
+  /**
+   * Build a PeriodicWave for the "damped pulse" waveform described in the
+   * 1939 whitepaper: "a repeated damped pulse with a fundamental frequency
+   * of 100 cycles per second and several upper harmonics."
+   *
+   * Each period: sharp impulse that decays exponentially. In the frequency
+   * domain, this means harmonics that fall off like e^(-n*decay).
+   * Compared to sawtooth (1/n), the damped pulse has:
+   *   - Stronger fundamental
+   *   - Faster harmonic rolloff (more "guttural", less "buzzy")
+   *   - A characteristic percussive attack
+   */
+  private _createDampedPulse(): PeriodicWave {
+    const N = 64
+    const real = new Float32Array(N)
+    const imag = new Float32Array(N)
+    const decay = 0.12  // controls how fast harmonics fall off
+    for (let n = 1; n < N; n++) {
+      // Damped pulse: harmonics decay exponentially
+      // e^(-n * decay) gives a steeper rolloff than 1/n
+      // Phase aligned to create a sharp positive pulse
+      imag[n] = Math.exp(-n * decay)
+      real[n] = 0
+    }
+    return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
+  }
+
+  /** Apply the selected waveform to an oscillator */
+  private _applyWaveform(osc: OscillatorNode): void {
+    switch (this.waveformType) {
+      case 'damped-pulse':
+        osc.setPeriodicWave(this._createDampedPulse())
+        break
+      case 'sawtooth':
+        osc.type = 'sawtooth'
+        break
+      case 'square':
+        osc.type = 'square'
+        break
+      case 'triangle':
+        osc.type = 'triangle'
+        break
+    }
+  }
+
+  /** Change waveform on a running engine */
+  setWaveform(type: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle'): void {
+    this.waveformType = type
+    if (this._started && this.oscNode && this.oscNode instanceof OscillatorNode) {
+      this._applyWaveform(this.oscNode)
+    }
   }
 
   private _startJitter(): void {

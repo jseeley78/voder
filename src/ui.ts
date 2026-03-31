@@ -451,6 +451,12 @@ export function initUI(): void {
   const vibratoRateSlider = $input('vibratoRate')
   const vibratoDepthSlider = $input('vibratoDepth')
 
+  // Waveform selector
+  $('waveform').addEventListener('change', () => {
+    const type = ($('waveform') as HTMLSelectElement).value as any
+    engine?.setWaveform(type)
+  })
+
   vibratoToggle.addEventListener('change', () => {
     const on = vibratoToggle.checked
     vibratoRateSlider.disabled = !on

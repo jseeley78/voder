@@ -81,6 +81,16 @@
 
         <div class="two" style="margin-top: 14px;">
           <div>
+            <label for="waveform">Buzz source</label>
+            <select id="waveform">
+              <option value="damped-pulse" selected>Damped Pulse (original)</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="square">Square</option>
+              <option value="triangle">Triangle</option>
+            </select>
+            <div class="small">Relaxation oscillator waveform</div>
+          </div>
+          <div>
             <label for="pitch">Base pitch</label>
             <input id="pitch" type="range" min="50" max="320" step="1" value="110">
             <div class="small"><span id="pitchVal">110</span> Hz</div>
