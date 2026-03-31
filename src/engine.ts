@@ -57,6 +57,13 @@ export class VoderEngine {
   vibratoRate = 5.2
   vibratoDepth = 0    // Off by default — original Voder had no auto-vibrato
 
+  // Track last scheduled values (needed for offline mode where .value
+  // doesn't reflect scheduled ramps — it always returns the initial value)
+  private _lastOscGain = 0
+  private _lastNoiseGain = 0
+  private _lastPitch = 110
+  private _lastBandGains = new Float64Array(10)
+
   get started(): boolean {
     return this._started
   }
@@ -342,9 +349,9 @@ export class VoderEngine {
       const oscCurve = new Float32Array(steps)
       const noiseCurve = new Float32Array(steps)
       const pitchCurve = new Float32Array(steps)
-      const prevOsc = this.oscGain!.gain.value
-      const prevNoise = this.noiseGain!.gain.value
-      const prevPitch = this.oscFreqParam!.value
+      const prevOsc = this._lastOscGain
+      const prevNoise = this._lastNoiseGain
+      const prevPitch = this._lastPitch
 
       for (let i = 0; i < steps; i++) {
         // Cosine interpolation: 0→1 with ease-in-out
@@ -355,13 +362,16 @@ export class VoderEngine {
       }
 
       this.oscGain!.gain.setValueCurveAtTime(oscCurve, now, sec)
+      this._lastOscGain = voicedAmp
       this.noiseGain!.gain.setValueCurveAtTime(noiseCurve, now, sec)
+      this._lastNoiseGain = noiseAmp
       this.oscFreqParam!.setValueCurveAtTime(pitchCurve, now, sec)
+      this._lastPitch = this._currentPitch
 
       // Band gains also get S-curves
       for (let i = 0; i < this.bandGains.length; i++) {
         const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
-        const prevV = this.bandGains[i].gain.value
+        const prevV = this._lastBandGains[i]
         const curve = new Float32Array(steps)
         for (let j = 0; j < steps; j++) {
           const t = 0.5 * (1 - Math.cos(Math.PI * j / (steps - 1)))
@@ -369,6 +379,7 @@ export class VoderEngine {
         }
         this.bandGains[i].gain.cancelScheduledValues(now)
         this.bandGains[i].gain.setValueCurveAtTime(curve, now, sec)
+        this._lastBandGains[i] = v
       }
     } else {
       // Linear ramp approximating exponential approach.
@@ -378,19 +389,26 @@ export class VoderEngine {
       // Ramp duration = tau*3 gives ~95% of the exponential shape.
       const rampEnd = now + tau * 3
 
-      this.oscGain!.gain.setValueAtTime(this.oscGain!.gain.value, now)
+      // Use tracked values instead of .value (which returns 0 in offline mode)
+      this.oscGain!.gain.setValueAtTime(this._lastOscGain, now)
       this.oscGain!.gain.linearRampToValueAtTime(voicedAmp, rampEnd)
-      this.noiseGain!.gain.setValueAtTime(this.noiseGain!.gain.value, now)
+      this._lastOscGain = voicedAmp
+
+      this.noiseGain!.gain.setValueAtTime(this._lastNoiseGain, now)
       this.noiseGain!.gain.linearRampToValueAtTime(noiseAmp, rampEnd)
-      this.oscFreqParam!.setValueAtTime(this.oscFreqParam!.value, now)
+      this._lastNoiseGain = noiseAmp
+
+      this.oscFreqParam!.setValueAtTime(this._lastPitch, now)
       this.oscFreqParam!.linearRampToValueAtTime(this._currentPitch, rampEnd)
+      this._lastPitch = this._currentPitch
 
       const bands = frame.bands || []
       for (let i = 0; i < this.bandGains.length; i++) {
         const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
         this.bandGains[i].gain.cancelScheduledValues(now)
-        this.bandGains[i].gain.setValueAtTime(this.bandGains[i].gain.value, now)
+        this.bandGains[i].gain.setValueAtTime(this._lastBandGains[i], now)
         this.bandGains[i].gain.linearRampToValueAtTime(v, rampEnd)
+        this._lastBandGains[i] = v
       }
     }
   }
