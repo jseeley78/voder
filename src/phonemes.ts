@@ -90,7 +90,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   // AO "bought": F1≈570 F2≈840 F3≈2410 — rounded back
   // AO: A/B tested — proposed was better (concentrate B3, reduce B5)
   AO: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
-        bands: [0.30, 0.30, 0.96, 0.81, 0.05, 0.10, 0.38, 0.30, 0.03, 0] },
+        bands: [0.30, 0.30, 0.96, 0.81, 0.05, 0.10, 0.38, 0.45, 0.03, 0] },
 
   // AH "but": F1≈640 F2≈1190 F3≈2390 — central mid (most common English vowel)
   AH: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 170,
@@ -106,7 +106,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
 
   // OW "boat": AO-like → UH-like glide
   OW: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 195,
-        bands:       [0.30, 0.20, 0.75, 0.30, 0.65, 0.12, 0.40, 0.30, 0.03, 0],
+        bands:       [0.30, 0.35, 0.75, 0.30, 0.65, 0.12, 0.40, 0.45, 0.03, 0],
         onsetBands:  [0.30, 0.30, 0.75, 0.70, 0.30, 0.10, 0.40, 0.35, 0.04, 0],
         offsetBands: [0.30, 0.60, 0.40, 0.25, 0.60, 0.12, 0.40, 0.30, 0.03, 0] },
 
@@ -156,7 +156,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         bands: [0, 0.08, 0, 0.02, 0.05, 0.15, 0.40, 0.80, 1.00, 0.85] },
   SH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 1.00, durationMs: 140,
         bands: [0, 0, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15] },
-  TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 110,
+  TH: { type: 'fricative', voiced: false, voicedAmp: 0, noise: 0.70, durationMs: 80,
         bands: [0, 0.02, 0.04, 0.08, 0.15, 0.30, 0.40, 0.35, 0.20, 0.10] },
   V:  { type: 'fricative', voiced: true, voicedAmp: 0.62, noise: 0.48, durationMs: 130,
         bands: [0.22, 0.18, 0.23, 0.08, 0.12, 0.32, 0.55, 0.75, 0.55, 0.22] },
@@ -189,7 +189,7 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   W:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 115,
         bands: [0.30, 0.76, 0.56, 0.15, 0.00, 0.00, 0.03, 0.02, 0, 0] },
   Y:  { type: 'glide', voiced: true, voicedAmp: 0.70, noise: 0.01, durationMs: 90,
-        bands: [0.25, 0.60, 0.15, 0.08, 0.10, 0.20, 0.80, 0.40, 0.05, 0] },
+        bands: [0.25, 0.60, 0.15, 0.08, 0.10, 0.20, 0.80, 0.40, 0.20, 0] },
 
   // ─── Stops ───
   // Burst then brief voiced/silent steady state
