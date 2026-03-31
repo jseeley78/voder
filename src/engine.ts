@@ -87,9 +87,9 @@ export class VoderEngine {
     return this._started
   }
 
-  async start(): Promise<void> {
+  async start(existingCtx?: AudioContext | OfflineAudioContext): Promise<void> {
     if (this._started) return
-    this.ctx = new AudioContext()
+    this.ctx = existingCtx ?? new AudioContext()
     this.master = this.ctx.createGain()
     this.master.gain.value = this.masterValue
 
@@ -132,8 +132,13 @@ export class VoderEngine {
     this.analyser.connect(this.ctx.destination)
 
     // Recording tap — captures the same signal the speakers get
-    this.recordDest = this.ctx.createMediaStreamDestination()
-    this.analyser.connect(this.recordDest)
+    // Recording tap (not available in OfflineAudioContext or node-web-audio-api)
+    try {
+      this.recordDest = this.ctx.createMediaStreamDestination()
+      this.analyser.connect(this.recordDest)
+    } catch (_) {
+      this.recordDest = null
+    }
 
     // Try AudioWorklet glottal pulse, fall back to PeriodicWave
     // Sawtooth is more accurate to the original relaxation oscillator

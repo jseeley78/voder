@@ -17,6 +17,7 @@
     "wav-decoder": "^1.3.0"
   },
   "dependencies": {
-    "cmu-pronouncing-dictionary": "^3.0.0"
+    "cmu-pronouncing-dictionary": "^3.0.0",
+    "node-web-audio-api": "^1.0.9"
   }
 }
