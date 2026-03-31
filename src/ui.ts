@@ -102,7 +102,7 @@ function buildPresetButtons(): void {
       const eng = await ensureStarted()
       const ph = PHONEMES[key]
       loadBandsToUI(ph.bands)
-      if (ph.transient) await eng.transientBurst(ph.transient, parseFloat($input('pitch').value))
+      if (ph.transient) eng.transientBurst(ph.transient, parseFloat($input('pitch').value))
       eng.applyPhoneme(ph, parseFloat($input('pitch').value), parseFloat($input('transitionMs').value))
       setStatus(`Applied preset ${key}.`)
     })

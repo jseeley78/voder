@@ -1,4 +1,4 @@
-import type { VoderEngine, VoderFrame } from './engine'
+import type { VoderEngine } from './engine'
 import { PHONEMES, type PhonemeConfig, type PhonemeType } from './phonemes'
 import { applyProsody, type ProsodyOptions } from './prosody'
 
@@ -15,13 +15,6 @@ function blendBands(a: number[], b: number[], t: number): number[] {
   return result
 }
 
-/**
- * Coarticulation timing profiles per phoneme type.
- * Values are fractions of total duration.
- *   onset:  transition FROM previous sound's target
- *   steady: hold at this phoneme's target
- *   offset: transition TOWARD next sound's target
- */
 const COARTIC: Record<PhonemeType, { onset: number; steady: number; offset: number }> = {
   vowel:     { onset: 0.20, steady: 0.50, offset: 0.30 },
   fricative: { onset: 0.15, steady: 0.60, offset: 0.25 },
@@ -31,18 +24,10 @@ const COARTIC: Record<PhonemeType, { onset: number; steady: number; offset: numb
   stop:      { onset: 0.05, steady: 0.25, offset: 0.70 },
 }
 
-/** Is this phoneme type a consonant? */
 function isConsonant(type: PhonemeType): boolean {
   return type !== 'vowel'
 }
 
-/**
- * Adjust coarticulation timing for consonant clusters.
- * When two consonants are adjacent, tighten the transition:
- *   - Shrink the steady state (consonants in clusters barely hold)
- *   - Speed up onset/offset (transitions between consonants are fast)
- *   - Same-place clusters (nt, mp, nk) get nearly instant transitions
- */
 function adjustTimingForContext(
   timing: { onset: number; steady: number; offset: number },
   _cur: { ph: PhonemeConfig },
@@ -51,32 +36,11 @@ function adjustTimingForContext(
 ): { onset: number; steady: number; offset: number } {
   const prevIsC = prev && isConsonant(prev.ph.type)
   const nextIsC = next && isConsonant(next.ph.type)
-
-  // Not in a cluster — use default timing
   if (!prevIsC && !nextIsC) return timing
-
   let { onset, steady, offset } = timing
-
-  // Consonant follows another consonant: fast onset, reduced steady
-  if (prevIsC) {
-    onset = Math.min(onset, 0.10)
-    steady *= 0.5
-  }
-
-  // Consonant precedes another consonant: fast offset, reduced steady
-  if (nextIsC) {
-    offset = Math.min(offset, 0.15)
-    steady *= 0.5
-  }
-
-  // Both sides are consonants (middle of a cluster like "str"):
-  // minimal steady state, almost all transition
-  if (prevIsC && nextIsC) {
-    steady = Math.min(steady, 0.10)
-  }
-
-  // Redistribute: what we took from steady goes to the vowel-facing side
-  // (the transition that carries the most perceptual information)
+  if (prevIsC) { onset = Math.min(onset, 0.10); steady *= 0.5 }
+  if (nextIsC) { offset = Math.min(offset, 0.15); steady *= 0.5 }
+  if (prevIsC && nextIsC) { steady = Math.min(steady, 0.10) }
   const total = onset + steady + offset
   const scale = 1.0 / total
   return { onset: onset * scale, steady: steady * scale, offset: offset * scale }
@@ -84,10 +48,8 @@ function adjustTimingForContext(
 
 const SILENCE_BANDS = Array(10).fill(0) as number[]
 
-/** Which of the 3 stop keys is firing (maps to place of articulation) */
 export type StopKey = 'bilabial' | 'alveolar' | 'velar' | null
 
-/** Map stop phonemes to their physical key */
 function getStopKey(phoneme: string): StopKey {
   switch (phoneme) {
     case 'P': case 'B': return 'bilabial'
@@ -107,6 +69,8 @@ export interface TokenEvent {
   voiced: boolean
   noise: number
   stopKey: StopKey
+  /** Absolute time this token starts (seconds from context start) */
+  startTime: number
 }
 
 export interface SequenceOptions {
@@ -115,7 +79,6 @@ export interface SequenceOptions {
   basePitch: number
   rateScale: number
   expressiveness?: number
-  /** Human-like randomness: 0 = robotic/deterministic, 1 = full variation */
   humanize?: number
   onToken?: (event: TokenEvent) => void
   onDone?: () => void
@@ -124,12 +87,14 @@ export interface SequenceOptions {
 export interface SequenceHandle {
   cancel: () => void
   done: Promise<void>
+  /** Total duration of the scheduled audio in seconds */
+  totalDuration: number
 }
 
 interface ResolvedToken {
   ph: PhonemeConfig
-  bands: number[]      // after prosody + humanize scaling
-  ampMul: number       // prosody amplitude multiplier (for diphthong scaling)
+  bands: number[]
+  ampMul: number
   pitchHz: number
   durationMs: number
   phoneme: string
@@ -137,45 +102,23 @@ interface ResolvedToken {
   pauseAfterMs: number
 }
 
-/** Random value centered on 0 with given spread (±spread) */
 function jit(spread: number): number {
   return (Math.random() - 0.5) * 2 * spread
 }
 
-/**
- * Apply human-like micro-variations to resolved tokens.
- * Models the imprecision of a live Voder operator:
- *   - Timing drift: ±8% duration variation
- *   - Pitch drift: slow random walk ±3% on top of prosody contour
- *   - Band wobble: ±6% gain perturbation per band (imprecise finger pressure)
- *   - Pause jitter: ±15% variation in pause lengths
- *   - Transition noise: slight random offset in transition ramp times
- */
 function humanizeTokens(tokens: ResolvedToken[], amount: number): void {
   if (amount <= 0) return
-
-  // Pitch drift: random walk that accumulates across the utterance,
-  // like an operator's foot gradually drifting on the pedal
   let pitchDrift = 0
-  const driftRate = 0.006 * amount  // how fast the drift wanders
-
+  const driftRate = 0.006 * amount
   for (const tok of tokens) {
-    // Duration jitter: ±8% scaled by humanize amount
     tok.durationMs *= 1 + jit(0.08 * amount)
-
-    // Pitch drift: random walk with mean reversion
     pitchDrift += jit(driftRate)
-    pitchDrift *= 0.95  // pull back toward center
+    pitchDrift *= 0.95
     tok.pitchHz *= 1 + pitchDrift + jit(0.01 * amount)
-
-    // Band gain wobble: each band gets independent ±6% perturbation
-    // (simulates imprecise finger pressure on the 10 keys)
     tok.bands = tok.bands.map(g => {
-      if (g < 0.01) return g  // don't perturb silence
+      if (g < 0.01) return g
       return Math.max(0, g * (1 + jit(0.06 * amount)))
     })
-
-    // Pause jitter
     if (tok.pauseAfterMs > 0) {
       tok.pauseAfterMs *= 1 + jit(0.15 * amount)
       tok.pauseAfterMs = Math.max(10, tok.pauseAfterMs)
@@ -183,12 +126,24 @@ function humanizeTokens(tokens: ResolvedToken[], amount: number): void {
   }
 }
 
+/**
+ * Schedule a phoneme sequence through the engine.
+ *
+ * All audio events are scheduled at absolute times using Web Audio's
+ * setTargetAtTime. This works for both real-time playback (AudioContext)
+ * and offline rendering (OfflineAudioContext).
+ *
+ * In real-time mode, the returned promise resolves after the audio
+ * has played. In offline mode, it resolves immediately after scheduling
+ * (call ctx.startRendering() to actually render).
+ */
 export function speakPhonemeSequence(
   engine: VoderEngine,
   input: string,
   options: SequenceOptions,
 ): SequenceHandle {
   let cancelled = false
+  let totalDuration = 0
 
   const promise = (async () => {
     const rawTokens = input.trim().split(/\s+/).filter(Boolean).map(x => x.toUpperCase())
@@ -199,7 +154,6 @@ export function speakPhonemeSequence(
     }
     const prosodyTokens = applyProsody(rawTokens, prosodyOpts)
 
-    // Resolve all tokens to their phoneme configs + prosody modifiers
     const resolved: ResolvedToken[] = []
     for (const pt of prosodyTokens) {
       const ph = PHONEMES[pt.phoneme]
@@ -218,8 +172,14 @@ export function speakPhonemeSequence(
 
     if (!resolved.length) return
 
-    // Apply human-like micro-variations
     humanizeTokens(resolved, options.humanize ?? 0.5)
+
+    // Determine if we're in offline mode (OfflineAudioContext)
+    const isOffline = engine.ctx instanceof OfflineAudioContext
+
+    // Schedule all frames at absolute times
+    // Start slightly after 0 to avoid edge cases
+    let t = isOffline ? 0.05 : (engine.ctx?.currentTime ?? 0) + 0.05
 
     for (let i = 0; i < resolved.length; i++) {
       if (cancelled) break
@@ -229,7 +189,7 @@ export function speakPhonemeSequence(
       const next = i < resolved.length - 1 ? resolved[i + 1] : null
       const timing = COARTIC[cur.ph.type]
 
-      // Notify UI
+      // Notify UI (with startTime for synchronization)
       options.onToken?.({
         index: i,
         phoneme: cur.phoneme,
@@ -240,9 +200,9 @@ export function speakPhonemeSequence(
         voiced: cur.ph.voiced,
         noise: cur.ph.noise,
         stopKey: cur.ph.transient ? getStopKey(cur.phoneme) : null,
+        startTime: t,
       })
 
-      // Adjust timing for consonant clusters
       const adjTiming = adjustTimingForContext(timing, cur, prev, next)
       const onsetMs = cur.durationMs * adjTiming.onset
       const steadyMs = cur.durationMs * adjTiming.steady
@@ -250,190 +210,161 @@ export function speakPhonemeSequence(
 
       // ── Transient burst + aspiration ──
       if (cur.ph.transient) {
-        await engine.transientBurst(cur.ph.transient, cur.pitchHz)
+        const burstMs = engine.transientBurst(cur.ph.transient, cur.pitchHz, t)
+        t += burstMs / 1000
 
-        // Aspiration after voiceless stops — only before vowels or glides.
-        // In clusters like "st" or "sk", no aspiration occurs.
         const nextIsVowelLike = next && (next.ph.type === 'vowel' || next.ph.type === 'glide')
         if (!cur.ph.voiced && nextIsVowelLike) {
-          // Shape aspiration using the next vowel's spectral envelope —
-          // this bridges the gap between the burst and the vowel onset
           const aspBands = next.bands.map(g => g * 0.5)
           engine.applyFrame({
             voiced: false,
             noise: 0.50,
             pitchHz: cur.pitchHz,
             bands: aspBands,
-          }, 5)
-          await sleep(30)
-          if (cancelled) break
+          }, 5, 'snap', t)
+          t += 0.030
         }
       }
 
       // ── Source crossfade ──
-      // When the voiced/noise source changes between phonemes (like
-      // fricative→vowel or vowel→fricative), a real operator would rock
-      // the wrist bar smoothly, not snap it. We insert a brief crossfade
-      // frame where both sources are partially active.
       if (prev && onsetMs > 8) {
         const prevVoiced = prev.ph.voiced
         const curVoiced = cur.ph.voiced
         const prevNoise = prev.ph.noise
         const curNoise = cur.ph.noise
-
-        // Detect source changes that need crossfade
         const voiceAppearing = !prevVoiced && curVoiced && prevNoise > 0.3
         const voiceDisappearing = prevVoiced && !curVoiced && curNoise > 0.3
         const noiseAppearing = prevNoise < 0.1 && curNoise > 0.3
         const noiseDisappearing = prevNoise > 0.3 && curNoise < 0.1
 
         if (voiceAppearing || voiceDisappearing || noiseAppearing || noiseDisappearing) {
-          // Crossfade: blend both sources for ~20ms
           const xfadeMs = Math.min(20, onsetMs * 0.4)
           const xfadeBands = blendBands(prev.bands, cur.bands, 0.5)
           engine.applyFrame({
-            voiced: true,  // keep buzz during crossfade
+            voiced: true,
             voicedAmp: (prev.ph.voicedAmp + cur.ph.voicedAmp) * 0.3,
             noise: Math.max(prevNoise, curNoise) * 0.5,
             pitchHz: cur.pitchHz,
             bands: xfadeBands,
-          }, xfadeMs * 0.6)
-          await sleep(Math.max(5, xfadeMs - 3))
-          if (cancelled) break
+          }, xfadeMs * 0.6, 'expo', t)
+          t += Math.max(0.005, xfadeMs / 1000 - 0.003)
         }
       }
 
       // ── Phase 1: Onset transition ──
-      // Consonant clusters use tighter blending (jump to target faster)
-
       if (onsetMs > 5) {
         const prevBands = prev ? prev.bands : SILENCE_BANDS
         const blendToward = (prev && isConsonant(prev.ph.type) && isConsonant(cur.ph.type)) ? 0.65 : 0.5
         const onsetBands = blendBands(prevBands, cur.bands, blendToward)
         const prevAmp = prev?.ph.voicedAmp ?? 0
-        const onsetFrame: VoderFrame = {
+        engine.applyFrame({
           voiced: cur.ph.voiced,
           voicedAmp: prevAmp * 0.5 + cur.ph.voicedAmp * 0.5,
           noise: cur.ph.noise,
           pitchHz: cur.pitchHz,
           bands: onsetBands,
-        }
-        engine.applyFrame(onsetFrame, onsetMs * 0.8)
-        await sleep(Math.max(5, onsetMs - 5))
-        if (cancelled) break
+        }, onsetMs * 0.8, 'expo', t)
+        t += Math.max(0.005, onsetMs / 1000 - 0.005)
       }
 
       // ── Phase 2: Steady state (or diphthong glide) ──
       if (cur.ph.onsetBands && cur.ph.offsetBands && steadyMs > 20) {
-        // Diphthong: glide from onset vowel target to offset vowel target
         const halfMs = steadyMs / 2
         const amp = cur.ampMul
 
-        // First half: onset vowel target
         engine.applyFrame({
           voiced: cur.ph.voiced,
           voicedAmp: cur.ph.voicedAmp,
           noise: cur.ph.noise,
           pitchHz: cur.pitchHz,
           bands: cur.ph.onsetBands.map(g => g * amp),
-        }, Math.min(onsetMs * 0.5, 20))
-        await sleep(Math.max(5, halfMs - 5))
-        if (cancelled) break
+        }, Math.min(onsetMs * 0.5, 20), 'expo', t)
+        t += Math.max(0.005, halfMs / 1000 - 0.005)
 
-        // Second half: glide to offset vowel target
         engine.applyFrame({
           voiced: cur.ph.voiced,
           voicedAmp: cur.ph.voicedAmp,
           noise: cur.ph.noise,
           pitchHz: cur.pitchHz,
           bands: cur.ph.offsetBands.map(g => g * amp),
-        }, halfMs)
-        await sleep(Math.max(5, halfMs - 5))
-        if (cancelled) break
+        }, halfMs, 'smooth', t)
+        t += Math.max(0.005, halfMs / 1000 - 0.005)
       } else {
-        // Normal phoneme: hold at target
-        const steadyFrame: VoderFrame = {
+        engine.applyFrame({
           voiced: cur.ph.voiced,
           voicedAmp: cur.ph.voicedAmp,
           noise: cur.ph.noise,
           pitchHz: cur.pitchHz,
           bands: cur.bands,
-        }
-        engine.applyFrame(steadyFrame, Math.min(onsetMs * 0.5, 25))
+        }, Math.min(onsetMs * 0.5, 25), 'expo', t)
         if (steadyMs > 5) {
-          await sleep(Math.max(5, steadyMs - 5))
-          if (cancelled) break
+          t += Math.max(0.005, steadyMs / 1000 - 0.005)
         }
       }
 
-      // ── Phase 3: Offset transition toward next phoneme ──
+      // ── Phase 3: Offset transition ──
       if (offsetMs > 5 && next) {
-        // Consonant clusters blend more aggressively toward the next target
         const ccCluster = isConsonant(cur.ph.type) && isConsonant(next.ph.type)
         const blendFwd = ccCluster ? 0.6 : 0.4
         const blendKeep = 1.0 - blendFwd
-
         const offsetBands = blendBands(cur.bands, next.bands, blendFwd)
-        const offsetVoiced = next.ph.voiced || cur.ph.voiced
-        const offsetNoise = cur.ph.noise * blendKeep + (next.ph.noise ?? 0) * blendFwd
-        const offsetPitch = cur.pitchHz * blendKeep + next.pitchHz * blendFwd
-
-        const offsetFrame: VoderFrame = {
-          voiced: offsetVoiced,
+        engine.applyFrame({
+          voiced: next.ph.voiced || cur.ph.voiced,
           voicedAmp: cur.ph.voicedAmp * blendKeep + next.ph.voicedAmp * blendFwd,
-          noise: offsetNoise,
-          pitchHz: offsetPitch,
+          noise: cur.ph.noise * blendKeep + (next.ph.noise ?? 0) * blendFwd,
+          pitchHz: cur.pitchHz * blendKeep + next.pitchHz * blendFwd,
           bands: offsetBands,
-        }
-        engine.applyFrame(offsetFrame, offsetMs)
-        await sleep(Math.max(5, offsetMs - 5))
+        }, offsetMs, 'expo', t)
+        t += Math.max(0.005, offsetMs / 1000 - 0.005)
       } else if (offsetMs > 5) {
-        // No next phoneme — word-final release
         if (cur.ph.type === 'stop' && !cur.ph.voiced) {
-          // Word-final voiceless stop: add a tiny aspiration puff
-          // (operator trick: release the stop with a breath rather than silence)
           engine.applyFrame({
-            voiced: false,
-            noise: 0.3,
-            pitchHz: cur.pitchHz,
+            voiced: false, noise: 0.3, pitchHz: cur.pitchHz,
             bands: [0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.10, 0.15, 0.10, 0.05],
-          }, 8)
-          await sleep(15)
+          }, 8, 'snap', t)
+          t += 0.015
         } else {
-          // Normal fade to silence
-          const fadeFrame: VoderFrame = {
+          engine.applyFrame({
             voiced: cur.ph.voiced,
             voicedAmp: cur.ph.voicedAmp * 0.3,
             noise: cur.ph.noise * 0.3,
             pitchHz: cur.pitchHz,
             bands: cur.bands.map(g => g * 0.3),
-          }
-          engine.applyFrame(fadeFrame, offsetMs)
-          await sleep(Math.max(5, offsetMs - 5))
+          }, offsetMs, 'slow', t)
+          t += Math.max(0.005, offsetMs / 1000 - 0.005)
         }
       }
 
-      if (cancelled) break
-
-      // Insert pause if prosody dictates
+      // Pause
       if (cur.pauseAfterMs > 0) {
         engine.applyFrame({
-          voiced: false,
-          noise: 0,
-          pitchHz: cur.pitchHz,
+          voiced: false, noise: 0, pitchHz: cur.pitchHz,
           bands: SILENCE_BANDS,
-        }, 20)
-        await sleep(cur.pauseAfterMs)
+        }, 20, 'expo', t)
+        t += cur.pauseAfterMs / 1000
       }
     }
 
     // Final ramp to silence
     engine.applyFrame({
-      voiced: false,
-      noise: 0.0,
-      pitchHz: options.basePitch,
+      voiced: false, noise: 0.0, pitchHz: options.basePitch,
       bands: SILENCE_BANDS,
-    }, 60)
+    }, 60, 'expo', t)
+    t += 0.1
+
+    totalDuration = t - (isOffline ? 0.05 : (engine.ctx?.currentTime ?? 0))
+
+    // In real-time mode, wait for the audio to play out
+    // In offline mode, return immediately (caller will call startRendering)
+    if (!isOffline) {
+      // Wait for the scheduled audio to finish playing
+      const waitMs = totalDuration * 1000 + 100
+      let elapsed = 0
+      while (elapsed < waitMs && !cancelled) {
+        await sleep(50)
+        elapsed += 50
+      }
+    }
 
     options.onDone?.()
   })()
@@ -441,5 +372,6 @@ export function speakPhonemeSequence(
   return {
     cancel: () => { cancelled = true },
     done: promise,
+    get totalDuration() { return totalDuration },
   }
 }

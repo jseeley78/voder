@@ -1,13 +1,9 @@
 import { BAND_CENTERS, BAND_Q, BAND_COMPENSATION, type PhonemeConfig, type TransientConfig } from './phonemes'
-import { GLOTTAL_WORKLET_CODE } from './glottal-worklet'
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v))
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise(r => setTimeout(r, ms))
-}
 
 export interface VoderFrame {
   voiced: boolean
@@ -21,38 +17,16 @@ export interface VoderFrame {
 /**
  * Fallback PeriodicWave for browsers that don't support AudioWorklet.
  */
-function createGlottalWave(ctx: AudioContext): PeriodicWave {
-  const N = 64
-  const real = new Float32Array(N)
-  const imag = new Float32Array(N)
-  real[0] = 0
-  imag[0] = 0
-  for (let n = 1; n < N; n++) {
-    const evenFactor = n % 2 === 0 ? 0.7 : 1.0
-    imag[n] = evenFactor / Math.pow(n, 1.2)
-    real[n] = 0
-  }
-  return ctx.createPeriodicWave(real, imag, { disableNormalization: false })
-}
+
 
 /**
  * Register the glottal pulse AudioWorklet processor.
  * Returns true if successful, false if worklets aren't supported.
  */
-async function registerGlottalWorklet(ctx: AudioContext): Promise<boolean> {
-  try {
-    const blob = new Blob([GLOTTAL_WORKLET_CODE], { type: 'application/javascript' })
-    const url = URL.createObjectURL(blob)
-    await ctx.audioWorklet.addModule(url)
-    URL.revokeObjectURL(url)
-    return true
-  } catch (_) {
-    return false
-  }
-}
+
 
 export class VoderEngine {
-  ctx: AudioContext | null = null
+  ctx: BaseAudioContext | null = null
   private master: GainNode | null = null
   private oscNode: AudioNode | null = null       // OscillatorNode or AudioWorkletNode
   private oscFreqParam: AudioParam | null = null  // .frequency param on either node type
@@ -134,8 +108,8 @@ export class VoderEngine {
     // Recording tap — captures the same signal the speakers get
     // Recording tap (not available in OfflineAudioContext or node-web-audio-api)
     try {
-      this.recordDest = this.ctx.createMediaStreamDestination()
-      this.analyser.connect(this.recordDest)
+      this.recordDest = (this.ctx as any).createMediaStreamDestination()
+      if (this.recordDest) this.analyser.connect(this.recordDest)
     } catch (_) {
       this.recordDest = null
     }
@@ -280,7 +254,7 @@ export class VoderEngine {
     } catch (_) { /* already stopped */ }
     try { this.vibratoLfo?.stop() } catch (_) { /* already stopped */ }
     try { this.noiseNode?.stop() } catch (_) { /* already stopped */ }
-    try { this.ctx?.close() } catch (_) { /* already closed */ }
+    try { if ('close' in this.ctx!) (this.ctx as any).close() } catch (_) { /* already closed */ }
     this.ctx = null
     this._started = false
     this.bandGains = []
@@ -325,9 +299,14 @@ export class VoderEngine {
    *   'smooth' — S-curve ease-in-out (vowel-to-vowel glide)
    *   'slow'   — gradual onset (nasal/liquid fade-in)
    */
-  applyFrame(frame: VoderFrame, transitionMs = 35, shape: 'snap' | 'expo' | 'smooth' | 'slow' = 'expo'): void {
+  /**
+   * Apply a frame at a specific time. If `atTime` is provided, schedules
+   * at that absolute time (for offline rendering). Otherwise uses currentTime
+   * (for live playback). Same code path either way.
+   */
+  applyFrame(frame: VoderFrame, transitionMs = 35, shape: 'snap' | 'expo' | 'smooth' | 'slow' = 'expo', atTime?: number): void {
     if (!this._started || !this.ctx) return
-    const now = this.ctx.currentTime
+    const now = atTime ?? this.ctx.currentTime
     const sec = Math.max(transitionMs / 1000, 0.005)
 
     // Drive the sources to match eSpeak's output level (~0.10 RMS).
@@ -406,15 +385,16 @@ export class VoderEngine {
     }
   }
 
-  async transientBurst(tr: TransientConfig, pitchHz = 110): Promise<void> {
+  /** Schedule a transient burst. Returns the duration in ms for time tracking. */
+  transientBurst(tr: TransientConfig, pitchHz = 110, atTime?: number): number {
     const frame: VoderFrame = {
       voiced: false,
       noise: tr.noise ?? 1.0,
       pitchHz,
       bands: tr.bands || Array(10).fill(0),
     }
-    this.applyFrame(frame, 3)
-    await sleep(tr.durationMs || 15)
+    this.applyFrame(frame, 3, 'snap', atTime)
+    return tr.durationMs || 15
   }
 
   applyPhoneme(ph: PhonemeConfig, pitchHz: number, transitionMs: number): void {
