@@ -351,6 +351,8 @@ function speakOpts() {
 async function ensureStarted(): Promise<VoderEngine> {
   const eng = getEngine()
   if (!eng.started) {
+    // Sync waveform from UI before starting
+    eng.waveformType = ($('waveform') as HTMLSelectElement).value as any
     await eng.start()
     startScope()
     setStatus('Audio started.')
@@ -451,10 +453,12 @@ export function initUI(): void {
   const vibratoRateSlider = $input('vibratoRate')
   const vibratoDepthSlider = $input('vibratoDepth')
 
-  // Waveform selector
-  $('waveform').addEventListener('change', () => {
+  // Waveform selector — works on the fly
+  $('waveform').addEventListener('change', async () => {
     const type = ($('waveform') as HTMLSelectElement).value as any
-    engine?.setWaveform(type)
+    const eng = await ensureStarted()
+    eng.setWaveform(type)
+    setStatus(`Waveform: ${type}`)
   })
 
   vibratoToggle.addEventListener('change', () => {

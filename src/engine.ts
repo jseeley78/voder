@@ -309,8 +309,10 @@ export class VoderEngine {
   /** Change waveform on a running engine */
   setWaveform(type: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
     this.waveformType = type
-    if (this._started && this.oscNode && this.oscNode instanceof OscillatorNode) {
-      this._applyWaveform(this.oscNode)
+    if (this._started && this.oscNode) {
+      try {
+        this._applyWaveform(this.oscNode as OscillatorNode)
+      } catch (_) { /* node might not support setPeriodicWave */ }
     }
   }
 
