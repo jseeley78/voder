@@ -342,6 +342,7 @@ function speakOpts() {
     onDone: () => {
       setStatus('Done.')
       loadBandsToUI(Array(10).fill(0))
+      stopRecording()
       resetOperatorControls()
     },
   }
@@ -363,6 +364,7 @@ async function ensureStarted(): Promise<VoderEngine> {
 async function speakPhonemes(text: string): Promise<void> {
   const eng = await ensureStarted()
   if (currentSequence) currentSequence.cancel()
+  startRecording(eng)
   setStatus('Speaking...')
   currentSequence = speakPhonemeSequence(eng, text, speakOpts())
 }
@@ -378,6 +380,7 @@ function tokenToWord(spans: WordSpan[], tokenIdx: number): string {
 async function speakText(text: string): Promise<void> {
   const eng = await ensureStarted()
   if (currentSequence) currentSequence.cancel()
+  startRecording(eng)
 
   const result = textToPhonemes(text)
 
@@ -511,43 +514,26 @@ export function initUI(): void {
   })
 
   // Convert button (show phonemes without speaking)
-  // ── Record button ──
+  // ── Auto-record toggle ──
+  // When checked, automatically records each speak action and downloads WAV
   let mediaRecorder: MediaRecorder | null = null
   let recordChunks: Blob[] = []
+  const recordToggle = $('recordToggle') as HTMLInputElement
 
-  $('recordBtn').addEventListener('click', async () => {
-    const eng = await ensureStarted()
-    const btn = $('recordBtn') as HTMLButtonElement
-
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      // Stop recording
-      mediaRecorder.stop()
-      btn.textContent = 'Record'
-      btn.style.borderColor = ''
-      return
-    }
-
-    // Start recording
-    if (!eng.recordDest) { setStatus('No record destination'); return }
-
+  function startRecording(eng: VoderEngine): void {
+    if (!recordToggle.checked || !eng.recordDest) return
     recordChunks = []
     mediaRecorder = new MediaRecorder(eng.recordDest.stream, { mimeType: 'audio/webm' })
-
     mediaRecorder.ondataavailable = (e) => {
       if (e.data.size > 0) recordChunks.push(e.data)
     }
-
     mediaRecorder.onstop = async () => {
       const webmBlob = new Blob(recordChunks, { type: 'audio/webm' })
-
-      // Convert to WAV for Whisper compatibility
       const arrayBuf = await webmBlob.arrayBuffer()
       const audioCtx = new AudioContext()
       const decoded = await audioCtx.decodeAudioData(arrayBuf)
       const samples = decoded.getChannelData(0)
       const sr = decoded.sampleRate
-
-      // Build WAV
       const numSamples = samples.length
       const dataSize = numSamples * 2
       const buffer = new ArrayBuffer(44 + dataSize)
@@ -561,24 +547,21 @@ export function initUI(): void {
       for (let i = 0; i < numSamples; i++) {
         view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, samples[i])) * 32767), true)
       }
-
       const wavBlob = new Blob([buffer], { type: 'audio/wav' })
       const url = URL.createObjectURL(wavBlob)
       const a = document.createElement('a')
-      a.href = url
-      a.download = 'voder-recording.wav'
-      a.click()
-      URL.revokeObjectURL(url)
-      audioCtx.close()
-
+      a.href = url; a.download = 'voder-recording.wav'; a.click()
+      URL.revokeObjectURL(url); audioCtx.close()
       setStatus(`Recorded ${(numSamples / sr).toFixed(1)}s → voder-recording.wav`)
     }
-
     mediaRecorder.start()
-    btn.textContent = 'Stop'
-    btn.style.borderColor = '#cc4422'
-    setStatus('Recording... click Stop when done')
-  })
+  }
+
+  function stopRecording(): void {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop()
+    }
+  }
 
   // ── Phoneme input (direct) ──
   $('speakBtn').addEventListener('click', () => {
