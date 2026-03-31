@@ -339,46 +339,30 @@ export class VoderEngine {
               : shape === 'slow' ? sec / 2
               : sec / 8  // expo — snappier, matches operator finger speed — was sec/3, now snappier
 
-    if (shape === 'smooth' && sec > 0.015) {
-      // S-curve: slow start, fast middle, slow end (ease-in-out)
-      // Use setValueCurveAtTime with a computed cosine curve
-      const steps = Math.max(4, Math.round(sec * 200))  // ~200 steps/sec
-      const bands = frame.bands || []
-
-      // For source gains, use S-curve
-      const oscCurve = new Float32Array(steps)
-      const noiseCurve = new Float32Array(steps)
-      const pitchCurve = new Float32Array(steps)
-      const prevOsc = this._lastOscGain
-      const prevNoise = this._lastNoiseGain
-      const prevPitch = this._lastPitch
-
-      for (let i = 0; i < steps; i++) {
-        // Cosine interpolation: 0→1 with ease-in-out
-        const t = 0.5 * (1 - Math.cos(Math.PI * i / (steps - 1)))
-        oscCurve[i] = prevOsc * (1 - t) + voicedAmp * t
-        noiseCurve[i] = prevNoise * (1 - t) + noiseAmp * t
-        pitchCurve[i] = prevPitch * (1 - t) + this._currentPitch * t
-      }
-
-      this.oscGain!.gain.setValueCurveAtTime(oscCurve, now, sec)
+    // All shapes use linearRamp (compatible with node-web-audio-api).
+    // setValueCurveAtTime causes Rust panics in the polyfill.
+    // The 'smooth' shape just uses a longer ramp time.
+    if (shape === 'smooth') {
+      // S-curve approximated as a slower linear ramp
+      const rampEnd = now + sec
+      this.oscGain!.gain.cancelScheduledValues(now)
+      this.oscGain!.gain.setValueAtTime(this._lastOscGain, now)
+      this.oscGain!.gain.linearRampToValueAtTime(voicedAmp, rampEnd)
       this._lastOscGain = voicedAmp
-      this.noiseGain!.gain.setValueCurveAtTime(noiseCurve, now, sec)
+      this.noiseGain!.gain.cancelScheduledValues(now)
+      this.noiseGain!.gain.setValueAtTime(this._lastNoiseGain, now)
+      this.noiseGain!.gain.linearRampToValueAtTime(noiseAmp, rampEnd)
       this._lastNoiseGain = noiseAmp
-      this.oscFreqParam!.setValueCurveAtTime(pitchCurve, now, sec)
+      this.oscFreqParam!.cancelScheduledValues(now)
+      this.oscFreqParam!.setValueAtTime(this._lastPitch, now)
+      this.oscFreqParam!.linearRampToValueAtTime(this._currentPitch, rampEnd)
       this._lastPitch = this._currentPitch
-
-      // Band gains also get S-curves
+      const bands = frame.bands || []
       for (let i = 0; i < this.bandGains.length; i++) {
         const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
-        const prevV = this._lastBandGains[i]
-        const curve = new Float32Array(steps)
-        for (let j = 0; j < steps; j++) {
-          const t = 0.5 * (1 - Math.cos(Math.PI * j / (steps - 1)))
-          curve[j] = prevV * (1 - t) + v * t
-        }
         this.bandGains[i].gain.cancelScheduledValues(now)
-        this.bandGains[i].gain.setValueCurveAtTime(curve, now, sec)
+        this.bandGains[i].gain.setValueAtTime(this._lastBandGains[i], now)
+        this.bandGains[i].gain.linearRampToValueAtTime(v, rampEnd)
         this._lastBandGains[i] = v
       }
     } else {
