@@ -57,7 +57,7 @@ export class VoderEngine {
   vibratoDepth = 2.75  // Whitepaper: 2-3% fluctuation at 6Hz — original Voder had no auto-vibrato
 
   /** Buzz source waveform type */
-  waveformType: 'damped-pulse' | 'rosenberg' | 'impulse' | 'sawtooth' | 'square' | 'triangle' | 'sine' = 'damped-pulse'
+  waveformType: 'damped-pulse' | 'rosenberg' | 'impulse' | 'warm' | 'buzzy' | 'breathy' | 'sawtooth' | 'square' | 'triangle' | 'sine' = 'damped-pulse'
 
   // Track last scheduled values (needed for offline mode where .value
   // doesn't reflect scheduled ramps — it always returns the initial value)
@@ -320,6 +320,37 @@ export class VoderEngine {
     return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
   }
 
+  /** Warm pulse: square + triangle blend. Rich body, soft edges. */
+  private _createWarmPulse(): PeriodicWave {
+    const N = 64, real = new Float32Array(N), imag = new Float32Array(N)
+    for (let n = 1; n < N; n++) {
+      const isOdd = n % 2 === 1
+      imag[n] = isOdd ? (0.6 / n + 0.4 / (n * n)) : 0
+    }
+    return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
+  }
+
+  /** Buzzy pulse: sawtooth with boosted even harmonics. Reed-like. */
+  private _createBuzzyPulse(): PeriodicWave {
+    const N = 64, real = new Float32Array(N), imag = new Float32Array(N)
+    for (let n = 1; n < N; n++) {
+      imag[n] = (n % 2 === 0 ? 1.5 : 1.0) / n
+    }
+    return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
+  }
+
+  /** Breathy pulse: damped pulse with noisy upper harmonics. Whispery. */
+  private _createBreathyPulse(): PeriodicWave {
+    const N = 64, real = new Float32Array(N), imag = new Float32Array(N)
+    for (let n = 1; n < N; n++) {
+      const base = Math.exp(-n * 0.12)
+      const breath = n > 10 ? 0.3 * Math.sin(n * 7.3) : 0
+      imag[n] = base + Math.abs(breath)
+      real[n] = breath * 0.5
+    }
+    return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
+  }
+
   /** Apply the selected waveform to an oscillator */
   private _applyWaveform(osc: OscillatorNode): void {
     switch (this.waveformType) {
@@ -331,6 +362,15 @@ export class VoderEngine {
         break
       case 'impulse':
         osc.setPeriodicWave(this._createImpulseTrain())
+        break
+      case 'warm':
+        osc.setPeriodicWave(this._createWarmPulse())
+        break
+      case 'buzzy':
+        osc.setPeriodicWave(this._createBuzzyPulse())
+        break
+      case 'breathy':
+        osc.setPeriodicWave(this._createBreathyPulse())
         break
       case 'sawtooth':
         osc.type = 'sawtooth'
@@ -371,7 +411,7 @@ export class VoderEngine {
     }
   }
 
-  setWaveform(type: 'damped-pulse' | 'rosenberg' | 'impulse' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
+  setWaveform(type: 'damped-pulse' | 'rosenberg' | 'impulse' | 'warm' | 'buzzy' | 'breathy' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
     this.waveformType = type
     if (this._started && this.oscNode) {
       try {
