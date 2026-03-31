@@ -274,20 +274,20 @@ export class VoderEngine {
   setMaster(v: number): void {
     this.masterValue = v
     if (!this._started || !this.master) return
-    this.master.gain.setTargetAtTime(v, this.ctx!.currentTime, 0.015)
+    this.master.gain.setValueAtTime(this.master.gain.value, this.ctx!.currentTime); this.master.gain.linearRampToValueAtTime(v, this.ctx!.currentTime + 0.045)
   }
 
   setVibratoRate(hz: number): void {
     this.vibratoRate = hz
     if (this.vibratoLfo) {
-      this.vibratoLfo.frequency.setTargetAtTime(hz, this.ctx!.currentTime, 0.05)
+      this.vibratoLfo.frequency.setValueAtTime(this.vibratoLfo.frequency.value, this.ctx!.currentTime); this.vibratoLfo.frequency.linearRampToValueAtTime(hz, this.ctx!.currentTime + 0.15)
     }
   }
 
   setVibratoDepth(hz: number): void {
     this.vibratoDepth = hz
     if (this.vibratoDepthNode) {
-      this.vibratoDepthNode.gain.setTargetAtTime(hz, this.ctx!.currentTime, 0.05)
+      this.vibratoDepthNode.gain.setValueAtTime(this.vibratoDepthNode.gain.value, this.ctx!.currentTime); this.vibratoDepthNode.gain.linearRampToValueAtTime(hz, this.ctx!.currentTime + 0.15)
     }
   }
 
@@ -371,16 +371,26 @@ export class VoderEngine {
         this.bandGains[i].gain.setValueCurveAtTime(curve, now, sec)
       }
     } else {
-      // Exponential approach for snap/expo/slow
-      this.oscGain!.gain.setTargetAtTime(voicedAmp, now, tau)
-      this.noiseGain!.gain.setTargetAtTime(noiseAmp, now, tau)
-      this.oscFreqParam!.setTargetAtTime(this._currentPitch, now, tau)
+      // Linear ramp approximating exponential approach.
+      // Using setValueAtTime + linearRampToValueAtTime instead of
+      // setTargetAtTime because node-web-audio-api has numerical overflow
+      // bugs with setTargetAtTime in OfflineAudioContext.
+      // Ramp duration = tau*3 gives ~95% of the exponential shape.
+      const rampEnd = now + tau * 3
+
+      this.oscGain!.gain.setValueAtTime(this.oscGain!.gain.value, now)
+      this.oscGain!.gain.linearRampToValueAtTime(voicedAmp, rampEnd)
+      this.noiseGain!.gain.setValueAtTime(this.noiseGain!.gain.value, now)
+      this.noiseGain!.gain.linearRampToValueAtTime(noiseAmp, rampEnd)
+      this.oscFreqParam!.setValueAtTime(this.oscFreqParam!.value, now)
+      this.oscFreqParam!.linearRampToValueAtTime(this._currentPitch, rampEnd)
 
       const bands = frame.bands || []
       for (let i = 0; i < this.bandGains.length; i++) {
         const v = clamp((bands[i] || 0) * BAND_COMPENSATION[i], 0, 1.5)
         this.bandGains[i].gain.cancelScheduledValues(now)
-        this.bandGains[i].gain.setTargetAtTime(v, now, tau)
+        this.bandGains[i].gain.setValueAtTime(this.bandGains[i].gain.value, now)
+        this.bandGains[i].gain.linearRampToValueAtTime(v, rampEnd)
       }
     }
   }
