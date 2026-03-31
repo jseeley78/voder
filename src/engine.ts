@@ -57,7 +57,7 @@ export class VoderEngine {
   vibratoDepth = 0    // Off by default — original Voder had no auto-vibrato
 
   /** Buzz source waveform type */
-  waveformType: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' | 'sine' = 'damped-pulse'
+  waveformType: 'damped-pulse' | 'rosenberg' | 'impulse' | 'sawtooth' | 'square' | 'triangle' | 'sine' = 'damped-pulse'
 
   // Track last scheduled values (needed for offline mode where .value
   // doesn't reflect scheduled ramps — it always returns the initial value)
@@ -286,11 +286,51 @@ export class VoderEngine {
     return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
   }
 
+  /**
+   * Build a Rosenberg glottal pulse: polynomial open phase + polynomial
+   * close phase. Smoother than the damped pulse, used in 70s-80s
+   * speech synthesis (Klatt synthesizer).
+   */
+  private _createRosenbergPulse(): PeriodicWave {
+    const N = 64
+    const real = new Float32Array(N)
+    const imag = new Float32Array(N)
+    // Rosenberg model: harmonics fall off as 1/n^2 with alternating phase
+    for (let n = 1; n < N; n++) {
+      imag[n] = 1.0 / (n * n)
+      real[n] = 0
+    }
+    return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
+  }
+
+  /**
+   * Build an impulse train: just a sharp click at each period.
+   * All harmonics at equal amplitude — the filter bank does ALL shaping.
+   * This is the theoretical minimum source for a channel vocoder.
+   */
+  private _createImpulseTrain(): PeriodicWave {
+    const N = 64
+    const real = new Float32Array(N)
+    const imag = new Float32Array(N)
+    // All harmonics at equal amplitude = impulse in time domain
+    for (let n = 1; n < N; n++) {
+      imag[n] = 1.0
+      real[n] = 0
+    }
+    return this.ctx!.createPeriodicWave(real, imag, { disableNormalization: false })
+  }
+
   /** Apply the selected waveform to an oscillator */
   private _applyWaveform(osc: OscillatorNode): void {
     switch (this.waveformType) {
       case 'damped-pulse':
         osc.setPeriodicWave(this._createDampedPulse())
+        break
+      case 'rosenberg':
+        osc.setPeriodicWave(this._createRosenbergPulse())
+        break
+      case 'impulse':
+        osc.setPeriodicWave(this._createImpulseTrain())
         break
       case 'sawtooth':
         osc.type = 'sawtooth'
@@ -331,7 +371,7 @@ export class VoderEngine {
     }
   }
 
-  setWaveform(type: 'damped-pulse' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
+  setWaveform(type: 'damped-pulse' | 'rosenberg' | 'impulse' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
     this.waveformType = type
     if (this._started && this.oscNode) {
       try {
