@@ -24,7 +24,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install --omit=optional --ignore-scripts --no-audit --no-fund
+        run: npm install --omit=optional --no-audit --no-fund
         timeout-minutes: 5
 
       - run: npx tsc && npx vite build
