@@ -22,15 +22,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: |
-          echo "omit[]=optional" > .npmrc
-          npm ci --ignore-scripts
-        timeout-minutes: 3
+        run: npm install --omit=optional --ignore-scripts --no-audit --no-fund
+        timeout-minutes: 5
 
-      - run: npm run build
+      - run: npx tsc && npx vite build
 
       - uses: actions/upload-pages-artifact@v3
         with:
