@@ -327,7 +327,8 @@ code {
   font-weight: 600;
   color: var(--accent);
   padding: 10px 0 4px;
-  min-height: 44px;
+  height: 48px;
+  box-sizing: border-box;
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: 1px;
   text-transform: uppercase;

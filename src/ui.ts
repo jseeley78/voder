@@ -3,12 +3,63 @@ import { VoderEngine } from './engine'
 import { speakPhonemeSequence, type SequenceHandle, type TokenEvent, type StopKey } from './sequencer'
 import { textToPhonemes, type WordSpan } from './text-to-phoneme'
 import { PROPOSALS, createABTest, playWithGains, getABResults, type ABTestState } from './ab-test'
+import { ANIMAL_SOUNDS, playAnimalSound } from './animals'
 
 let engine: VoderEngine | null = null
 let currentSequence: SequenceHandle | null = null
 let manualMode: 'buzz' | 'hiss' | 'both' | 'silence' = 'buzz'
 let sliderEls: HTMLInputElement[] = []
 let scopeAnimId: number | null = null
+/** The basePitch that the current sequence was scheduled with — detune is relative to this */
+let sequenceBasePitch = 110
+
+// ── Recording state (module-level so speakPhonemes/speakText can access) ──
+let mediaRecorder: MediaRecorder | null = null
+let recordChunks: Blob[] = []
+let recordToggle: HTMLInputElement | null = null
+
+function startRecording(eng: VoderEngine): void {
+  if (!recordToggle?.checked || !eng.recordDest) return
+  recordChunks = []
+  mediaRecorder = new MediaRecorder(eng.recordDest.stream, { mimeType: 'audio/webm' })
+  mediaRecorder.ondataavailable = (e) => {
+    if (e.data.size > 0) recordChunks.push(e.data)
+  }
+  mediaRecorder.onstop = async () => {
+    const webmBlob = new Blob(recordChunks, { type: 'audio/webm' })
+    const arrayBuf = await webmBlob.arrayBuffer()
+    const audioCtx = new AudioContext()
+    const decoded = await audioCtx.decodeAudioData(arrayBuf)
+    const samples = decoded.getChannelData(0)
+    const sr = decoded.sampleRate
+    const numSamples = samples.length
+    const dataSize = numSamples * 2
+    const buffer = new ArrayBuffer(44 + dataSize)
+    const view = new DataView(buffer)
+    const writeStr = (off: number, str: string) => { for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i)) }
+    writeStr(0, 'RIFF'); view.setUint32(4, 36 + dataSize, true); writeStr(8, 'WAVE')
+    writeStr(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true)
+    view.setUint16(22, 1, true); view.setUint32(24, sr, true); view.setUint32(28, sr * 2, true)
+    view.setUint16(32, 2, true); view.setUint16(34, 16, true)
+    writeStr(36, 'data'); view.setUint32(40, dataSize, true)
+    for (let i = 0; i < numSamples; i++) {
+      view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, samples[i])) * 32767), true)
+    }
+    const wavBlob = new Blob([buffer], { type: 'audio/wav' })
+    const url = URL.createObjectURL(wavBlob)
+    const a = document.createElement('a')
+    a.href = url; a.download = 'voder-recording.wav'; a.click()
+    URL.revokeObjectURL(url); audioCtx.close()
+    setStatus(`Recorded ${(numSamples / sr).toFixed(1)}s → voder-recording.wav`)
+  }
+  mediaRecorder.start()
+}
+
+function stopRecording(): void {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop()
+  }
+}
 
 const $ = (id: string) => document.getElementById(id) as HTMLElement
 const $input = (id: string) => document.getElementById(id) as HTMLInputElement
@@ -364,6 +415,8 @@ async function ensureStarted(): Promise<VoderEngine> {
 async function speakPhonemes(text: string): Promise<void> {
   const eng = await ensureStarted()
   if (currentSequence) currentSequence.cancel()
+  eng.restoreDetune(0)
+  sequenceBasePitch = parseFloat($input('pitch').value)
   startRecording(eng)
   setStatus('Speaking...')
   currentSequence = speakPhonemeSequence(eng, text, speakOpts())
@@ -380,6 +433,8 @@ function tokenToWord(spans: WordSpan[], tokenIdx: number): string {
 async function speakText(text: string): Promise<void> {
   const eng = await ensureStarted()
   if (currentSequence) currentSequence.cancel()
+  eng.restoreDetune(0)
+  sequenceBasePitch = parseFloat($input('pitch').value)
   startRecording(eng)
 
   const result = textToPhonemes(text)
@@ -419,9 +474,13 @@ export function initUI(): void {
   buildPresetButtons()
 
   bindSliderDisplay('pitch', 'pitchVal')
-  // Live pitch update — changes the oscillator frequency immediately
+  // Live pitch: compute detune relative to the basePitch the current sequence was
+  // scheduled with, so the shift is applied once (not double-stacked).
   $input('pitch').addEventListener('input', () => {
-    engine?.setPitch(parseFloat($input('pitch').value))
+    if (!engine) return
+    const newPitch = parseFloat($input('pitch').value)
+    const cents = 1200 * Math.log2(newPitch / sequenceBasePitch)
+    engine.restoreDetune(cents)
   })
   bindSliderDisplay('master', 'masterVal', v => Number(v).toFixed(2))
   bindSliderDisplay('transitionMs', 'transitionVal')
@@ -513,55 +572,8 @@ export function initUI(): void {
     }
   })
 
-  // Convert button (show phonemes without speaking)
-  // ── Auto-record toggle ──
-  // When checked, automatically records each speak action and downloads WAV
-  let mediaRecorder: MediaRecorder | null = null
-  let recordChunks: Blob[] = []
-  const recordToggle = $('recordToggle') as HTMLInputElement
-
-  function startRecording(eng: VoderEngine): void {
-    if (!recordToggle.checked || !eng.recordDest) return
-    recordChunks = []
-    mediaRecorder = new MediaRecorder(eng.recordDest.stream, { mimeType: 'audio/webm' })
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) recordChunks.push(e.data)
-    }
-    mediaRecorder.onstop = async () => {
-      const webmBlob = new Blob(recordChunks, { type: 'audio/webm' })
-      const arrayBuf = await webmBlob.arrayBuffer()
-      const audioCtx = new AudioContext()
-      const decoded = await audioCtx.decodeAudioData(arrayBuf)
-      const samples = decoded.getChannelData(0)
-      const sr = decoded.sampleRate
-      const numSamples = samples.length
-      const dataSize = numSamples * 2
-      const buffer = new ArrayBuffer(44 + dataSize)
-      const view = new DataView(buffer)
-      const writeStr = (off: number, str: string) => { for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i)) }
-      writeStr(0, 'RIFF'); view.setUint32(4, 36 + dataSize, true); writeStr(8, 'WAVE')
-      writeStr(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true)
-      view.setUint16(22, 1, true); view.setUint32(24, sr, true); view.setUint32(28, sr * 2, true)
-      view.setUint16(32, 2, true); view.setUint16(34, 16, true)
-      writeStr(36, 'data'); view.setUint32(40, dataSize, true)
-      for (let i = 0; i < numSamples; i++) {
-        view.setInt16(44 + i * 2, Math.round(Math.max(-1, Math.min(1, samples[i])) * 32767), true)
-      }
-      const wavBlob = new Blob([buffer], { type: 'audio/wav' })
-      const url = URL.createObjectURL(wavBlob)
-      const a = document.createElement('a')
-      a.href = url; a.download = 'voder-recording.wav'; a.click()
-      URL.revokeObjectURL(url); audioCtx.close()
-      setStatus(`Recorded ${(numSamples / sr).toFixed(1)}s → voder-recording.wav`)
-    }
-    mediaRecorder.start()
-  }
-
-  function stopRecording(): void {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop()
-    }
-  }
+  // Initialize record toggle reference
+  recordToggle = $('recordToggle') as HTMLInputElement
 
   // ── Phoneme input (direct) ──
   $('speakBtn').addEventListener('click', () => {
@@ -585,25 +597,20 @@ export function initUI(): void {
   exBtn('exMary', 'Mary had a little lamb, its fleece was white as snow.')
   exBtn('exSF', 'Hello, San Francisco. This is New York speaking. Greetings to you.')
 
-  // ── Example text buttons ──
-  // Helper to wire up example buttons
-  function exBtn(id: string, text: string) {
-    $(id).addEventListener('click', () => {
-      $input('textInput').value = text
-      speakText(text)
+  // ── Animal sounds ──
+  const animalContainer = $('animalButtons')
+  for (const sound of ANIMAL_SOUNDS) {
+    const btn = document.createElement('button')
+    btn.textContent = sound.label
+    btn.addEventListener('click', async () => {
+      const eng = await ensureStarted()
+      if (currentSequence) currentSequence.cancel()
+      setStatus(`${sound.label}...`)
+      $('currentWord').textContent = sound.label
+      playAnimalSound(eng, sound)
     })
+    animalContainer.appendChild(btn)
   }
-
-  exBtn('exHello', 'Hello, how are you?')
-  exBtn('exRobot', 'I am a robot.')
-  exBtn('exRainbow', 'When the sunlight strikes raindrops in the air, they act as a prism and form a rainbow. The rainbow is a division of white light into many beautiful colors.')
-
-  // Original 1939 World's Fair Voder demonstration phrases
-  exBtn('exSheSaw', 'She saw me.')
-  exBtn('exGreeting', 'Good afternoon, radio audience.')
-  exBtn('exConcentration', 'Concentration.')
-  exBtn('exMary', 'Mary had a little lamb, its fleece was white as snow.')
-  exBtn('exSF', 'Hello, San Francisco. This is New York speaking. Greetings to you.')
 
   // ── A/B Test ──
   let abState: ABTestState | null = null

@@ -5,6 +5,7 @@ import { execSync } from 'child_process'
 const gitHash = execSync('git rev-parse --short HEAD').toString().trim()
 
 export default defineConfig({
+  base: '/voder/',
   define: {
     __GIT_HASH__: JSON.stringify(gitHash),
   },

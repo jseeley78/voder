@@ -65,83 +65,81 @@ export const BAND_COMPENSATION = BAND_WIDTHS.map(bw => Math.sqrt(minBW / bw))
 export const PHONEMES: Record<string, PhonemeConfig> = {
   // ─── Vowels ───
   // voicedAmp: open vowels (1.0) > mid (0.9) > close (0.8)
-  // Gains derived from standard male formant frequencies (Peterson & Barney 1952)
+  // Compensated gains: eSpeak_output / Voder_output × Hillenbrand gains.
+  // Accounts for our source spectrum so the output matches what ASR expects.
 
-  // IY "beat": F1≈270 F2≈2290 F3≈3010 — highest front vowel
+  // IY "beat": F1≈270 F2≈2290 F3≈3010
   IY: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 175,
-        bands: [0.25, 0.85, 0.10, 0.05, 0.08, 0.12, 0.95, 0.65, 0.08, 0] },
+        bands: [0.15, 0.36, 0.02, 0.00, 0.00, 0.01, 0.35, 1.00, 0.33, 0.20] },
 
-  // IH "bit": F1≈390 F2≈1990 F3≈2550 — lower than IY
+  // IH "bit": F1≈390 F2≈1990 F3≈2550
   IH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 120,
-        bands: [0.25, 0.72, 0.30, 0.12, 0.05, 0.40, 0.82, 0.50, 0.05, 0] },
+        bands: [0.14, 1.00, 0.98, 0.01, 0.00, 0.11, 0.25, 0.32, 0.28, 0.23] },
 
-  // EH "bet": F1≈530 F2≈1840 F3≈2480 — mid front
+  // EH "bet": F1≈530 F2≈1840 F3≈2480
   EH: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.02, durationMs: 170,
-        bands: [0.33, 0.25, 0.85, 0.18, 0.00, 0.95, 0.45, 0.35, 0.04, 0] },
+        bands: [0.17, 0.51, 1.00, 0.35, 0.01, 0.48, 0.30, 0.29, 0.56, 0.09] },
 
-  // AE "bat": F1≈660 F2≈1720 F3≈2410 — open front
+  // AE "bat": F1≈660 F2≈1720 F3≈2410
   AE: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
-        bands: [0.25, 0.15, 0.50, 0.90, 0.18, 0.90, 0.40, 0.30, 0.04, 0] },
+        bands: [0.28, 0.57, 1.00, 0.70, 0.09, 0.96, 0.60, 0.42, 0.51, 0.26] },
 
-  // AA "bot/father": F1≈730 F2≈1090 F3≈2440 — open back
+  // AA "bot/father": F1≈730 F2≈1090 F3≈2440
   AA: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
-        bands: [0.25, 0.15, 0.30, 0.75, 0.90, 0.22, 0.40, 0.30, 0.03, 0] },
+        bands: [0.22, 0.47, 0.88, 0.58, 0.40, 0.28, 0.10, 0.26, 0.32, 0.15] },
 
-  // AO "bought": F1≈570 F2≈840 F3≈2410 — rounded back
-  // AO: A/B tested — proposed was better (concentrate B3, reduce B5)
+  // AO "bought": F1≈570 F2≈840 F3≈2410
   AO: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 185,
-        bands: [0.30, 0.30, 0.96, 0.81, 0.05, 0.10, 0.38, 0.45, 0.03, 0] },
+        bands: [0.20, 0.60, 1.00, 0.65, 0.40, 0.09, 0.06, 0.15, 0.20, 0.15] },
 
-  // AH "but": F1≈640 F2≈1190 F3≈2390 — central mid (most common English vowel)
+  // AH "but": F1≈640 F2≈1190 F3≈2390
   AH: { type: 'vowel', voiced: true, voicedAmp: 1.00, noise: 0.02, durationMs: 170,
-        bands: [0.25, 0.22, 0.55, 0.65, 0.88, 0.35, 0.42, 0.32, 0.03, 0] },
+        bands: [0.15, 0.36, 1.00, 0.47, 0.20, 0.12, 0.05, 0.10, 0.12, 0.48] },
 
-  // UH "book": F1≈440 F2≈1020 F3≈2240 — close back unrounded
+  // UH "book": F1≈440 F2≈1020 F3≈2240
   UH: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.01, durationMs: 160,
-        bands: [0.30, 0.62, 0.38, 0.48, 0.70, 0.18, 0.40, 0.30, 0.03, 0] },
+        bands: [0.20, 0.85, 0.55, 0.10, 0.15, 0.08, 0.08, 0.08, 0.30, 0.20] },
 
-  // UW "boot": F1≈300 F2≈870 F3≈2240 — close back rounded
+  // UW "boot": F1≈300 F2≈870 F3≈2240
   UW: { type: 'vowel', voiced: true, voicedAmp: 0.80, noise: 0.01, durationMs: 200,
-        bands: [0.30, 0.85, 0.20, 0.65, 0.40, 0.08, 0.38, 0.28, 0.03, 0] },
+        bands: [0.26, 1.00, 0.12, 0.01, 0.15, 0.05, 0.10, 0.11, 0.55, 0.34] },
 
-  // OW "boat": AO-like → UH-like glide
+  // OW "boat": AO → UH glide
   OW: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 195,
-        bands:       [0.30, 0.35, 0.75, 0.30, 0.65, 0.12, 0.40, 0.45, 0.03, 0],
-        onsetBands:  [0.30, 0.30, 0.75, 0.70, 0.30, 0.10, 0.40, 0.35, 0.04, 0],
-        offsetBands: [0.30, 0.60, 0.40, 0.25, 0.60, 0.12, 0.40, 0.30, 0.03, 0] },
+        bands:       [0.19, 0.86, 1.00, 0.29, 0.21, 0.00, 0.04, 0.04, 0.23, 0.25],
+        onsetBands:  [0.20, 0.60, 1.00, 0.65, 0.40, 0.09, 0.06, 0.15, 0.20, 0.15],
+        offsetBands: [0.20, 0.85, 0.55, 0.10, 0.15, 0.08, 0.08, 0.08, 0.30, 0.20] },
 
   // ER "bird": F1≈490 F2≈1350 F3≈1690
   ER: { type: 'vowel', voiced: true, voicedAmp: 0.85, noise: 0.02, durationMs: 175,
-        bands: [0.25, 0.40, 0.65, 0.25, 0.55, 0.55, 0.20, 0.20, 0.03, 0] },
+        bands: [0.16, 1.00, 0.92, 0.02, 0.21, 0.30, 0.08, 0.05, 0.32, 0.73] },
 
   // ─── Diphthongs ───
-  // Each has onsetBands (starting vowel) and offsetBands (ending vowel).
-  // The bands field is the midpoint for compatibility; the sequencer
-  // uses onset→offset for the actual glide.
+  // Onset/offset use compensated gains for component vowels.
 
   // AW "how/out": AA → UH
   AW: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 210,
-        bands:       [0.28, 0.25, 0.45, 0.80, 0.55, 0.15, 0.40, 0.30, 0.03, 0],
-        onsetBands:  [0.25, 0.20, 0.35, 0.90, 0.70, 0.20, 0.45, 0.35, 0.04, 0],
-        offsetBands: [0.30, 0.60, 0.40, 0.25, 0.60, 0.12, 0.40, 0.30, 0.03, 0] },
+        bands:       [0.21, 0.66, 0.72, 0.34, 0.28, 0.18, 0.09, 0.17, 0.31, 0.18],
+        onsetBands:  [0.22, 0.47, 0.88, 0.58, 0.40, 0.28, 0.10, 0.26, 0.32, 0.15],
+        offsetBands: [0.20, 0.85, 0.55, 0.10, 0.15, 0.08, 0.08, 0.08, 0.30, 0.20] },
 
   // AY "my/time": AA → IH
   AY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 210,
-        bands:       [0.33, 0.22, 0.40, 0.75, 0.45, 0.45, 0.55, 0.35, 0.04, 0],
-        onsetBands:  [0.25, 0.20, 0.35, 0.90, 0.70, 0.20, 0.45, 0.35, 0.04, 0],
-        offsetBands: [0.25, 0.70, 0.25, 0.10, 0.12, 0.30, 0.80, 0.50, 0.06, 0] },
+        bands:       [0.18, 0.74, 0.93, 0.30, 0.20, 0.20, 0.18, 0.29, 0.30, 0.19],
+        onsetBands:  [0.22, 0.47, 0.88, 0.58, 0.40, 0.28, 0.10, 0.26, 0.32, 0.15],
+        offsetBands: [0.14, 1.00, 0.98, 0.01, 0.00, 0.11, 0.25, 0.32, 0.28, 0.23] },
 
   // EY "say/day": EH → IY
   EY: { type: 'vowel', voiced: true, voicedAmp: 0.90, noise: 0.01, durationMs: 200,
-        bands:       [0.25, 0.30, 0.60, 0.30, 0.20, 0.65, 0.70, 0.45, 0.05, 0],
-        onsetBands:  [0.25, 0.30, 0.85, 0.20, 0.15, 0.80, 0.50, 0.40, 0.05, 0],
-        offsetBands: [0.25, 0.80, 0.15, 0.08, 0.10, 0.15, 0.90, 0.60, 0.08, 0] },
+        bands:       [0.23, 0.97, 0.90, 0.01, 0.00, 0.19, 0.75, 1.00, 0.93, 0.30],
+        onsetBands:  [0.17, 0.51, 1.00, 0.35, 0.01, 0.48, 0.30, 0.29, 0.56, 0.09],
+        offsetBands: [0.15, 0.36, 0.02, 0.00, 0.00, 0.01, 0.35, 1.00, 0.33, 0.20] },
 
   // OY "boy/toy": AO → IY
   OY: { type: 'vowel', voiced: true, voicedAmp: 0.95, noise: 0.01, durationMs: 210,
-        bands:       [0.28, 0.30, 0.65, 0.50, 0.25, 0.30, 0.60, 0.40, 0.04, 0],
-        onsetBands:  [0.30, 0.30, 0.75, 0.70, 0.30, 0.10, 0.40, 0.35, 0.04, 0],
-        offsetBands: [0.25, 0.80, 0.15, 0.08, 0.10, 0.15, 0.90, 0.60, 0.08, 0] },
+        bands:       [0.18, 0.48, 0.51, 0.33, 0.20, 0.05, 0.21, 0.58, 0.27, 0.18],
+        onsetBands:  [0.20, 0.60, 1.00, 0.65, 0.40, 0.09, 0.06, 0.15, 0.20, 0.15],
+        offsetBands: [0.15, 0.36, 0.02, 0.00, 0.00, 0.01, 0.35, 1.00, 0.33, 0.20] },
 
   // ─── Fricatives / aspirates ───
   // These need strong noise and distinctive spectral shapes

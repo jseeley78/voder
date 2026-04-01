@@ -69,7 +69,7 @@ async function renderPhrase(text: string): Promise<Float32Array> {
     transitionMs: 35,
     basePitch: 110,
     rateScale: 1.0,
-    expressiveness: 0.7,
+    expressiveness: 1.0,
     humanize: 0,
   })
 

@@ -6,7 +6,7 @@ wav_dir = sys.argv[1]
 words = sys.argv[2].split(',')
 output_file = sys.argv[3]
 
-model = whisper.load_model('tiny')
+model = whisper.load_model('small')
 
 results = {}
 for word in words:
@@ -18,6 +18,14 @@ for word in words:
         f.read(44)
         data = f.read()
     samples = np.array(struct.unpack(f'<{len(data)//2}h', data), dtype=np.float32) / 32768.0
+    # Resample to 16kHz if needed (our renders are 48kHz)
+    import wave as wavmod
+    with wavmod.open(path, 'rb') as wf:
+        sr = wf.getframerate()
+    if sr != 16000:
+        from scipy.signal import resample as scipy_resample
+        new_len = int(len(samples) * 16000 / sr)
+        samples = scipy_resample(samples, new_len).astype(np.float32)
     audio = whisper.pad_or_trim(samples.astype(np.float32))
     mel = whisper.log_mel_spectrogram(audio, n_mels=model.dims.n_mels).to(model.device)
     result = whisper.decode(model, mel, whisper.DecodingOptions(language='en', fp16=False))

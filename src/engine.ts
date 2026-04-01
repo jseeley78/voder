@@ -146,20 +146,12 @@ export class VoderEngine {
     this.vibratoDepthNode.connect(this.oscFreqParam)
     this.vibratoLfo.start()
 
-    // Spectral tilt: lowpass shapes the sawtooth before the filter bank.
-    // Tested alternatives: no filter (-8.19), high shelf boost (-8.27).
-    // The lowpass at 3400Hz gives the best Whisper scores (-6.84) by
-    // removing ultrasonic harmonics that alias in the narrow bandpass filters.
-    const oscTilt = this.ctx.createBiquadFilter()
-    oscTilt.type = 'lowpass'
-    oscTilt.frequency.value = 3400
-    oscTilt.Q.value = 0.65
-
+    // No spectral tilt — the compensated band gains already account for
+    // source spectrum differences vs real speech.
     this.oscGain = this.ctx.createGain()
     this.oscGain.gain.value = 0
 
-    buzzOutput.connect(oscTilt)
-    oscTilt.connect(this.oscGain)
+    buzzOutput.connect(this.oscGain)
 
     // Noise source
     this.noiseNode = this._createNoiseSource()
@@ -411,6 +403,20 @@ export class VoderEngine {
     }
   }
 
+  /** Zero the detune offset so applyFrame pitchHz values are absolute. Returns saved cents to pass to restoreDetune. */
+  zeroDetune(): number {
+    if (!this._started || !this.oscNode) return 0
+    const saved = (this.oscNode as any).detune?.value ?? 0
+    ;(this.oscNode as any).detune.value = 0
+    return saved
+  }
+
+  /** Restore a previously saved detune offset. */
+  restoreDetune(cents: number): void {
+    if (!this._started || !this.oscNode) return
+    ;(this.oscNode as any).detune.value = cents
+  }
+
   setWaveform(type: 'damped-pulse' | 'rosenberg' | 'impulse' | 'warm' | 'buzzy' | 'breathy' | 'sawtooth' | 'square' | 'triangle' | 'sine'): void {
     this.waveformType = type
     if (this._started && this.oscNode) {
@@ -472,7 +478,7 @@ export class VoderEngine {
     // Drive the sources to match eSpeak's output level (~0.10 RMS).
     // Was 0.30/0.10 giving only 0.016 RMS — 5x too quiet.
     const voicedAmp = frame.voiced ? (frame.voicedAmp ?? 0.8) * 1.50 : 0.0
-    const noiseAmp = (frame.noise ?? 0.0) * 0.45
+    const noiseAmp = (frame.noise ?? 0.0) * 0.80
     this._currentVoiced = frame.voiced
     this._currentPitch = frame.pitchHz
 
