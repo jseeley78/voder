@@ -24,10 +24,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install --omit=optional --no-audit --no-fund
+        run: npm ci
         timeout-minutes: 5
 
-      - run: npx tsc && npx vite build
+      - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
