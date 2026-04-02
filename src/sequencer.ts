@@ -1,6 +1,7 @@
 import type { VoderEngine } from './engine'
 import { PHONEMES, type PhonemeConfig, type PhonemeType } from './phonemes'
 import { applyProsody, type ProsodyOptions } from './prosody'
+import { getTransitionCurve } from './transitions'
 
 function sleep(ms: number): Promise<void> {
   return new Promise(r => setTimeout(r, ms))
@@ -251,87 +252,137 @@ export function speakPhonemeSequence(
         }
       }
 
-      // ── Phase 1: Onset transition ──
-      if (onsetMs > 5) {
-        const prevBands = prev ? prev.bands : SILENCE_BANDS
-        const blendToward = (prev && isConsonant(prev.ph.type) && isConsonant(cur.ph.type)) ? 0.65 : 0.5
-        const onsetBands = blendBands(prevBands, cur.bands, blendToward)
-        const prevAmp = prev?.ph.voicedAmp ?? 0
-        engine.applyFrame({
-          voiced: cur.ph.voiced,
-          voicedAmp: prevAmp * 0.5 + cur.ph.voicedAmp * 0.5,
-          noise: cur.ph.noise,
-          pitchHz: cur.pitchHz,
-          bands: onsetBands,
-        }, onsetMs * 0.8, 'expo', t)
-        t += Math.max(0.005, onsetMs / 1000 - 0.005)
-      }
+      // ── Check for measured transition curve ──
+      const prevPhoneme = prev?.phoneme ?? ''
+      const transCurve = prev ? getTransitionCurve(prevPhoneme, cur.phoneme) : null
+      const totalPhonemeMs = onsetMs + steadyMs + offsetMs
 
-      // ── Phase 2: Steady state (or diphthong glide) ──
-      if (cur.ph.onsetBands && cur.ph.offsetBands && steadyMs > 20) {
-        const halfMs = steadyMs / 2
-        const amp = cur.ampMul
+      if (transCurve && totalPhonemeMs > 20) {
+        // Data-driven transition: play through measured keyframes
+        // Use the curve for the onset+steady portion, then blend to next
+        const curveMs = totalPhonemeMs * 0.85  // 85% for curve, 15% for offset to next
+        const stepMs = curveMs / transCurve.length
 
-        engine.applyFrame({
-          voiced: cur.ph.voiced,
-          voicedAmp: cur.ph.voicedAmp,
-          noise: cur.ph.noise,
-          pitchHz: cur.pitchHz,
-          bands: cur.ph.onsetBands.map(g => g * amp),
-        }, Math.min(onsetMs * 0.5, 20), 'expo', t)
-        t += Math.max(0.005, halfMs / 1000 - 0.005)
+        for (let k = 0; k < transCurve.length; k++) {
+          const curveBands = transCurve[k].map(g => g * cur.ampMul)
+          const progress = k / (transCurve.length - 1)
+          // Interpolate voiced/noise between prev and current
+          const voiced = progress < 0.3 ? (prev?.ph.voiced || cur.ph.voiced) : cur.ph.voiced
+          const voicedAmp = progress < 0.3
+            ? (prev?.ph.voicedAmp ?? 0) * (1 - progress * 3) + cur.ph.voicedAmp * (progress * 3)
+            : cur.ph.voicedAmp
+          const noise = progress < 0.3
+            ? (prev?.ph.noise ?? 0) * (1 - progress * 3) + cur.ph.noise * (progress * 3)
+            : cur.ph.noise
 
-        engine.applyFrame({
-          voiced: cur.ph.voiced,
-          voicedAmp: cur.ph.voicedAmp,
-          noise: cur.ph.noise,
-          pitchHz: cur.pitchHz,
-          bands: cur.ph.offsetBands.map(g => g * amp),
-        }, halfMs, 'smooth', t)
-        t += Math.max(0.005, halfMs / 1000 - 0.005)
-      } else {
-        engine.applyFrame({
-          voiced: cur.ph.voiced,
-          voicedAmp: cur.ph.voicedAmp,
-          noise: cur.ph.noise,
-          pitchHz: cur.pitchHz,
-          bands: cur.bands,
-        }, Math.min(onsetMs * 0.5, 25), 'expo', t)
-        if (steadyMs > 5) {
-          t += Math.max(0.005, steadyMs / 1000 - 0.005)
-        }
-      }
-
-      // ── Phase 3: Offset transition ──
-      if (offsetMs > 5 && next) {
-        const ccCluster = isConsonant(cur.ph.type) && isConsonant(next.ph.type)
-        const blendFwd = ccCluster ? 0.6 : 0.4
-        const blendKeep = 1.0 - blendFwd
-        const offsetBands = blendBands(cur.bands, next.bands, blendFwd)
-        engine.applyFrame({
-          voiced: next.ph.voiced || cur.ph.voiced,
-          voicedAmp: cur.ph.voicedAmp * blendKeep + next.ph.voicedAmp * blendFwd,
-          noise: cur.ph.noise * blendKeep + (next.ph.noise ?? 0) * blendFwd,
-          pitchHz: cur.pitchHz * blendKeep + next.pitchHz * blendFwd,
-          bands: offsetBands,
-        }, offsetMs, 'expo', t)
-        t += Math.max(0.005, offsetMs / 1000 - 0.005)
-      } else if (offsetMs > 5) {
-        if (cur.ph.type === 'stop' && !cur.ph.voiced) {
           engine.applyFrame({
-            voiced: false, noise: 0.3, pitchHz: cur.pitchHz,
-            bands: [0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.10, 0.15, 0.10, 0.05],
-          }, 8, 'snap', t)
-          t += 0.015
+            voiced,
+            voicedAmp,
+            noise,
+            pitchHz: cur.pitchHz,
+            bands: curveBands,
+          }, stepMs * 0.8, 'smooth', t)
+          t += Math.max(0.005, stepMs / 1000)
+        }
+
+        // Brief offset toward next phoneme
+        const remainMs = totalPhonemeMs - curveMs
+        if (remainMs > 5 && next) {
+          const offsetBands = blendBands(cur.bands, next.bands, 0.4)
+          engine.applyFrame({
+            voiced: next.ph.voiced || cur.ph.voiced,
+            voicedAmp: cur.ph.voicedAmp * 0.6 + next.ph.voicedAmp * 0.4,
+            noise: cur.ph.noise * 0.6 + (next.ph.noise ?? 0) * 0.4,
+            pitchHz: cur.pitchHz * 0.6 + next.pitchHz * 0.4,
+            bands: offsetBands,
+          }, remainMs, 'expo', t)
+          t += Math.max(0.005, remainMs / 1000 - 0.005)
+        }
+      } else {
+        // ── Rule-based fallback: onset/steady/offset ──
+
+        // Phase 1: Onset transition
+        if (onsetMs > 5) {
+          const prevBands = prev ? prev.bands : SILENCE_BANDS
+          const blendToward = (prev && isConsonant(prev.ph.type) && isConsonant(cur.ph.type)) ? 0.65 : 0.5
+          const onsetBands = blendBands(prevBands, cur.bands, blendToward)
+          const prevAmp = prev?.ph.voicedAmp ?? 0
+          engine.applyFrame({
+            voiced: cur.ph.voiced,
+            voicedAmp: prevAmp * 0.5 + cur.ph.voicedAmp * 0.5,
+            noise: cur.ph.noise,
+            pitchHz: cur.pitchHz,
+            bands: onsetBands,
+          }, onsetMs * 0.8, 'expo', t)
+          t += Math.max(0.005, onsetMs / 1000 - 0.005)
+        }
+
+        // Phase 2: Steady state (or diphthong glide)
+        if (cur.ph.onsetBands && cur.ph.offsetBands && steadyMs > 20) {
+          const halfMs = steadyMs / 2
+          const amp = cur.ampMul
+
+          engine.applyFrame({
+            voiced: cur.ph.voiced,
+            voicedAmp: cur.ph.voicedAmp,
+            noise: cur.ph.noise,
+            pitchHz: cur.pitchHz,
+            bands: cur.ph.onsetBands.map(g => g * amp),
+          }, Math.min(onsetMs * 0.5, 20), 'expo', t)
+          t += Math.max(0.005, halfMs / 1000 - 0.005)
+
+          engine.applyFrame({
+            voiced: cur.ph.voiced,
+            voicedAmp: cur.ph.voicedAmp,
+            noise: cur.ph.noise,
+            pitchHz: cur.pitchHz,
+            bands: cur.ph.offsetBands.map(g => g * amp),
+          }, halfMs, 'smooth', t)
+          t += Math.max(0.005, halfMs / 1000 - 0.005)
         } else {
           engine.applyFrame({
             voiced: cur.ph.voiced,
-            voicedAmp: cur.ph.voicedAmp * 0.3,
-            noise: cur.ph.noise * 0.3,
+            voicedAmp: cur.ph.voicedAmp,
+            noise: cur.ph.noise,
             pitchHz: cur.pitchHz,
-            bands: cur.bands.map(g => g * 0.3),
-          }, offsetMs, 'slow', t)
+            bands: cur.bands,
+          }, Math.min(onsetMs * 0.5, 25), 'expo', t)
+          if (steadyMs > 5) {
+            t += Math.max(0.005, steadyMs / 1000 - 0.005)
+          }
+        }
+
+        // Phase 3: Offset transition
+        if (offsetMs > 5 && next) {
+          const ccCluster = isConsonant(cur.ph.type) && isConsonant(next.ph.type)
+          const blendFwd = ccCluster ? 0.6 : 0.4
+          const blendKeep = 1.0 - blendFwd
+          const offsetBands = blendBands(cur.bands, next.bands, blendFwd)
+          engine.applyFrame({
+            voiced: next.ph.voiced || cur.ph.voiced,
+            voicedAmp: cur.ph.voicedAmp * blendKeep + next.ph.voicedAmp * blendFwd,
+            noise: cur.ph.noise * blendKeep + (next.ph.noise ?? 0) * blendFwd,
+            pitchHz: cur.pitchHz * blendKeep + next.pitchHz * blendFwd,
+            bands: offsetBands,
+          }, offsetMs, 'expo', t)
           t += Math.max(0.005, offsetMs / 1000 - 0.005)
+        } else if (offsetMs > 5) {
+          if (cur.ph.type === 'stop' && !cur.ph.voiced) {
+            engine.applyFrame({
+              voiced: false, noise: 0.3, pitchHz: cur.pitchHz,
+              bands: [0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.10, 0.15, 0.10, 0.05],
+            }, 8, 'snap', t)
+            t += 0.015
+          } else {
+            engine.applyFrame({
+              voiced: cur.ph.voiced,
+              voicedAmp: cur.ph.voicedAmp * 0.3,
+              noise: cur.ph.noise * 0.3,
+              pitchHz: cur.pitchHz,
+              bands: cur.bands.map(g => g * 0.3),
+            }, offsetMs, 'slow', t)
+            t += Math.max(0.005, offsetMs / 1000 - 0.005)
+          }
         }
       }
 
