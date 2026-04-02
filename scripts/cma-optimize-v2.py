@@ -233,22 +233,73 @@ def render_with_params(phonemes, globals_, words):
     return True
 
 
+def mcd_score(voder_path, ref_path):
+    """Mel Cepstral Distortion between voder output and Samantha reference. Lower = better."""
+    from scripts_mcd import mcd_score as _mcd
+    return _mcd(voder_path, ref_path)
+
+
+# Lazy import MCD
+import importlib.util
+_mcd_mod = None
+def get_mcd_func():
+    global _mcd_mod
+    if _mcd_mod is None:
+        spec = importlib.util.spec_from_file_location('mcd',
+            os.path.join(VODER_DIR, 'scripts', 'mcd-score.py'))
+        _mcd_mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_mcd_mod)
+    return _mcd_mod.mcd_score
+
+
+REF_DIR = '/tmp/voder-reference'  # Samantha single-word WAVs
+
+# Weights for combined objective
+CTC_WEIGHT = 0.6    # intelligibility (does it say the right word?)
+MCD_WEIGHT = 0.4    # perceptual quality (does it sound like real speech?)
+MCD_SCALE = 0.1     # MCD values are ~80-100, scale down to match CTC range (~3-8)
+
+
 def evaluate(phonemes, globals_, words=TEST_WORDS):
     if not render_with_params(phonemes, globals_, words):
         return 1000.0
 
-    total_score = 0.0
+    mcd_func = get_mcd_func()
+    total_ctc = 0.0
+    total_mcd = 0.0
+    count = 0
+
     for word in words:
         safe = word.replace(' ', '_').lower()
         wav_path = f'{WORK_DIR}/{safe}.wav'
-        if not os.path.exists(wav_path):
-            total_score -= 10.0
-            continue
-        audio = read_wav_16k(wav_path)
-        _, score = ctc_score(audio, word)
-        total_score += score
+        ref_path = os.path.join(REF_DIR, safe + '.wav')
 
-    return -total_score
+        if not os.path.exists(wav_path):
+            total_ctc -= 10.0
+            total_mcd += 100.0
+            count += 1
+            continue
+
+        # CTC score (higher = better)
+        audio = read_wav_16k(wav_path)
+        _, ctc = ctc_score(audio, word)
+        total_ctc += ctc
+
+        # MCD score (lower = better) — only if reference exists
+        if os.path.exists(ref_path):
+            mcd = mcd_func(wav_path, ref_path)
+            total_mcd += mcd
+        else:
+            total_mcd += 90.0  # penalty
+
+        count += 1
+
+    # Combined cost: CMA-ES minimizes this
+    # CTC: negate (higher CTC = better → lower cost)
+    # MCD: already lower=better, scale down to match CTC range
+    avg_mcd = total_mcd / max(count, 1)
+    cost = -total_ctc * CTC_WEIGHT + avg_mcd * MCD_SCALE * MCD_WEIGHT
+    return cost
 
 
 def main():
