@@ -172,7 +172,7 @@ for idx, ((from_ph, to_ph), count) in enumerate(sorted_bigrams):
 
     if not os.path.exists(wav_path):
         try:
-            subprocess.run(['say', '-v', 'Samantha', '-r', '120', '-o', aiff, word],
+            subprocess.run(['say', '-v', 'Fred', '-r', '120', '-o', aiff, word],
                           capture_output=True, timeout=10)
             subprocess.run(['afconvert', '-f', 'WAVE', '-d', 'LEI16', aiff, wav_path],
                           capture_output=True, timeout=5)
