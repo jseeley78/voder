@@ -1,0 +1,4142 @@
+{
+  "AH_N": {
+    "word": "'n",
+    "count": 21349
+  },
+  "AH_L": {
+    "word": "w",
+    "count": 11948
+  },
+  "S_T": {
+    "word": "mr",
+    "count": 9787
+  },
+  "IH_N": {
+    "word": "in",
+    "count": 7685
+  },
+  "IH_NG": {
+    "word": "inc",
+    "count": 7638
+  },
+  "M_AH": {
+    "word": "ema",
+    "count": 7008
+  },
+  "AA_R": {
+    "word": "r",
+    "count": 6453
+  },
+  "R_IY": {
+    "word": "st",
+    "count": 6286
+  },
+  "AO_R": {
+    "word": "ct",
+    "count": 6122
+  },
+  "R_AH": {
+    "word": "ara",
+    "count": 6094
+  },
+  "N_T": {
+    "word": "mt",
+    "count": 6029
+  },
+  "K_AH": {
+    "word": "ca",
+    "count": 5850
+  },
+  "L_IY": {
+    "word": "li",
+    "count": 5661
+  },
+  "L_AH": {
+    "word": "le",
+    "count": 5635
+  },
+  "IH_K": {
+    "word": "mc",
+    "count": 5589
+  },
+  "T_AH": {
+    "word": "ata",
+    "count": 5524
+  },
+  "AE_N": {
+    "word": "an",
+    "count": 5521
+  },
+  "T_IH": {
+    "word": "ltd",
+    "count": 5508
+  },
+  "N_D": {
+    "word": "lb",
+    "count": 5412
+  },
+  "L_IH": {
+    "word": "lib",
+    "count": 5243
+  },
+  "IH_S": {
+    "word": "mr",
+    "count": 5123
+  },
+  "S_AH": {
+    "word": "asa",
+    "count": 5106
+  },
+  "R_IH": {
+    "word": "aaa",
+    "count": 5049
+  },
+  "AH_S": {
+    "word": "us",
+    "count": 5007
+  },
+  "T_S": {
+    "word": "atz",
+    "count": 4876
+  },
+  "EH_N": {
+    "word": "n",
+    "count": 4857
+  },
+  "N_AH": {
+    "word": "ana",
+    "count": 4792
+  },
+  "AH_M": {
+    "word": "'m",
+    "count": 4450
+  },
+  "N_Z": {
+    "word": "enz",
+    "count": 4391
+  },
+  "D_IH": {
+    "word": "dic",
+    "count": 4331
+  },
+  "AA_N": {
+    "word": "on",
+    "count": 4313
+  },
+  "EH_L": {
+    "word": "l",
+    "count": 4169
+  },
+  "T_R": {
+    "word": "st",
+    "count": 4130
+  },
+  "T_ER": {
+    "word": "mr",
+    "count": 4128
+  },
+  "AH_T": {
+    "word": "but",
+    "count": 3975
+  },
+  "EH_R": {
+    "word": "aer",
+    "count": 3922
+  },
+  "IH_L": {
+    "word": "il",
+    "count": 3736
+  },
+  "N_S": {
+    "word": "dnc",
+    "count": 3735
+  },
+  "S_IH": {
+    "word": "cid",
+    "count": 3699
+  },
+  "K_S": {
+    "word": "x",
+    "count": 3687
+  },
+  "D_AH": {
+    "word": "w",
+    "count": 3663
+  },
+  "AH_K": {
+    "word": "buc",
+    "count": 3652
+  },
+  "S_K": {
+    "word": "ask",
+    "count": 3596
+  },
+  "ER_Z": {
+    "word": "ers",
+    "count": 3566
+  },
+  "SH_AH": {
+    "word": "fyi",
+    "count": 3533
+  },
+  "K_AA": {
+    "word": "ka",
+    "count": 3389
+  },
+  "IH_T": {
+    "word": "it",
+    "count": 3233
+  },
+  "N_IH": {
+    "word": "nib",
+    "count": 3096
+  },
+  "T_IY": {
+    "word": "t",
+    "count": 2998
+  },
+  "EH_K": {
+    "word": "x",
+    "count": 2955
+  },
+  "B_AH": {
+    "word": "w",
+    "count": 2937
+  },
+  "R_OW": {
+    "word": "ro",
+    "count": 2936
+  },
+  "R_EH": {
+    "word": "cr.",
+    "count": 2927
+  },
+  "EY_T": {
+    "word": "ate",
+    "count": 2826
+  },
+  "R_AE": {
+    "word": "rab",
+    "count": 2810
+  },
+  "M_IH": {
+    "word": "mc",
+    "count": 2802
+  },
+  "N_IY": {
+    "word": "ne",
+    "count": 2774
+  },
+  "P_R": {
+    "word": "pre",
+    "count": 2744
+  },
+  "IY_AH": {
+    "word": "ia",
+    "count": 2698
+  },
+  "IH_D": {
+    "word": "id",
+    "count": 2587
+  },
+  "IY_N": {
+    "word": "sr",
+    "count": 2572
+  },
+  "OW_L": {
+    "word": "kol",
+    "count": 2568
+  },
+  "K_R": {
+    "word": "cr.",
+    "count": 2566
+  },
+  "B_ER": {
+    "word": "bir",
+    "count": 2555
+  },
+  "IH_Z": {
+    "word": "is",
+    "count": 2553
+  },
+  "IY_Z": {
+    "word": "b's",
+    "count": 2538
+  },
+  "AA_L": {
+    "word": "ahl",
+    "count": 2525
+  },
+  "EH_S": {
+    "word": "s",
+    "count": 2507
+  },
+  "AE_K": {
+    "word": "ax",
+    "count": 2500
+  },
+  "Y_UW": {
+    "word": "q",
+    "count": 2461
+  },
+  "B_R": {
+    "word": "bra",
+    "count": 2446
+  },
+  "AH_B": {
+    "word": "w",
+    "count": 2398
+  },
+  "S_IY": {
+    "word": "c",
+    "count": 2351
+  },
+  "K_IY": {
+    "word": "ki",
+    "count": 2279
+  },
+  "M_AA": {
+    "word": "ma",
+    "count": 2213
+  },
+  "G_R": {
+    "word": "gro",
+    "count": 2190
+  },
+  "L_ER": {
+    "word": "blur",
+    "count": 2172
+  },
+  "K_L": {
+    "word": "klu",
+    "count": 2150
+  },
+  "K_OW": {
+    "word": "co",
+    "count": 2136
+  },
+  "L_AE": {
+    "word": "lab",
+    "count": 2125
+  },
+  "L_D": {
+    "word": "old",
+    "count": 2098
+  },
+  "L_Z": {
+    "word": "als",
+    "count": 2085
+  },
+  "R_AA": {
+    "word": "ra",
+    "count": 2083
+  },
+  "D_IY": {
+    "word": "d",
+    "count": 2081
+  },
+  "G_AH": {
+    "word": "aga",
+    "count": 2081
+  },
+  "AE_L": {
+    "word": "al",
+    "count": 2041
+  },
+  "S_P": {
+    "word": "asp",
+    "count": 2006
+  },
+  "S_EH": {
+    "word": "ss",
+    "count": 1996
+  },
+  "T_EH": {
+    "word": "tec",
+    "count": 1996
+  },
+  "EH_T": {
+    "word": "et",
+    "count": 1983
+  },
+  "W_IH": {
+    "word": "wm",
+    "count": 1970
+  },
+  "AH_Z": {
+    "word": "luz",
+    "count": 1969
+  },
+  "L_EH": {
+    "word": "ls",
+    "count": 1947
+  },
+  "K_AE": {
+    "word": "cab",
+    "count": 1938
+  },
+  "IH_M": {
+    "word": "im",
+    "count": 1916
+  },
+  "K_ER": {
+    "word": "cur",
+    "count": 1892
+  },
+  "R_EY": {
+    "word": "re",
+    "count": 1883
+  },
+  "AH_D": {
+    "word": "ado",
+    "count": 1881
+  },
+  "D_ER": {
+    "word": "der",
+    "count": 1878
+  },
+  "R_T": {
+    "word": "ct",
+    "count": 1863
+  },
+  "K_T": {
+    "word": "act",
+    "count": 1863
+  },
+  "M_EH": {
+    "word": "cmx",
+    "count": 1853
+  },
+  "AA_K": {
+    "word": "ox",
+    "count": 1811
+  },
+  "M_AE": {
+    "word": "mab",
+    "count": 1805
+  },
+  "P_ER": {
+    "word": "per",
+    "count": 1781
+  },
+  "AE_M": {
+    "word": "am",
+    "count": 1769
+  },
+  "N_ER": {
+    "word": "jr.",
+    "count": 1750
+  },
+  "K_IH": {
+    "word": "kid",
+    "count": 1746
+  },
+  "P_AH": {
+    "word": "aaa",
+    "count": 1702
+  },
+  "AE_S": {
+    "word": "ask",
+    "count": 1693
+  },
+  "M_P": {
+    "word": "amp",
+    "count": 1688
+  },
+  "V_ER": {
+    "word": "ver",
+    "count": 1657
+  },
+  "IH_R": {
+    "word": "cyr",
+    "count": 1654
+  },
+  "L_AA": {
+    "word": "la",
+    "count": 1636
+  },
+  "OW_N": {
+    "word": "aon",
+    "count": 1634
+  },
+  "V_IH": {
+    "word": "vic",
+    "count": 1601
+  },
+  "L_OW": {
+    "word": "lo",
+    "count": 1594
+  },
+  "L_AY": {
+    "word": "ly",
+    "count": 1591
+  },
+  "AY_N": {
+    "word": "ein",
+    "count": 1581
+  },
+  "L_EY": {
+    "word": "ln",
+    "count": 1565
+  },
+  "Z_AH": {
+    "word": "ism",
+    "count": 1560
+  },
+  "AA_M": {
+    "word": "ami",
+    "count": 1538
+  },
+  "D_EH": {
+    "word": "deb",
+    "count": 1535
+  },
+  "NG_K": {
+    "word": "inc",
+    "count": 1527
+  },
+  "N_OW": {
+    "word": "no",
+    "count": 1523
+  },
+  "B_AA": {
+    "word": "bah",
+    "count": 1519
+  },
+  "AH_P": {
+    "word": "up",
+    "count": 1516
+  },
+  "B_IH": {
+    "word": "bib",
+    "count": 1494
+  },
+  "B_EH": {
+    "word": "bec",
+    "count": 1488
+  },
+  "EY_SH": {
+    "word": "fyi",
+    "count": 1471
+  },
+  "ER_D": {
+    "word": "bird",
+    "count": 1466
+  },
+  "EY_N": {
+    "word": "ln",
+    "count": 1453
+  },
+  "EH_M": {
+    "word": "m",
+    "count": 1440
+  },
+  "AY_Z": {
+    "word": "ais",
+    "count": 1438
+  },
+  "IH_V": {
+    "word": "liv",
+    "count": 1434
+  },
+  "R_D": {
+    "word": "ard",
+    "count": 1423
+  },
+  "P_L": {
+    "word": "pla",
+    "count": 1417
+  },
+  "AE_T": {
+    "word": "at",
+    "count": 1411
+  },
+  "P_EH": {
+    "word": "peg",
+    "count": 1394
+  },
+  "F_IH": {
+    "word": "fib",
+    "count": 1391
+  },
+  "D_Z": {
+    "word": "ads",
+    "count": 1379
+  },
+  "P_AA": {
+    "word": "pa",
+    "count": 1376
+  },
+  "T_OW": {
+    "word": "ito",
+    "count": 1374
+  },
+  "M_ER": {
+    "word": "amr",
+    "count": 1364
+  },
+  "IY_L": {
+    "word": "eel",
+    "count": 1362
+  },
+  "AH_F": {
+    "word": "ruf",
+    "count": 1360
+  },
+  "T_AA": {
+    "word": "ta",
+    "count": 1360
+  },
+  "P_IH": {
+    "word": "pic",
+    "count": 1351
+  },
+  "R_AY": {
+    "word": "dr",
+    "count": 1348
+  },
+  "EH_D": {
+    "word": "ed",
+    "count": 1343
+  },
+  "AA_T": {
+    "word": "ata",
+    "count": 1342
+  },
+  "K_AO": {
+    "word": "ct",
+    "count": 1330
+  },
+  "B_L": {
+    "word": "bly",
+    "count": 1329
+  },
+  "V_AH": {
+    "word": "ava",
+    "count": 1327
+  },
+  "N_AA": {
+    "word": "na",
+    "count": 1327
+  },
+  "R_UW": {
+    "word": "ru",
+    "count": 1313
+  },
+  "F_R": {
+    "word": "fro",
+    "count": 1312
+  },
+  "OW_Z": {
+    "word": "jos",
+    "count": 1300
+  },
+  "D_R": {
+    "word": "dr",
+    "count": 1295
+  },
+  "IY_T": {
+    "word": "bt",
+    "count": 1293
+  },
+  "HH_AA": {
+    "word": "ha",
+    "count": 1286
+  },
+  "K_W": {
+    "word": "qua",
+    "count": 1283
+  },
+  "AO_L": {
+    "word": "all",
+    "count": 1276
+  },
+  "IH_P": {
+    "word": "aaa",
+    "count": 1274
+  },
+  "L_T": {
+    "word": "alt",
+    "count": 1258
+  },
+  "AY_T": {
+    "word": "cit",
+    "count": 1247
+  },
+  "ER_T": {
+    "word": "hz",
+    "count": 1245
+  },
+  "IH_G": {
+    "word": "big",
+    "count": 1229
+  },
+  "HH_AE": {
+    "word": "had",
+    "count": 1228
+  },
+  "AA_S": {
+    "word": "os",
+    "count": 1225
+  },
+  "B_AE": {
+    "word": "bab",
+    "count": 1222
+  },
+  "B_IY": {
+    "word": "b",
+    "count": 1218
+  },
+  "Z_IH": {
+    "word": "zig",
+    "count": 1215
+  },
+  "W_EH": {
+    "word": "bue",
+    "count": 1215
+  },
+  "S_ER": {
+    "word": "sir",
+    "count": 1199
+  },
+  "AH_G": {
+    "word": "ago",
+    "count": 1185
+  },
+  "F_AH": {
+    "word": "fun",
+    "count": 1184
+  },
+  "F_ER": {
+    "word": "fer",
+    "count": 1176
+  },
+  "IH_SH": {
+    "word": "ish",
+    "count": 1176
+  },
+  "Y_AH": {
+    "word": "wm",
+    "count": 1154
+  },
+  "N_EH": {
+    "word": "cnn",
+    "count": 1145
+  },
+  "T_AE": {
+    "word": "tab",
+    "count": 1140
+  },
+  "JH_AH": {
+    "word": "jug",
+    "count": 1127
+  },
+  "S_L": {
+    "word": "sly",
+    "count": 1123
+  },
+  "M_B": {
+    "word": "mba",
+    "count": 1105
+  },
+  "P_IY": {
+    "word": "p",
+    "count": 1099
+  },
+  "IY_D": {
+    "word": "cd",
+    "count": 1093
+  },
+  "HH_EH": {
+    "word": "heh",
+    "count": 1092
+  },
+  "T_EY": {
+    "word": "tae",
+    "count": 1088
+  },
+  "OW_S": {
+    "word": "ios",
+    "count": 1079
+  },
+  "ER_S": {
+    "word": "vs.",
+    "count": 1069
+  },
+  "ER_N": {
+    "word": "urn",
+    "count": 1065
+  },
+  "M_IY": {
+    "word": "me",
+    "count": 1064
+  },
+  "IY_K": {
+    "word": "dk",
+    "count": 1049
+  },
+  "IY_S": {
+    "word": "bc",
+    "count": 1037
+  },
+  "L_UW": {
+    "word": "lu",
+    "count": 1027
+  },
+  "G_ER": {
+    "word": "agar",
+    "count": 1026
+  },
+  "K_EY": {
+    "word": "k",
+    "count": 1021
+  },
+  "AY_D": {
+    "word": "eid",
+    "count": 1019
+  },
+  "EY_L": {
+    "word": "ail",
+    "count": 1008
+  },
+  "F_L": {
+    "word": "flo",
+    "count": 998
+  },
+  "AH_V": {
+    "word": "of",
+    "count": 994
+  },
+  "IH_F": {
+    "word": "if",
+    "count": 981
+  },
+  "AE_NG": {
+    "word": "ang",
+    "count": 975
+  },
+  "ER_G": {
+    "word": "berg",
+    "count": 951
+  },
+  "OW_T": {
+    "word": "oat",
+    "count": 946
+  },
+  "P_AE": {
+    "word": "pac",
+    "count": 945
+  },
+  "AE_D": {
+    "word": "ad",
+    "count": 943
+  },
+  "R_K": {
+    "word": "arc",
+    "count": 938
+  },
+  "JH_IH": {
+    "word": "gin",
+    "count": 938
+  },
+  "F_EH": {
+    "word": "fm",
+    "count": 928
+  },
+  "UW_T": {
+    "word": "boot",
+    "count": 926
+  },
+  "S_AA": {
+    "word": "sa",
+    "count": 921
+  },
+  "M_OW": {
+    "word": "mo",
+    "count": 916
+  },
+  "D_AA": {
+    "word": "da",
+    "count": 909
+  },
+  "AA_P": {
+    "word": "op",
+    "count": 909
+  },
+  "L_AO": {
+    "word": "law",
+    "count": 907
+  },
+  "ER_M": {
+    "word": "fyi",
+    "count": 889
+  },
+  "OW_V": {
+    "word": "nov",
+    "count": 884
+  },
+  "G_AA": {
+    "word": "ga",
+    "count": 880
+  },
+  "OW_M": {
+    "word": "ohm",
+    "count": 879
+  },
+  "G_L": {
+    "word": "glo",
+    "count": 876
+  },
+  "T_AY": {
+    "word": "ty",
+    "count": 874
+  },
+  "D_OW": {
+    "word": "dau",
+    "count": 873
+  },
+  "OW_K": {
+    "word": "ok",
+    "count": 871
+  },
+  "S_AY": {
+    "word": "cy",
+    "count": 866
+  },
+  "B_OW": {
+    "word": "bo",
+    "count": 859
+  },
+  "W_AO": {
+    "word": "wal",
+    "count": 859
+  },
+  "AA_D": {
+    "word": "cod",
+    "count": 854
+  },
+  "UH_R": {
+    "word": "nur",
+    "count": 853
+  },
+  "R_M": {
+    "word": "arm",
+    "count": 852
+  },
+  "W_AA": {
+    "word": "wa",
+    "count": 848
+  },
+  "M_Z": {
+    "word": "ams",
+    "count": 844
+  },
+  "ER_IH": {
+    "word": "uric",
+    "count": 844
+  },
+  "V_IY": {
+    "word": "v",
+    "count": 842
+  },
+  "F_AO": {
+    "word": "faw",
+    "count": 841
+  },
+  "UW_L": {
+    "word": "ula",
+    "count": 838
+  },
+  "IY_M": {
+    "word": "ema",
+    "count": 837
+  },
+  "M_EY": {
+    "word": "mh",
+    "count": 836
+  },
+  "NG_G": {
+    "word": "ngo",
+    "count": 832
+  },
+  "AW_N": {
+    "word": "lb",
+    "count": 831
+  },
+  "ER_AH": {
+    "word": "etc",
+    "count": 830
+  },
+  "K_EH": {
+    "word": "ke",
+    "count": 828
+  },
+  "IY_OW": {
+    "word": "apo",
+    "count": 827
+  },
+  "R_N": {
+    "word": "arn",
+    "count": 825
+  },
+  "V_EH": {
+    "word": "vet",
+    "count": 811
+  },
+  "UW_N": {
+    "word": "jr",
+    "count": 810
+  },
+  "S_AE": {
+    "word": "sac",
+    "count": 806
+  },
+  "ER_K": {
+    "word": "erk",
+    "count": 805
+  },
+  "EY_D": {
+    "word": "ada",
+    "count": 799
+  },
+  "IH_JH": {
+    "word": "ijaz",
+    "count": 786
+  },
+  "AE_P": {
+    "word": "app",
+    "count": 785
+  },
+  "L_M": {
+    "word": "alm",
+    "count": 785
+  },
+  "F_IY": {
+    "word": "fee",
+    "count": 784
+  },
+  "T_L": {
+    "word": "atla",
+    "count": 781
+  },
+  "W_AY": {
+    "word": "y",
+    "count": 781
+  },
+  "JH_EH": {
+    "word": "gel",
+    "count": 780
+  },
+  "HH_AH": {
+    "word": "hub",
+    "count": 780
+  },
+  "P_S": {
+    "word": "ops",
+    "count": 769
+  },
+  "ER_IY": {
+    "word": "uri",
+    "count": 766
+  },
+  "OW_D": {
+    "word": "oda",
+    "count": 765
+  },
+  "N_AE": {
+    "word": "nab",
+    "count": 761
+  },
+  "S_M": {
+    "word": "smay",
+    "count": 756
+  },
+  "N_EY": {
+    "word": "dna",
+    "count": 754
+  },
+  "SH_IH": {
+    "word": "shim",
+    "count": 741
+  },
+  "AH_JH": {
+    "word": "ajaj",
+    "count": 739
+  },
+  "G_IH": {
+    "word": "gib",
+    "count": 739
+  },
+  "F_AY": {
+    "word": "fi",
+    "count": 734
+  },
+  "M_AY": {
+    "word": "my",
+    "count": 732
+  },
+  "AO_F": {
+    "word": "off",
+    "count": 730
+  },
+  "V_AE": {
+    "word": "val",
+    "count": 730
+  },
+  "HH_OW": {
+    "word": "ho",
+    "count": 729
+  },
+  "N_B": {
+    "word": "nba",
+    "count": 727
+  },
+  "T_AO": {
+    "word": "tol",
+    "count": 725
+  },
+  "N_K": {
+    "word": "ankh",
+    "count": 719
+  },
+  "P_OW": {
+    "word": "po",
+    "count": 714
+  },
+  "K_Y": {
+    "word": "q",
+    "count": 712
+  },
+  "AE_G": {
+    "word": "ag",
+    "count": 712
+  },
+  "M_AO": {
+    "word": "maw",
+    "count": 710
+  },
+  "UW_M": {
+    "word": "uma",
+    "count": 708
+  },
+  "N_JH": {
+    "word": "ange",
+    "count": 706
+  },
+  "B_AO": {
+    "word": "bot",
+    "count": 703
+  },
+  "N_F": {
+    "word": "fyi",
+    "count": 701
+  },
+  "W_ER": {
+    "word": "swor",
+    "count": 700
+  },
+  "IY_V": {
+    "word": "cv",
+    "count": 699
+  },
+  "EY_S": {
+    "word": "ac",
+    "count": 699
+  },
+  "W_EY": {
+    "word": "wy",
+    "count": 698
+  },
+  "AY_K": {
+    "word": "iq",
+    "count": 697
+  },
+  "L_S": {
+    "word": "lcs",
+    "count": 695
+  },
+  "S_OW": {
+    "word": "so",
+    "count": 694
+  },
+  "EY_K": {
+    "word": "ake",
+    "count": 691
+  },
+  "R_S": {
+    "word": "rca",
+    "count": 690
+  },
+  "G_OW": {
+    "word": "go",
+    "count": 687
+  },
+  "UW_Z": {
+    "word": "q's",
+    "count": 686
+  },
+  "JH_IY": {
+    "word": "g",
+    "count": 681
+  },
+  "D_EY": {
+    "word": "dae",
+    "count": 677
+  },
+  "EY_Z": {
+    "word": "a's",
+    "count": 676
+  },
+  "Z_IY": {
+    "word": "z",
+    "count": 675
+  },
+  "HH_AY": {
+    "word": "hi",
+    "count": 672
+  },
+  "ER_L": {
+    "word": "erl",
+    "count": 667
+  },
+  "R_AO": {
+    "word": "ros",
+    "count": 666
+  },
+  "EH_V": {
+    "word": "ev",
+    "count": 661
+  },
+  "EH_P": {
+    "word": "cep",
+    "count": 660
+  },
+  "AE_B": {
+    "word": "ab",
+    "count": 653
+  },
+  "HH_IH": {
+    "word": "hid",
+    "count": 653
+  },
+  "P_T": {
+    "word": "apt",
+    "count": 649
+  },
+  "IH_B": {
+    "word": "ib",
+    "count": 649
+  },
+  "UW_S": {
+    "word": "use",
+    "count": 647
+  },
+  "R_Z": {
+    "word": "r's",
+    "count": 646
+  },
+  "AA_B": {
+    "word": "abo",
+    "count": 645
+  },
+  "AE_F": {
+    "word": "aft",
+    "count": 642
+  },
+  "OW_B": {
+    "word": "oba",
+    "count": 628
+  },
+  "AY_L": {
+    "word": "ilo",
+    "count": 626
+  },
+  "CH_ER": {
+    "word": "chern",
+    "count": 621
+  },
+  "Z_ER": {
+    "word": "ezer",
+    "count": 618
+  },
+  "CH_IH": {
+    "word": "h's",
+    "count": 613
+  },
+  "AY_AH": {
+    "word": "aja",
+    "count": 605
+  },
+  "W_IY": {
+    "word": "we",
+    "count": 600
+  },
+  "S_UW": {
+    "word": "su",
+    "count": 599
+  },
+  "D_AY": {
+    "word": "dai",
+    "count": 592
+  },
+  "L_K": {
+    "word": "elk",
+    "count": 589
+  },
+  "F_S": {
+    "word": "fs",
+    "count": 588
+  },
+  "UW_D": {
+    "word": "ude",
+    "count": 586
+  },
+  "IH_CH": {
+    "word": "ich",
+    "count": 579
+  },
+  "S_W": {
+    "word": "swab",
+    "count": 578
+  },
+  "AA_G": {
+    "word": "og",
+    "count": 577
+  },
+  "L_B": {
+    "word": "alba",
+    "count": 574
+  },
+  "D_L": {
+    "word": "idly",
+    "count": 573
+  },
+  "AY_S": {
+    "word": "acc",
+    "count": 569
+  },
+  "T_UW": {
+    "word": "to",
+    "count": 567
+  },
+  "G_AE": {
+    "word": "gab",
+    "count": 566
+  },
+  "F_AA": {
+    "word": "far",
+    "count": 563
+  },
+  "N_UW": {
+    "word": "nu",
+    "count": 562
+  },
+  "P_AO": {
+    "word": "paw",
+    "count": 554
+  },
+  "CH_IY": {
+    "word": "chea",
+    "count": 553
+  },
+  "ER_B": {
+    "word": "erb",
+    "count": 552
+  },
+  "CH_AH": {
+    "word": "chug",
+    "count": 544
+  },
+  "AW_T": {
+    "word": "out",
+    "count": 540
+  },
+  "D_AE": {
+    "word": "dab",
+    "count": 538
+  },
+  "V_AA": {
+    "word": "vos",
+    "count": 536
+  },
+  "HH_AO": {
+    "word": "haw",
+    "count": 536
+  },
+  "N_AY": {
+    "word": "nye",
+    "count": 533
+  },
+  "N_AO": {
+    "word": "nor",
+    "count": 532
+  },
+  "D_AO": {
+    "word": "daw",
+    "count": 523
+  },
+  "P_EY": {
+    "word": "pay",
+    "count": 523
+  },
+  "EH_G": {
+    "word": "beg",
+    "count": 521
+  },
+  "S_EY": {
+    "word": "se",
+    "count": 520
+  },
+  "UW_P": {
+    "word": "oop",
+    "count": 520
+  },
+  "W_AH": {
+    "word": "one",
+    "count": 518
+  },
+  "D_UW": {
+    "word": "do",
+    "count": 518
+  },
+  "N_CH": {
+    "word": "inch",
+    "count": 517
+  },
+  "AO_N": {
+    "word": "von",
+    "count": 513
+  },
+  "L_F": {
+    "word": "alf",
+    "count": 513
+  },
+  "NG_Z": {
+    "word": "bangs",
+    "count": 511
+  },
+  "IY_AA": {
+    "word": "pr",
+    "count": 509
+  },
+  "R_L": {
+    "word": "arlt",
+    "count": 509
+  },
+  "AY_R": {
+    "word": "eir",
+    "count": 507
+  },
+  "AO_S": {
+    "word": "cos",
+    "count": 506
+  },
+  "ER_EY": {
+    "word": "array",
+    "count": 495
+  },
+  "EH_F": {
+    "word": "f",
+    "count": 495
+  },
+  "IY_P": {
+    "word": "bp",
+    "count": 492
+  },
+  "JH_ER": {
+    "word": "ager",
+    "count": 490
+  },
+  "R_B": {
+    "word": "arb",
+    "count": 488
+  },
+  "F_T": {
+    "word": "aft",
+    "count": 487
+  },
+  "EY_V": {
+    "word": "av",
+    "count": 485
+  },
+  "S_N": {
+    "word": "snag",
+    "count": 485
+  },
+  "SH_IY": {
+    "word": "xi",
+    "count": 483
+  },
+  "AA_V": {
+    "word": "ave",
+    "count": 483
+  },
+  "B_EY": {
+    "word": "bay",
+    "count": 481
+  },
+  "K_UW": {
+    "word": "ku",
+    "count": 481
+  },
+  "AE_SH": {
+    "word": "ash",
+    "count": 479
+  },
+  "EY_M": {
+    "word": "aim",
+    "count": 472
+  },
+  "B_AY": {
+    "word": "bi",
+    "count": 471
+  },
+  "Z_D": {
+    "word": "used",
+    "count": 471
+  },
+  "EH_Z": {
+    "word": "fez",
+    "count": 469
+  },
+  "IY_G": {
+    "word": "cgi",
+    "count": 469
+  },
+  "CH_EH": {
+    "word": "chek",
+    "count": 468
+  },
+  "AE_R": {
+    "word": "ara",
+    "count": 467
+  },
+  "N_Y": {
+    "word": "jr",
+    "count": 464
+  },
+  "F_AE": {
+    "word": "fab",
+    "count": 461
+  },
+  "UH_D": {
+    "word": "good",
+    "count": 455
+  },
+  "AY_ER": {
+    "word": "ayer",
+    "count": 454
+  },
+  "S_AO": {
+    "word": "saw",
+    "count": 449
+  },
+  "OW_P": {
+    "word": "copa",
+    "count": 448
+  },
+  "IY_ER": {
+    "word": "kia",
+    "count": 439
+  },
+  "AH_NG": {
+    "word": "ung",
+    "count": 439
+  },
+  "L_V": {
+    "word": "alva",
+    "count": 437
+  },
+  "G_EY": {
+    "word": "gai",
+    "count": 435
+  },
+  "N_V": {
+    "word": "envy",
+    "count": 434
+  },
+  "AY_M": {
+    "word": "i'm",
+    "count": 434
+  },
+  "UW_K": {
+    "word": "uk",
+    "count": 433
+  },
+  "IY_B": {
+    "word": "cb",
+    "count": 430
+  },
+  "G_Z": {
+    "word": "ag's",
+    "count": 427
+  },
+  "AO_T": {
+    "word": "ot",
+    "count": 411
+  },
+  "HH_ER": {
+    "word": "hz",
+    "count": 411
+  },
+  "K_SH": {
+    "word": "action",
+    "count": 410
+  },
+  "N_SH": {
+    "word": "ensz",
+    "count": 408
+  },
+  "AW_S": {
+    "word": "haus",
+    "count": 407
+  },
+  "UW_B": {
+    "word": "boob",
+    "count": 407
+  },
+  "L_Y": {
+    "word": "w",
+    "count": 406
+  },
+  "G_N": {
+    "word": "agna",
+    "count": 405
+  },
+  "R_G": {
+    "word": "org",
+    "count": 394
+  },
+  "IY_EY": {
+    "word": "ba",
+    "count": 394
+  },
+  "HH_AW": {
+    "word": "hao",
+    "count": 394
+  },
+  "K_AW": {
+    "word": "cao",
+    "count": 393
+  },
+  "R_AW": {
+    "word": "rao",
+    "count": 392
+  },
+  "EY_B": {
+    "word": "aba",
+    "count": 388
+  },
+  "AA_Z": {
+    "word": "oz",
+    "count": 388
+  },
+  "HH_W": {
+    "word": "hwa",
+    "count": 388
+  },
+  "ER_V": {
+    "word": "irv",
+    "count": 388
+  },
+  "N_HH": {
+    "word": "pinho",
+    "count": 386
+  },
+  "V_EY": {
+    "word": "ave",
+    "count": 386
+  },
+  "T_M": {
+    "word": "atman",
+    "count": 385
+  },
+  "W_UH": {
+    "word": "wolf",
+    "count": 382
+  },
+  "AE_V": {
+    "word": "nav",
+    "count": 379
+  },
+  "SH_EH": {
+    "word": "chef",
+    "count": 376
+  },
+  "M_Y": {
+    "word": "cmu",
+    "count": 372
+  },
+  "G_EH": {
+    "word": "ged",
+    "count": 367
+  },
+  "TH_AH": {
+    "word": "atha",
+    "count": 365
+  },
+  "N_L": {
+    "word": "enlo",
+    "count": 359
+  },
+  "UH_K": {
+    "word": "book",
+    "count": 355
+  },
+  "NG_ER": {
+    "word": "inger",
+    "count": 353
+  },
+  "T_W": {
+    "word": "twas",
+    "count": 352
+  },
+  "V_AY": {
+    "word": "vi",
+    "count": 346
+  },
+  "F_OW": {
+    "word": "cfo",
+    "count": 345
+  },
+  "S_B": {
+    "word": "sba",
+    "count": 344
+  },
+  "Z_EH": {
+    "word": "zed",
+    "count": 339
+  },
+  "IY_EH": {
+    "word": "bs",
+    "count": 338
+  },
+  "B_UH": {
+    "word": "blvd",
+    "count": 337
+  },
+  "EH_SH": {
+    "word": "esh",
+    "count": 337
+  },
+  "SH_AA": {
+    "word": "sha",
+    "count": 337
+  },
+  "HH_EY": {
+    "word": "hay",
+    "count": 335
+  },
+  "IY_R": {
+    "word": "ear",
+    "count": 335
+  },
+  "T_N": {
+    "word": "etna",
+    "count": 329
+  },
+  "UW_AH": {
+    "word": "bua",
+    "count": 328
+  },
+  "Y_AA": {
+    "word": "ja",
+    "count": 328
+  },
+  "AE_CH": {
+    "word": "gach",
+    "count": 323
+  },
+  "IY_F": {
+    "word": "beef",
+    "count": 323
+  },
+  "IY_AE": {
+    "word": "biaz",
+    "count": 322
+  },
+  "AA_F": {
+    "word": "hof",
+    "count": 322
+  },
+  "DH_ER": {
+    "word": "thur",
+    "count": 319
+  },
+  "ER_EH": {
+    "word": "uren",
+    "count": 314
+  },
+  "B_UW": {
+    "word": "abu",
+    "count": 311
+  },
+  "AH_SH": {
+    "word": "cush",
+    "count": 310
+  },
+  "V_Z": {
+    "word": "eves",
+    "count": 309
+  },
+  "AH_W": {
+    "word": "feb",
+    "count": 308
+  },
+  "OW_G": {
+    "word": "fogy",
+    "count": 308
+  },
+  "N_R": {
+    "word": "enro",
+    "count": 308
+  },
+  "D_M": {
+    "word": "adman",
+    "count": 307
+  },
+  "HH_IY": {
+    "word": "he",
+    "count": 306
+  },
+  "V_OW": {
+    "word": "vo",
+    "count": 306
+  },
+  "EH_B": {
+    "word": "eb",
+    "count": 306
+  },
+  "B_Y": {
+    "word": "bua",
+    "count": 304
+  },
+  "SH_ER": {
+    "word": "sher",
+    "count": 303
+  },
+  "Z_AA": {
+    "word": "azar",
+    "count": 303
+  },
+  "R_P": {
+    "word": "arp",
+    "count": 301
+  },
+  "ER_F": {
+    "word": "cerf",
+    "count": 299
+  },
+  "G_AO": {
+    "word": "gaw",
+    "count": 299
+  },
+  "K_M": {
+    "word": "acme",
+    "count": 299
+  },
+  "IY_IH": {
+    "word": "agius",
+    "count": 297
+  },
+  "UH_L": {
+    "word": "blvd",
+    "count": 297
+  },
+  "K_N": {
+    "word": "acne",
+    "count": 295
+  },
+  "L_AW": {
+    "word": "lao",
+    "count": 295
+  },
+  "AH_HH": {
+    "word": "ahoy",
+    "count": 294
+  },
+  "P_AY": {
+    "word": "pi",
+    "count": 293
+  },
+  "TH_IY": {
+    "word": "thi",
+    "count": 290
+  },
+  "AO_K": {
+    "word": "hok",
+    "count": 290
+  },
+  "D_S": {
+    "word": "adss",
+    "count": 289
+  },
+  "AY_V": {
+    "word": "dr",
+    "count": 289
+  },
+  "Y_ER": {
+    "word": "jr",
+    "count": 288
+  },
+  "AO_NG": {
+    "word": "ong",
+    "count": 283
+  },
+  "AH_CH": {
+    "word": "buch",
+    "count": 282
+  },
+  "ER_P": {
+    "word": "burp",
+    "count": 279
+  },
+  "AY_B": {
+    "word": "cyb",
+    "count": 279
+  },
+  "Z_M": {
+    "word": "esme",
+    "count": 277
+  },
+  "G_IY": {
+    "word": "mg",
+    "count": 276
+  },
+  "P_Y": {
+    "word": "pew",
+    "count": 273
+  },
+  "JH_UW": {
+    "word": "jr",
+    "count": 272
+  },
+  "ER_AA": {
+    "word": "girod",
+    "count": 271
+  },
+  "EY_G": {
+    "word": "agan",
+    "count": 269
+  },
+  "N_M": {
+    "word": "enman",
+    "count": 267
+  },
+  "D_W": {
+    "word": "duan",
+    "count": 265
+  },
+  "JH_AE": {
+    "word": "jab",
+    "count": 263
+  },
+  "AA_NG": {
+    "word": "bong",
+    "count": 263
+  },
+  "EY_P": {
+    "word": "ap",
+    "count": 261
+  },
+  "D_AW": {
+    "word": "dao",
+    "count": 261
+  },
+  "AY_P": {
+    "word": "ip",
+    "count": 259
+  },
+  "EH_NG": {
+    "word": "ng",
+    "count": 259
+  },
+  "B_Z": {
+    "word": "abbs",
+    "count": 258
+  },
+  "SH_AE": {
+    "word": "shad",
+    "count": 258
+  },
+  "F_EY": {
+    "word": "fe",
+    "count": 256
+  },
+  "CH_AE": {
+    "word": "chad",
+    "count": 254
+  },
+  "M_UW": {
+    "word": "mu",
+    "count": 254
+  },
+  "OW_SH": {
+    "word": "osha",
+    "count": 254
+  },
+  "B_AW": {
+    "word": "bao",
+    "count": 251
+  },
+  "IH_TH": {
+    "word": "dith",
+    "count": 251
+  },
+  "R_F": {
+    "word": "orf",
+    "count": 249
+  },
+  "ZH_AH": {
+    "word": "asia",
+    "count": 248
+  },
+  "B_S": {
+    "word": "abso",
+    "count": 247
+  },
+  "IY_CH": {
+    "word": "each",
+    "count": 247
+  },
+  "Z_EY": {
+    "word": "jose",
+    "count": 244
+  },
+  "AE_TH": {
+    "word": "atha",
+    "count": 243
+  },
+  "AH_TH": {
+    "word": "luthy",
+    "count": 242
+  },
+  "EH_JH": {
+    "word": "ajay",
+    "count": 242
+  },
+  "ER_JH": {
+    "word": "urge",
+    "count": 242
+  },
+  "AO_D": {
+    "word": "aud",
+    "count": 238
+  },
+  "Y_UH": {
+    "word": "buhr",
+    "count": 235
+  },
+  "Z_OW": {
+    "word": "zoe",
+    "count": 234
+  },
+  "V_L": {
+    "word": "vlad",
+    "count": 233
+  },
+  "G_W": {
+    "word": "agua",
+    "count": 233
+  },
+  "N_W": {
+    "word": "nypd",
+    "count": 233
+  },
+  "AA_CH": {
+    "word": "paci",
+    "count": 231
+  },
+  "AA_JH": {
+    "word": "agin",
+    "count": 231
+  },
+  "S_F": {
+    "word": "oxfam",
+    "count": 231
+  },
+  "AE_Z": {
+    "word": "as",
+    "count": 229
+  },
+  "K_AY": {
+    "word": "cai",
+    "count": 229
+  },
+  "AW_ER": {
+    "word": "our",
+    "count": 228
+  },
+  "ER_SH": {
+    "word": "gersh",
+    "count": 227
+  },
+  "OW_F": {
+    "word": "hofi",
+    "count": 226
+  },
+  "M_S": {
+    "word": "amc",
+    "count": 225
+  },
+  "Z_AE": {
+    "word": "zag",
+    "count": 224
+  },
+  "ER_OW": {
+    "word": "boro",
+    "count": 223
+  },
+  "TH_R": {
+    "word": "thru",
+    "count": 223
+  },
+  "JH_AA": {
+    "word": "jar",
+    "count": 222
+  },
+  "R_JH": {
+    "word": "sgt",
+    "count": 222
+  },
+  "Z_B": {
+    "word": "zbig",
+    "count": 221
+  },
+  "F_Y": {
+    "word": "few",
+    "count": 219
+  },
+  "T_K": {
+    "word": "atco",
+    "count": 218
+  },
+  "UW_G": {
+    "word": "buga",
+    "count": 216
+  },
+  "CH_UW": {
+    "word": "chu",
+    "count": 215
+  },
+  "TH_ER": {
+    "word": "ether",
+    "count": 215
+  },
+  "ER_TH": {
+    "word": "berth",
+    "count": 212
+  },
+  "OY_N": {
+    "word": "coin",
+    "count": 208
+  },
+  "HH_Y": {
+    "word": "hew",
+    "count": 207
+  },
+  "UW_IH": {
+    "word": "hui",
+    "count": 206
+  },
+  "SH_UW": {
+    "word": "hsu",
+    "count": 204
+  },
+  "D_N": {
+    "word": "edna",
+    "count": 202
+  },
+  "N_TH": {
+    "word": "nth",
+    "count": 202
+  },
+  "CH_AA": {
+    "word": "hr",
+    "count": 202
+  },
+  "L_P": {
+    "word": "lp",
+    "count": 201
+  },
+  "M_D": {
+    "word": "md",
+    "count": 199
+  },
+  "AY_F": {
+    "word": "fife",
+    "count": 199
+  },
+  "EY_JH": {
+    "word": "age",
+    "count": 196
+  },
+  "UW_R": {
+    "word": "ure",
+    "count": 196
+  },
+  "L_G": {
+    "word": "elg",
+    "count": 196
+  },
+  "Z_L": {
+    "word": "oslo",
+    "count": 196
+  },
+  "T_Z": {
+    "word": "hz",
+    "count": 194
+  },
+  "ER_AY": {
+    "word": "awry",
+    "count": 192
+  },
+  "AA_SH": {
+    "word": "osh",
+    "count": 191
+  },
+  "D_B": {
+    "word": "cadby",
+    "count": 190
+  },
+  "ER_AE": {
+    "word": "duran",
+    "count": 189
+  },
+  "UW_V": {
+    "word": "uv",
+    "count": 187
+  },
+  "M_L": {
+    "word": "comly",
+    "count": 185
+  },
+  "L_W": {
+    "word": "luo",
+    "count": 185
+  },
+  "EH_TH": {
+    "word": "beth",
+    "count": 184
+  },
+  "Y_OW": {
+    "word": "yo",
+    "count": 183
+  },
+  "HH_UW": {
+    "word": "hu",
+    "count": 182
+  },
+  "R_V": {
+    "word": "arva",
+    "count": 182
+  },
+  "SH_OW": {
+    "word": "chau",
+    "count": 182
+  },
+  "Y_EH": {
+    "word": "yeh",
+    "count": 181
+  },
+  "R_OY": {
+    "word": "roi",
+    "count": 181
+  },
+  "G_UW": {
+    "word": "gu",
+    "count": 179
+  },
+  "TH_IH": {
+    "word": "thin",
+    "count": 178
+  },
+  "T_F": {
+    "word": "artful",
+    "count": 177
+  },
+  "SH_R": {
+    "word": "sri",
+    "count": 177
+  },
+  "ER_CH": {
+    "word": "birch",
+    "count": 176
+  },
+  "AO_G": {
+    "word": "aug",
+    "count": 175
+  },
+  "UW_CH": {
+    "word": "ucci",
+    "count": 174
+  },
+  "P_UW": {
+    "word": "pu",
+    "count": 174
+  },
+  "SH_AO": {
+    "word": "sean",
+    "count": 174
+  },
+  "NG_T": {
+    "word": "kington",
+    "count": 173
+  },
+  "R_SH": {
+    "word": "barsh",
+    "count": 172
+  },
+  "OW_AH": {
+    "word": "boa",
+    "count": 171
+  },
+  "SH_EY": {
+    "word": "chez",
+    "count": 170
+  },
+  "P_AW": {
+    "word": "lb",
+    "count": 170
+  },
+  "IY_HH": {
+    "word": "reha",
+    "count": 169
+  },
+  "OW_HH": {
+    "word": "coho",
+    "count": 169
+  },
+  "SH_N": {
+    "word": "schnee",
+    "count": 168
+  },
+  "IY_JH": {
+    "word": "dj",
+    "count": 168
+  },
+  "JH_OW": {
+    "word": "jo",
+    "count": 167
+  },
+  "SH_M": {
+    "word": "ashman",
+    "count": 166
+  },
+  "R_TH": {
+    "word": "arth",
+    "count": 165
+  },
+  "G_Y": {
+    "word": "gue",
+    "count": 161
+  },
+  "AY_G": {
+    "word": "iger",
+    "count": 161
+  },
+  "R_CH": {
+    "word": "arch",
+    "count": 161
+  },
+  "S_CH": {
+    "word": "boscia",
+    "count": 161
+  },
+  "AE_JH": {
+    "word": "maj",
+    "count": 160
+  },
+  "L_HH": {
+    "word": "folha",
+    "count": 160
+  },
+  "L_OY": {
+    "word": "loy",
+    "count": 160
+  },
+  "UW_SH": {
+    "word": "lucia",
+    "count": 159
+  },
+  "T_AW": {
+    "word": "tao",
+    "count": 158
+  },
+  "N_G": {
+    "word": "ungo",
+    "count": 158
+  },
+  "ER_R": {
+    "word": "sirs",
+    "count": 157
+  },
+  "AH_R": {
+    "word": "arau",
+    "count": 156
+  },
+  "D_V": {
+    "word": "advo",
+    "count": 155
+  },
+  "N_P": {
+    "word": "gnp",
+    "count": 154
+  },
+  "V_R": {
+    "word": "avram",
+    "count": 152
+  },
+  "B_OY": {
+    "word": "boy",
+    "count": 151
+  },
+  "K_HH": {
+    "word": "ekholm",
+    "count": 150
+  },
+  "SH_L": {
+    "word": "ashley",
+    "count": 150
+  },
+  "EH_CH": {
+    "word": "etch",
+    "count": 149
+  },
+  "AW_D": {
+    "word": "doud",
+    "count": 148
+  },
+  "M_F": {
+    "word": "amfac",
+    "count": 148
+  },
+  "JH_D": {
+    "word": "aged",
+    "count": 147
+  },
+  "NG_L": {
+    "word": "bangla",
+    "count": 147
+  },
+  "D_K": {
+    "word": "adcox",
+    "count": 147
+  },
+  "AO_Z": {
+    "word": "baus",
+    "count": 146
+  },
+  "Z_AY": {
+    "word": "zeit",
+    "count": 146
+  },
+  "W_OW": {
+    "word": "wo",
+    "count": 146
+  },
+  "L_N": {
+    "word": "elna",
+    "count": 145
+  },
+  "ER_HH": {
+    "word": "berhow",
+    "count": 144
+  },
+  "W_AE": {
+    "word": "wag",
+    "count": 144
+  },
+  "IY_SH": {
+    "word": "eash",
+    "count": 142
+  },
+  "OY_L": {
+    "word": "oil",
+    "count": 142
+  },
+  "G_M": {
+    "word": "dogma",
+    "count": 142
+  },
+  "R_ER": {
+    "word": "borer",
+    "count": 141
+  },
+  "ER_W": {
+    "word": "erway",
+    "count": 141
+  },
+  "Z_UW": {
+    "word": "xu",
+    "count": 141
+  },
+  "F_UH": {
+    "word": "foor",
+    "count": 140
+  },
+  "IH_HH": {
+    "word": "cihak",
+    "count": 140
+  },
+  "G_UH": {
+    "word": "good",
+    "count": 140
+  },
+  "AW_Z": {
+    "word": "aus",
+    "count": 140
+  },
+  "R_UH": {
+    "word": "rook",
+    "count": 140
+  },
+  "P_SH": {
+    "word": "pshaw",
+    "count": 138
+  },
+  "TH_S": {
+    "word": "ths",
+    "count": 138
+  },
+  "T_B": {
+    "word": "ostby",
+    "count": 138
+  },
+  "OW_IH": {
+    "word": "coen",
+    "count": 137
+  },
+  "R_W": {
+    "word": "arwen",
+    "count": 136
+  },
+  "AY_IH": {
+    "word": "naim",
+    "count": 136
+  },
+  "G_AY": {
+    "word": "gae",
+    "count": 135
+  },
+  "TH_AO": {
+    "word": "thaw",
+    "count": 134
+  },
+  "F_UW": {
+    "word": "fu",
+    "count": 133
+  },
+  "SH_T": {
+    "word": "ashtec",
+    "count": 132
+  },
+  "OY_D": {
+    "word": "boyd",
+    "count": 132
+  },
+  "UW_F": {
+    "word": "bufe",
+    "count": 131
+  },
+  "Y_AE": {
+    "word": "yak",
+    "count": 130
+  },
+  "K_B": {
+    "word": "akbar",
+    "count": 130
+  },
+  "Z_N": {
+    "word": "hosni",
+    "count": 128
+  },
+  "EY_ER": {
+    "word": "ayars",
+    "count": 128
+  },
+  "SH_W": {
+    "word": "schwa",
+    "count": 128
+  },
+  "D_F": {
+    "word": "dadfar",
+    "count": 128
+  },
+  "D_HH": {
+    "word": "adham",
+    "count": 127
+  },
+  "N_AW": {
+    "word": "now",
+    "count": 127
+  },
+  "K_UH": {
+    "word": "cook",
+    "count": 126
+  },
+  "K_CH": {
+    "word": "actual",
+    "count": 125
+  },
+  "P_OY": {
+    "word": "depoy",
+    "count": 125
+  },
+  "T_HH": {
+    "word": "github",
+    "count": 123
+  },
+  "IY_W": {
+    "word": "byu",
+    "count": 122
+  },
+  "AY_OW": {
+    "word": "io",
+    "count": 121
+  },
+  "UW_JH": {
+    "word": "cluj",
+    "count": 121
+  },
+  "V_D": {
+    "word": "avdel",
+    "count": 120
+  },
+  "CH_T": {
+    "word": "html",
+    "count": 120
+  },
+  "CH_EY": {
+    "word": "che",
+    "count": 119
+  },
+  "AW_L": {
+    "word": "owl",
+    "count": 119
+  },
+  "L_CH": {
+    "word": "ulch",
+    "count": 119
+  },
+  "AO_TH": {
+    "word": "auth",
+    "count": 118
+  },
+  "UW_IY": {
+    "word": "uy",
+    "count": 117
+  },
+  "UW_TH": {
+    "word": "buth",
+    "count": 117
+  },
+  "S_AW": {
+    "word": "sao",
+    "count": 116
+  },
+  "SH_AY": {
+    "word": "shy",
+    "count": 111
+  },
+  "TH_EH": {
+    "word": "theft",
+    "count": 111
+  },
+  "M_AW": {
+    "word": "mt",
+    "count": 111
+  },
+  "UW_ER": {
+    "word": "buer",
+    "count": 111
+  },
+  "JH_EY": {
+    "word": "j",
+    "count": 110
+  },
+  "L_R": {
+    "word": "alred",
+    "count": 110
+  },
+  "M_K": {
+    "word": "amca",
+    "count": 108
+  },
+  "B_D": {
+    "word": "abdo",
+    "count": 107
+  },
+  "L_UH": {
+    "word": "look",
+    "count": 107
+  },
+  "V_AO": {
+    "word": "von",
+    "count": 107
+  },
+  "K_D": {
+    "word": "okdo",
+    "count": 106
+  },
+  "ER_ER": {
+    "word": "burrer",
+    "count": 105
+  },
+  "OY_S": {
+    "word": "alois",
+    "count": 105
+  },
+  "P_K": {
+    "word": "ipco",
+    "count": 105
+  },
+  "OW_CH": {
+    "word": "bocce",
+    "count": 104
+  },
+  "UW_EH": {
+    "word": "ul",
+    "count": 104
+  },
+  "K_F": {
+    "word": "hicfa",
+    "count": 103
+  },
+  "V_Y": {
+    "word": "vue",
+    "count": 103
+  },
+  "Z_W": {
+    "word": "zwack",
+    "count": 102
+  },
+  "IY_AO": {
+    "word": "dior",
+    "count": 102
+  },
+  "Y_AO": {
+    "word": "fyi",
+    "count": 102
+  },
+  "P_UH": {
+    "word": "put",
+    "count": 101
+  },
+  "EH_DH": {
+    "word": "bethea",
+    "count": 101
+  },
+  "JH_AO": {
+    "word": "jaw",
+    "count": 101
+  },
+  "P_F": {
+    "word": "hopf",
+    "count": 100
+  },
+  "EY_AH": {
+    "word": "caya",
+    "count": 99
+  },
+  "AW_M": {
+    "word": "fraum",
+    "count": 99
+  },
+  "AA_W": {
+    "word": "awb",
+    "count": 99
+  },
+  "G_D": {
+    "word": "egged",
+    "count": 99
+  },
+  "T_UH": {
+    "word": "took",
+    "count": 98
+  },
+  "OW_ER": {
+    "word": "goer",
+    "count": 98
+  },
+  "S_R": {
+    "word": "usry",
+    "count": 97
+  },
+  "M_R": {
+    "word": "amre",
+    "count": 96
+  },
+  "UW_EY": {
+    "word": "kwh",
+    "count": 95
+  },
+  "AW_R": {
+    "word": "bour",
+    "count": 94
+  },
+  "AW_AH": {
+    "word": "aoun",
+    "count": 94
+  },
+  "AH_DH": {
+    "word": "otha",
+    "count": 94
+  },
+  "UH_T": {
+    "word": "put",
+    "count": 93
+  },
+  "EY_F": {
+    "word": "rafe",
+    "count": 93
+  },
+  "HH_UH": {
+    "word": "hood",
+    "count": 92
+  },
+  "M_N": {
+    "word": "omni",
+    "count": 92
+  },
+  "UH_SH": {
+    "word": "bush",
+    "count": 92
+  },
+  "AA_TH": {
+    "word": "foth",
+    "count": 92
+  },
+  "Z_AO": {
+    "word": "zon",
+    "count": 91
+  },
+  "CH_AY": {
+    "word": "hiv",
+    "count": 91
+  },
+  "OW_JH": {
+    "word": "oj",
+    "count": 90
+  },
+  "IY_TH": {
+    "word": "ethan",
+    "count": 90
+  },
+  "ZH_ER": {
+    "word": "azure",
+    "count": 90
+  },
+  "R_HH": {
+    "word": "farha",
+    "count": 89
+  },
+  "EY_IH": {
+    "word": "hayek",
+    "count": 89
+  },
+  "AO_M": {
+    "word": "om",
+    "count": 89
+  },
+  "AA_HH": {
+    "word": "aha",
+    "count": 88
+  },
+  "CH_OW": {
+    "word": "cho",
+    "count": 87
+  },
+  "IH_ZH": {
+    "word": "fejes",
+    "count": 87
+  },
+  "OY_Z": {
+    "word": "boys",
+    "count": 87
+  },
+  "T_Y": {
+    "word": "tian",
+    "count": 86
+  },
+  "S_HH": {
+    "word": "shead",
+    "count": 86
+  },
+  "M_UH": {
+    "word": "mook",
+    "count": 86
+  },
+  "OY_T": {
+    "word": "boyt",
+    "count": 83
+  },
+  "L_JH": {
+    "word": "algy",
+    "count": 83
+  },
+  "AO_P": {
+    "word": "fop",
+    "count": 82
+  },
+  "NG_HH": {
+    "word": "engholm",
+    "count": 82
+  },
+  "SH_UH": {
+    "word": "sure",
+    "count": 82
+  },
+  "F_AW": {
+    "word": "fao",
+    "count": 81
+  },
+  "EY_R": {
+    "word": "ayr",
+    "count": 80
+  },
+  "AO_B": {
+    "word": "fob",
+    "count": 80
+  },
+  "V_OY": {
+    "word": "void",
+    "count": 80
+  },
+  "AY_AE": {
+    "word": "cyan",
+    "count": 80
+  },
+  "JH_OY": {
+    "word": "joy",
+    "count": 79
+  },
+  "S_D": {
+    "word": "lsd",
+    "count": 79
+  },
+  "TH_AA": {
+    "word": "thar",
+    "count": 77
+  },
+  "T_P": {
+    "word": "hotpot",
+    "count": 76
+  },
+  "D_Y": {
+    "word": "edu",
+    "count": 72
+  },
+  "Y_IH": {
+    "word": "yim",
+    "count": 70
+  },
+  "L_TH": {
+    "word": "belth",
+    "count": 69
+  },
+  "AW_TH": {
+    "word": "louth",
+    "count": 69
+  },
+  "W_UW": {
+    "word": "wu",
+    "count": 69
+  },
+  "EY_ZH": {
+    "word": "asia",
+    "count": 68
+  },
+  "OY_AH": {
+    "word": "goya",
+    "count": 68
+  },
+  "TH_AE": {
+    "word": "thad",
+    "count": 68
+  },
+  "AO_SH": {
+    "word": "mosh",
+    "count": 68
+  },
+  "D_UH": {
+    "word": "dura",
+    "count": 67
+  },
+  "ER_AO": {
+    "word": "peron",
+    "count": 67
+  },
+  "JH_AY": {
+    "word": "gyr",
+    "count": 67
+  },
+  "AY_AA": {
+    "word": "irs",
+    "count": 67
+  },
+  "N_OY": {
+    "word": "neu",
+    "count": 65
+  },
+  "IY_UW": {
+    "word": "siu",
+    "count": 63
+  },
+  "NG_S": {
+    "word": "hingst",
+    "count": 63
+  },
+  "L_SH": {
+    "word": "ulsh",
+    "count": 63
+  },
+  "ER_UW": {
+    "word": "arup",
+    "count": 63
+  },
+  "EY_CH": {
+    "word": "h",
+    "count": 62
+  },
+  "UW_AA": {
+    "word": "url",
+    "count": 62
+  },
+  "UW_ZH": {
+    "word": "rouge",
+    "count": 62
+  },
+  "S_G": {
+    "word": "isgro",
+    "count": 62
+  },
+  "CH_M": {
+    "word": "kuchma",
+    "count": 62
+  },
+  "AW_B": {
+    "word": "doub",
+    "count": 62
+  },
+  "K_OY": {
+    "word": "coy",
+    "count": 62
+  },
+  "B_K": {
+    "word": "abco",
+    "count": 61
+  },
+  "P_N": {
+    "word": "apnea",
+    "count": 61
+  },
+  "AA_ZH": {
+    "word": "raj",
+    "count": 61
+  },
+  "V_N": {
+    "word": "avner",
+    "count": 61
+  },
+  "EY_OW": {
+    "word": "aol",
+    "count": 60
+  },
+  "AY_JH": {
+    "word": "ige",
+    "count": 60
+  },
+  "T_OY": {
+    "word": "toy",
+    "count": 60
+  },
+  "TH_L": {
+    "word": "athlete",
+    "count": 60
+  },
+  "TH_W": {
+    "word": "thwart",
+    "count": 60
+  },
+  "N_UH": {
+    "word": "nur",
+    "count": 60
+  },
+  "G_S": {
+    "word": "aungst",
+    "count": 59
+  },
+  "OY_ER": {
+    "word": "oyer",
+    "count": 59
+  },
+  "P_M": {
+    "word": "hopman",
+    "count": 59
+  },
+  "G_AW": {
+    "word": "gao",
+    "count": 58
+  },
+  "NG_AH": {
+    "word": "cunha",
+    "count": 58
+  },
+  "UW_HH": {
+    "word": "duhe",
+    "count": 57
+  },
+  "EY_HH": {
+    "word": "ahab",
+    "count": 57
+  },
+  "IH_DH": {
+    "word": "with",
+    "count": 57
+  },
+  "M_T": {
+    "word": "mtv",
+    "count": 57
+  },
+  "T_G": {
+    "word": "citgo",
+    "count": 56
+  },
+  "JH_M": {
+    "word": "edgmon",
+    "count": 55
+  },
+  "AA_Y": {
+    "word": "kaya",
+    "count": 55
+  },
+  "S_V": {
+    "word": "csv",
+    "count": 55
+  },
+  "Y_IY": {
+    "word": "ye",
+    "count": 55
+  },
+  "EH_HH": {
+    "word": "ehud",
+    "count": 54
+  },
+  "F_N": {
+    "word": "dafna",
+    "count": 54
+  },
+  "SH_B": {
+    "word": "ashby",
+    "count": 54
+  },
+  "SH_K": {
+    "word": "liszka",
+    "count": 54
+  },
+  "M_OY": {
+    "word": "moy",
+    "count": 54
+  },
+  "CH_AO": {
+    "word": "chaw",
+    "count": 54
+  },
+  "DH_IY": {
+    "word": "thee",
+    "count": 53
+  },
+  "F_K": {
+    "word": "jfk",
+    "count": 53
+  },
+  "AW_CH": {
+    "word": "ouch",
+    "count": 52
+  },
+  "Z_K": {
+    "word": "rizk",
+    "count": 51
+  },
+  "M_W": {
+    "word": "moi",
+    "count": 51
+  },
+  "AA_IY": {
+    "word": "pai",
+    "count": 50
+  },
+  "D_P": {
+    "word": "edper",
+    "count": 50
+  },
+  "OW_TH": {
+    "word": "both",
+    "count": 50
+  },
+  "AE_HH": {
+    "word": "ahola",
+    "count": 49
+  },
+  "B_W": {
+    "word": "bue",
+    "count": 49
+  },
+  "V_S": {
+    "word": "tvsat",
+    "count": 49
+  },
+  "OW_AA": {
+    "word": "toa",
+    "count": 49
+  },
+  "AY_EH": {
+    "word": "baez",
+    "count": 48
+  },
+  "IY_Y": {
+    "word": "eu",
+    "count": 48
+  },
+  "B_M": {
+    "word": "hibma",
+    "count": 48
+  },
+  "K_P": {
+    "word": "okpo",
+    "count": 48
+  },
+  "AO_V": {
+    "word": "mauve",
+    "count": 48
+  },
+  "NG_D": {
+    "word": "banged",
+    "count": 47
+  },
+  "OW_Y": {
+    "word": "iou",
+    "count": 47
+  },
+  "D_T": {
+    "word": "todt",
+    "count": 46
+  },
+  "F_M": {
+    "word": "difm",
+    "count": 46
+  },
+  "ZH_IH": {
+    "word": "giron",
+    "count": 46
+  },
+  "P_CH": {
+    "word": "capcha",
+    "count": 46
+  },
+  "D_OY": {
+    "word": "doi",
+    "count": 45
+  },
+  "OW_IY": {
+    "word": "zoe",
+    "count": 45
+  },
+  "D_SH": {
+    "word": "redshaw",
+    "count": 44
+  },
+  "AE_DH": {
+    "word": "paths",
+    "count": 44
+  },
+  "IH_W": {
+    "word": "iwen",
+    "count": 43
+  },
+  "OW_W": {
+    "word": "loewi",
+    "count": 42
+  },
+  "T_D": {
+    "word": "outdo",
+    "count": 42
+  },
+  "B_N": {
+    "word": "abner",
+    "count": 41
+  },
+  "AY_W": {
+    "word": "iwo",
+    "count": 41
+  },
+  "M_HH": {
+    "word": "mhm",
+    "count": 41
+  },
+  "AH_Y": {
+    "word": "ayako",
+    "count": 41
+  },
+  "AA_DH": {
+    "word": "bother",
+    "count": 41
+  },
+  "P_W": {
+    "word": "depuy",
+    "count": 41
+  },
+  "CH_L": {
+    "word": "archly",
+    "count": 40
+  },
+  "Y_EY": {
+    "word": "yay",
+    "count": 40
+  },
+  "TH_AY": {
+    "word": "theil",
+    "count": 40
+  },
+  "S_TH": {
+    "word": "sixth",
+    "count": 39
+  },
+  "OW_EH": {
+    "word": "aol",
+    "count": 39
+  },
+  "UH_N": {
+    "word": "junta",
+    "count": 39
+  },
+  "S_Y": {
+    "word": "suu",
+    "count": 38
+  },
+  "AY_SH": {
+    "word": "aisha",
+    "count": 38
+  },
+  "EY_NG": {
+    "word": "ainge",
+    "count": 38
+  },
+  "EY_Y": {
+    "word": "ceja",
+    "count": 38
+  },
+  "UH_M": {
+    "word": "woman",
+    "count": 38
+  },
+  "AW_K": {
+    "word": "houk",
+    "count": 38
+  },
+  "JH_UH": {
+    "word": "jura",
+    "count": 38
+  },
+  "DH_AH": {
+    "word": "the",
+    "count": 37
+  },
+  "HH_OY": {
+    "word": "hoi",
+    "count": 37
+  },
+  "ER_DH": {
+    "word": "ertha",
+    "count": 37
+  },
+  "AW_IH": {
+    "word": "cowin",
+    "count": 37
+  },
+  "OW_ZH": {
+    "word": "fosia",
+    "count": 37
+  },
+  "OW_R": {
+    "word": "neorx",
+    "count": 37
+  },
+  "K_V": {
+    "word": "kvam",
+    "count": 37
+  },
+  "EY_EH": {
+    "word": "afl",
+    "count": 36
+  },
+  "EY_TH": {
+    "word": "athie",
+    "count": 36
+  },
+  "G_B": {
+    "word": "bagby",
+    "count": 36
+  },
+  "D_G": {
+    "word": "edgar",
+    "count": 36
+  },
+  "Z_R": {
+    "word": "ezra",
+    "count": 36
+  },
+  "NG_M": {
+    "word": "engman",
+    "count": 36
+  },
+  "EH_ZH": {
+    "word": "jesuit",
+    "count": 36
+  },
+  "NG_B": {
+    "word": "ingber",
+    "count": 36
+  },
+  "R_Y": {
+    "word": "fyi",
+    "count": 35
+  },
+  "CH_K": {
+    "word": "brcko",
+    "count": 35
+  },
+  "SH_AW": {
+    "word": "shao",
+    "count": 35
+  },
+  "IY_ZH": {
+    "word": "bijur",
+    "count": 34
+  },
+  "T_V": {
+    "word": "tvedt",
+    "count": 33
+  },
+  "UW_W": {
+    "word": "duwe",
+    "count": 33
+  },
+  "AO_CH": {
+    "word": "auch",
+    "count": 33
+  },
+  "M_G": {
+    "word": "mg",
+    "count": 32
+  },
+  "ER_ZH": {
+    "word": "persia",
+    "count": 32
+  },
+  "NG_IH": {
+    "word": "banging",
+    "count": 32
+  },
+  "TH_OW": {
+    "word": "ortho",
+    "count": 32
+  },
+  "P_D": {
+    "word": "eloped",
+    "count": 32
+  },
+  "B_JH": {
+    "word": "abject",
+    "count": 31
+  },
+  "UH_S": {
+    "word": "puss",
+    "count": 31
+  },
+  "UW_Y": {
+    "word": "suu",
+    "count": 31
+  },
+  "Z_V": {
+    "word": "jozwiak",
+    "count": 31
+  },
+  "AW_G": {
+    "word": "houg",
+    "count": 31
+  },
+  "CH_R": {
+    "word": "archrival",
+    "count": 30
+  },
+  "F_OY": {
+    "word": "foy",
+    "count": 30
+  },
+  "AW_IY": {
+    "word": "aoi",
+    "count": 30
+  },
+  "TH_M": {
+    "word": "othman",
+    "count": 30
+  },
+  "ER_AW": {
+    "word": "around",
+    "count": 30
+  },
+  "Z_T": {
+    "word": "arzt",
+    "count": 30
+  },
+  "TH_K": {
+    "word": "bathke",
+    "count": 30
+  },
+  "P_B": {
+    "word": "upbeat",
+    "count": 30
+  },
+  "ZH_AA": {
+    "word": "zsa",
+    "count": 30
+  },
+  "S_OY": {
+    "word": "soy",
+    "count": 30
+  },
+  "B_T": {
+    "word": "abt",
+    "count": 29
+  },
+  "AO_JH": {
+    "word": "auge",
+    "count": 29
+  },
+  "CH_B": {
+    "word": "hbo",
+    "count": 29
+  },
+  "M_SH": {
+    "word": "gumshoe",
+    "count": 29
+  },
+  "SH_Y": {
+    "word": "arshia",
+    "count": 28
+  },
+  "CH_UH": {
+    "word": "chook",
+    "count": 28
+  },
+  "V_AW": {
+    "word": "vow",
+    "count": 28
+  },
+  "UW_AE": {
+    "word": "puat",
+    "count": 27
+  },
+  "OW_NG": {
+    "word": "duong",
+    "count": 27
+  },
+  "F_D": {
+    "word": "dfw",
+    "count": 27
+  },
+  "DH_IH": {
+    "word": "this",
+    "count": 27
+  },
+  "CH_F": {
+    "word": "rachford",
+    "count": 27
+  },
+  "OY_K": {
+    "word": "boik",
+    "count": 27
+  },
+  "S_S": {
+    "word": "cxc",
+    "count": 27
+  },
+  "N_N": {
+    "word": "oneness",
+    "count": 27
+  },
+  "UW_OW": {
+    "word": "duo",
+    "count": 27
+  },
+  "DH_EH": {
+    "word": "them",
+    "count": 27
+  },
+  "ZH_IY": {
+    "word": "beji",
+    "count": 26
+  },
+  "TH_EY": {
+    "word": "thabo",
+    "count": 26
+  },
+  "AW_SH": {
+    "word": "housh",
+    "count": 26
+  },
+  "TH_B": {
+    "word": "boothby",
+    "count": 26
+  },
+  "P_HH": {
+    "word": "opheim",
+    "count": 26
+  },
+  "W_OY": {
+    "word": "woy",
+    "count": 26
+  },
+  "NG_W": {
+    "word": "engwall",
+    "count": 25
+  },
+  "OY_IH": {
+    "word": "oyen",
+    "count": 25
+  },
+  "IY_AY": {
+    "word": "api",
+    "count": 25
+  },
+  "OW_EY": {
+    "word": "oad",
+    "count": 25
+  },
+  "EY_W": {
+    "word": "awan",
+    "count": 25
+  },
+  "S_UH": {
+    "word": "soot",
+    "count": 25
+  },
+  "JH_W": {
+    "word": "jwan",
+    "count": 25
+  },
+  "CH_AW": {
+    "word": "chao",
+    "count": 25
+  },
+  "T_CH": {
+    "word": "blotch",
+    "count": 24
+  },
+  "G_HH": {
+    "word": "bigham",
+    "count": 24
+  },
+  "AA_OW": {
+    "word": "booe",
+    "count": 24
+  },
+  "IY_IY": {
+    "word": "ce",
+    "count": 24
+  },
+  "JH_Y": {
+    "word": "kogyo",
+    "count": 24
+  },
+  "F_G": {
+    "word": "afghan",
+    "count": 23
+  },
+  "TH_N": {
+    "word": "aithne",
+    "count": 23
+  },
+  "CH_W": {
+    "word": "archway",
+    "count": 23
+  },
+  "Z_P": {
+    "word": "mpg(2)",
+    "count": 23
+  },
+  "NG_F": {
+    "word": "langfitt",
+    "count": 23
+  },
+  "AY_HH": {
+    "word": "ihle",
+    "count": 23
+  },
+  "P_G": {
+    "word": "apgar",
+    "count": 22
+  },
+  "OY_M": {
+    "word": "coym",
+    "count": 22
+  },
+  "T_JH": {
+    "word": "tatge",
+    "count": 22
+  },
+  "OW_AE": {
+    "word": "boaz",
+    "count": 22
+  },
+  "G_OY": {
+    "word": "goy",
+    "count": 22
+  },
+  "AA_UW": {
+    "word": "loew",
+    "count": 22
+  },
+  "UH_G": {
+    "word": "bogie",
+    "count": 21
+  },
+  "G_F": {
+    "word": "agfa",
+    "count": 21
+  },
+  "IY_NG": {
+    "word": "inga",
+    "count": 21
+  },
+  "ZH_W": {
+    "word": "joie",
+    "count": 21
+  },
+  "AY_CH": {
+    "word": "zych",
+    "count": 21
+  },
+  "CH_N": {
+    "word": "michna",
+    "count": 21
+  },
+  "F_TH": {
+    "word": "fifth",
+    "count": 21
+  },
+  "M_CH": {
+    "word": "emch",
+    "count": 20
+  },
+  "V_M": {
+    "word": "avmark",
+    "count": 20
+  },
+  "AY_AO": {
+    "word": "anion",
+    "count": 20
+  },
+  "EY_AO": {
+    "word": "ayon",
+    "count": 20
+  },
+  "UW_DH": {
+    "word": "luthi",
+    "count": 20
+  },
+  "OY_CH": {
+    "word": "broich",
+    "count": 20
+  },
+  "AO_IH": {
+    "word": "hawing",
+    "count": 20
+  },
+  "TH_UW": {
+    "word": "thew",
+    "count": 20
+  },
+  "NG_SH": {
+    "word": "angstadt",
+    "count": 19
+  },
+  "SH_F": {
+    "word": "ashford",
+    "count": 19
+  },
+  "UW_NG": {
+    "word": "cunha",
+    "count": 19
+  },
+  "AE_ZH": {
+    "word": "beji",
+    "count": 19
+  },
+  "V_W": {
+    "word": "voir",
+    "count": 19
+  },
+  "OW_DH": {
+    "word": "bothe",
+    "count": 19
+  },
+  "OY_R": {
+    "word": "moir",
+    "count": 19
+  },
+  "F_W": {
+    "word": "fuente",
+    "count": 19
+  },
+  "T_T": {
+    "word": "outtake",
+    "count": 19
+  },
+  "OY_B": {
+    "word": "loibl",
+    "count": 19
+  },
+  "TH_F": {
+    "word": "faithful",
+    "count": 19
+  },
+  "EY_IY": {
+    "word": "seyi",
+    "count": 18
+  },
+  "JH_L": {
+    "word": "hejl",
+    "count": 18
+  },
+  "AY_IY": {
+    "word": "aida",
+    "count": 18
+  },
+  "Z_HH": {
+    "word": "banzhaf",
+    "count": 18
+  },
+  "ER_OY": {
+    "word": "arroyo",
+    "count": 18
+  },
+  "EY_DH": {
+    "word": "athas",
+    "count": 18
+  },
+  "DH_D": {
+    "word": "bathed",
+    "count": 18
+  },
+  "F_B": {
+    "word": "fbi",
+    "count": 18
+  },
+  "S_JH": {
+    "word": "nexgen",
+    "count": 18
+  },
+  "IY_DH": {
+    "word": "either",
+    "count": 18
+  },
+  "V_UW": {
+    "word": "vu",
+    "count": 18
+  },
+  "B_V": {
+    "word": "obverse",
+    "count": 17
+  },
+  "Z_UH": {
+    "word": "zook",
+    "count": 17
+  },
+  "Z_G": {
+    "word": "ozga",
+    "count": 17
+  },
+  "AA_IH": {
+    "word": "faist",
+    "count": 17
+  },
+  "TH_Y": {
+    "word": "mathew",
+    "count": 17
+  },
+  "AY_DH": {
+    "word": "gytha",
+    "count": 17
+  },
+  "TH_AW": {
+    "word": "thuot",
+    "count": 17
+  },
+  "Y_AW": {
+    "word": "yao",
+    "count": 17
+  },
+  "NG_TH": {
+    "word": "lengthy",
+    "count": 17
+  },
+  "W_AW": {
+    "word": "wow",
+    "count": 17
+  },
+  "B_HH": {
+    "word": "abhor",
+    "count": 16
+  },
+  "AW_F": {
+    "word": "sough",
+    "count": 16
+  },
+  "G_T": {
+    "word": "fogt",
+    "count": 16
+  },
+  "D_CH": {
+    "word": "gradchev",
+    "count": 16
+  },
+  "OW_AO": {
+    "word": "owosso",
+    "count": 16
+  },
+  "OY_F": {
+    "word": "coiffe",
+    "count": 16
+  },
+  "EH_W": {
+    "word": "pewex",
+    "count": 16
+  },
+  "R_DH": {
+    "word": "marthe",
+    "count": 16
+  },
+  "JH_K": {
+    "word": "edgcomb",
+    "count": 16
+  },
+  "AY_NG": {
+    "word": "heinke",
+    "count": 16
+  },
+  "F_HH": {
+    "word": "kaufhof",
+    "count": 15
+  },
+  "V_K": {
+    "word": "avco",
+    "count": 15
+  },
+  "DH_Z": {
+    "word": "oaths",
+    "count": 15
+  },
+  "IH_Y": {
+    "word": "ijames",
+    "count": 15
+  },
+  "K_Z": {
+    "word": "akzo",
+    "count": 14
+  },
+  "EY_AA": {
+    "word": "aurea",
+    "count": 14
+  },
+  "AW_P": {
+    "word": "cowper",
+    "count": 14
+  },
+  "K_G": {
+    "word": "mcgols",
+    "count": 14
+  },
+  "Z_F": {
+    "word": "buzzfeed",
+    "count": 14
+  },
+  "K_TH": {
+    "word": "length",
+    "count": 14
+  },
+  "TH_D": {
+    "word": "writhed",
+    "count": 14
+  },
+  "ZH_EH": {
+    "word": "jares",
+    "count": 14
+  },
+  "HH_R": {
+    "word": "hren",
+    "count": 14
+  },
+  "N_DH": {
+    "word": "anthes",
+    "count": 13
+  },
+  "M_V": {
+    "word": "amvest",
+    "count": 13
+  },
+  "G_P": {
+    "word": "magpie",
+    "count": 13
+  },
+  "TH_P": {
+    "word": "bethpage",
+    "count": 13
+  },
+  "UW_AO": {
+    "word": "suon",
+    "count": 13
+  },
+  "ER_Y": {
+    "word": "heryana",
+    "count": 13
+  },
+  "AO_Y": {
+    "word": "lawyer",
+    "count": 13
+  },
+  "ZH_UW": {
+    "word": "zhu",
+    "count": 12
+  },
+  "D_TH": {
+    "word": "width",
+    "count": 12
+  },
+  "ZH_D": {
+    "word": "garajda",
+    "count": 12
+  },
+  "CH_HH": {
+    "word": "beachhead",
+    "count": 12
+  },
+  "SH_OY": {
+    "word": "scheu",
+    "count": 12
+  },
+  "T_SH": {
+    "word": "nutshell",
+    "count": 12
+  },
+  "M_TH": {
+    "word": "ramtha",
+    "count": 12
+  },
+  "V_UH": {
+    "word": "vulva",
+    "count": 12
+  },
+  "Z_Y": {
+    "word": "xian",
+    "count": 11
+  },
+  "CH_D": {
+    "word": "phd",
+    "count": 11
+  },
+  "AE_W": {
+    "word": "dawit",
+    "count": 11
+  },
+  "AY_TH": {
+    "word": "feith",
+    "count": 11
+  },
+  "OY_OW": {
+    "word": "koyo",
+    "count": 11
+  },
+  "V_T": {
+    "word": "avtex",
+    "count": 11
+  },
+  "TH_T": {
+    "word": "bathtub",
+    "count": 11
+  },
+  "AO_AH": {
+    "word": "gawel",
+    "count": 11
+  },
+  "AW_W": {
+    "word": "mouw",
+    "count": 11
+  },
+  "K_JH": {
+    "word": "inkjet",
+    "count": 11
+  },
+  "UW_AY": {
+    "word": "ui",
+    "count": 11
+  },
+  "NG_JH": {
+    "word": "rongji",
+    "count": 11
+  },
+  "CH_OY": {
+    "word": "choi",
+    "count": 11
+  },
+  "UH_B": {
+    "word": "uebel",
+    "count": 11
+  },
+  "NG_R": {
+    "word": "lungren",
+    "count": 11
+  },
+  "S_SH": {
+    "word": "horseshit",
+    "count": 10
+  },
+  "F_SH": {
+    "word": "afshar",
+    "count": 10
+  },
+  "AY_UW": {
+    "word": "ayuso",
+    "count": 10
+  },
+  "AY_Y": {
+    "word": "byu",
+    "count": 10
+  },
+  "AO_ER": {
+    "word": "mawr",
+    "count": 10
+  },
+  "JH_S": {
+    "word": "krejci",
+    "count": 10
+  },
+  "UH_CH": {
+    "word": "butch",
+    "count": 10
+  },
+  "AY_EY": {
+    "word": "cia",
+    "count": 10
+  },
+  "AH_ZH": {
+    "word": "lajous",
+    "count": 10
+  },
+  "IY_AW": {
+    "word": "liao",
+    "count": 10
+  }
+}
