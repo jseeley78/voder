@@ -166,7 +166,10 @@ export class VoderEngine {
       const filter = this.ctx.createBiquadFilter()
       filter.type = 'bandpass'
       filter.frequency.value = BAND_CENTERS[i]
-      filter.Q.value = BAND_Q[i] * 3.5 // sharper formants without hollow gaps
+      // Q set per-band; default tilt=0.5 (upper bands sharper, lower wider)
+      const bandPos = i / 9
+      const tiltFactor = 1.0 + 0.5 * (bandPos - 0.5)
+      filter.Q.value = BAND_Q[i] * 3.5 * Math.max(0.3, tiltFactor)
 
       const gain = this.ctx.createGain()
       gain.gain.value = 0
@@ -407,14 +410,20 @@ export class VoderEngine {
   }
 
   /** Change the filter Q multiplier on a running engine. */
-  _qMul = 2.0
-  setFilterQ(multiplier: number): void {
+  _qMul = 3.5
+  _qTilt = 0.0  // -1 = wider low bands, +1 = wider high bands
+  setFilterQ(multiplier: number, tilt?: number): void {
     this._qMul = multiplier
+    if (tilt !== undefined) this._qTilt = tilt
     for (let i = 0; i < this.bandFilters.length; i++) {
-      this.bandFilters[i].Q.value = BAND_Q[i] * multiplier
+      // Per-band Q: tilt ramps the multiplier across bands
+      // tilt=0: uniform. tilt>0: lower bands wider, upper bands sharper
+      // tilt<0: lower bands sharper, upper bands wider
+      const bandPosition = i / 9  // 0.0 (band 0) to 1.0 (band 9)
+      const tiltFactor = 1.0 + this._qTilt * (bandPosition - 0.5)
+      this.bandFilters[i].Q.value = BAND_Q[i] * multiplier * Math.max(0.3, tiltFactor)
     }
     // Compensate volume: narrower filters pass less energy.
-    // Scale master gain by sqrt(newQ / defaultQ) to maintain loudness.
     if (this.master) {
       const compensation = Math.sqrt(multiplier / 2.0)
       this.master.gain.value = this.masterValue * compensation

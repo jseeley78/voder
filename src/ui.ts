@@ -483,8 +483,12 @@ export function initUI(): void {
     engine.restoreDetune(cents)
   })
   bindSliderDisplay('filterQ', 'filterQVal', v => Number(v).toFixed(1))
+  bindSliderDisplay('qTilt', 'qTiltVal', v => Number(v).toFixed(1))
   $input('filterQ').addEventListener('input', () => {
-    engine?.setFilterQ(parseFloat($input('filterQ').value))
+    engine?.setFilterQ(parseFloat($input('filterQ').value), parseFloat($input('qTilt').value))
+  })
+  $input('qTilt').addEventListener('input', () => {
+    engine?.setFilterQ(parseFloat($input('filterQ').value), parseFloat($input('qTilt').value))
   })
   bindSliderDisplay('master', 'masterVal', v => Number(v).toFixed(2))
   bindSliderDisplay('transitionMs', 'transitionVal')
