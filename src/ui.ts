@@ -482,6 +482,10 @@ export function initUI(): void {
     const cents = 1200 * Math.log2(newPitch / sequenceBasePitch)
     engine.restoreDetune(cents)
   })
+  bindSliderDisplay('filterQ', 'filterQVal', v => Number(v).toFixed(1))
+  $input('filterQ').addEventListener('input', () => {
+    engine?.setFilterQ(parseFloat($input('filterQ').value))
+  })
   bindSliderDisplay('master', 'masterVal', v => Number(v).toFixed(2))
   bindSliderDisplay('transitionMs', 'transitionVal')
   bindSliderDisplay('jitter', 'jitterVal', v => Number(v).toFixed(1))

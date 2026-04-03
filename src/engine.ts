@@ -34,6 +34,7 @@ export class VoderEngine {
   private noiseGain: GainNode | null = null
   private noiseNode: AudioBufferSourceNode | null = null
   private bandGains: GainNode[] = []
+  private bandFilters: BiquadFilterNode[] = []
   private _started = false
   private _currentPitch = 110
   private _currentVoiced = true
@@ -175,6 +176,7 @@ export class VoderEngine {
       filter.connect(gain)
       gain.connect(this.master)
       this.bandGains.push(gain)
+      this.bandFilters.push(filter)
     }
 
     this.noiseNode.start()
@@ -249,6 +251,7 @@ export class VoderEngine {
     this.ctx = null
     this._started = false
     this.bandGains = []
+    this.bandFilters = []
   }
 
   /**
@@ -400,6 +403,13 @@ export class VoderEngine {
     if (this._started && this.oscNode && this._initialPitch > 0) {
       const cents = 1200 * Math.log2(hz / this._initialPitch)
       ;(this.oscNode as any).detune.value = cents
+    }
+  }
+
+  /** Change the filter Q multiplier on a running engine. */
+  setFilterQ(multiplier: number): void {
+    for (let i = 0; i < this.bandFilters.length; i++) {
+      this.bandFilters[i].Q.value = BAND_Q[i] * multiplier
     }
   }
 
