@@ -166,7 +166,7 @@ export class VoderEngine {
       const filter = this.ctx.createBiquadFilter()
       filter.type = 'bandpass'
       filter.frequency.value = BAND_CENTERS[i]
-      filter.Q.value = BAND_Q[i] * 2.0 // sharper formants for clearer vowels
+      filter.Q.value = BAND_Q[i] * 4.0 // sharper formants — Q×4 preferred in A/B test
 
       const gain = this.ctx.createGain()
       gain.gain.value = 0
@@ -407,9 +407,17 @@ export class VoderEngine {
   }
 
   /** Change the filter Q multiplier on a running engine. */
+  _qMul = 2.0
   setFilterQ(multiplier: number): void {
+    this._qMul = multiplier
     for (let i = 0; i < this.bandFilters.length; i++) {
       this.bandFilters[i].Q.value = BAND_Q[i] * multiplier
+    }
+    // Compensate volume: narrower filters pass less energy.
+    // Scale master gain by sqrt(newQ / defaultQ) to maintain loudness.
+    if (this.master) {
+      const compensation = Math.sqrt(multiplier / 2.0)
+      this.master.gain.value = this.masterValue * compensation
     }
   }
 
