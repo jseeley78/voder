@@ -102,11 +102,12 @@ ALL_PHONEMES = [
 
 # ── Parameter layout ──
 # For each phoneme: 10 bands + voicedAmp + noise + durationMs (scaled 0-1) = 13 params
-# Global params: voicedGainMul, noiseGainMul, filterQMul, eqLowGain, eqMidGain, eqMidFreq, eqHighGain = 7
-# Total: 39 * 13 + 7 = 514 params
+# Global params: voicedGainMul, noiseGainMul, eqLowGain, eqMidGain, eqMidFreq, eqHighGain = 6
+# Per-band Q: 10 individual Q values (replaces single filterQMul + qTilt)
+# Total: 39 * 13 + 6 + 10 = 523 params
 
 PARAMS_PER_PHONEME = 13  # 10 bands + voicedAmp + noise + durationMs_scaled
-N_GLOBAL = 7
+N_GLOBAL = 16  # 6 global + 10 per-band Q
 
 def get_current_values():
     """Read current phoneme values from phonemes.ts (hardcoded snapshot)."""
@@ -152,15 +153,27 @@ def get_current_values():
         'CH': {'bands': [0.00, 0.00, 0.03, 0.08, 0.20, 0.50, 0.90, 0.70, 0.35, 0.15], 'voicedAmp': 0.00, 'noise': 0.45, 'durationMs': 70},
         'JH': {'bands': [0.15, 0.10, 0.05, 0.08, 0.20, 0.50, 0.85, 0.65, 0.30, 0.12], 'voicedAmp': 0.45, 'noise': 0.50, 'durationMs': 65},
     }
-    # Global params: voicedGainMul, noiseGainMul, filterQMul, eqLowGain, eqMidGain, eqMidFreq(scaled), eqHighGain
+    # Global params
+    # Per-band Q: individual Q value for each of the 10 bandpass filters
+    # Starting from Q=3.5x with tilt=0.5 (lower bands wider, upper sharper)
+    # Patent-derived Q = center/bandwidth
+    BAND_CENTERS = [112, 338, 575, 850, 1200, 1700, 2350, 3250, 4600, 6450]
+    BAND_WIDTHS  = [225, 225, 250, 300,  400,  600,  700, 1100, 1600, 2100]
+    BASE_Q = [c/w for c, w in zip(BAND_CENTERS, BAND_WIDTHS)]
+    band_q = []
+    for i in range(10):
+        band_pos = i / 9
+        tilt_factor = 1.0 + 0.5 * (band_pos - 0.5)
+        band_q.append(round(BASE_Q[i] * 3.5 * max(0.3, tilt_factor), 2))
+
     globals_ = {
         'voicedGainMul': 1.50,
         'noiseGainMul': 0.80,
-        'filterQMul': 2.0,
         'eqLowGain': -4.0,   # dB, range -10 to +5
         'eqMidGain': 5.0,    # dB, range -5 to +12
         'eqMidFreq': 2800,   # Hz, range 1500 to 5000
         'eqHighGain': -3.0,  # dB, range -10 to +5
+        'bandQ': band_q,     # 10 individual Q values
     }
     return phonemes, globals_
 
@@ -177,11 +190,13 @@ def params_to_vector(phonemes, globals_):
     # Global params (normalized to ~0-1 range)
     vec.append(globals_['voicedGainMul'] / 3.0)    # 0-3 → 0-1
     vec.append(globals_['noiseGainMul'] / 2.0)     # 0-2 → 0-1
-    vec.append(globals_['filterQMul'] / 4.0)       # 0-4 → 0-1
     vec.append((globals_['eqLowGain'] + 10) / 15)  # -10..+5 → 0-1
     vec.append((globals_['eqMidGain'] + 5) / 17)   # -5..+12 → 0-1
     vec.append((globals_['eqMidFreq'] - 1500) / 3500)  # 1500-5000 → 0-1
     vec.append((globals_['eqHighGain'] + 10) / 15) # -10..+5 → 0-1
+    # Per-band Q values (10), normalized: Q range ~0.5 to 15 → /15
+    for q in globals_['bandQ']:
+        vec.append(q / 15.0)
     return np.array(vec)
 
 
@@ -200,11 +215,11 @@ def vector_to_params(vec):
     globals_ = {
         'voicedGainMul': float(np.clip(vec[idx] * 3.0, 0.3, 3.0)),
         'noiseGainMul': float(np.clip(vec[idx+1] * 2.0, 0.1, 2.0)),
-        'filterQMul': float(np.clip(vec[idx+2] * 4.0, 0.5, 4.0)),
-        'eqLowGain': float(np.clip(vec[idx+3] * 15 - 10, -10, 5)),
-        'eqMidGain': float(np.clip(vec[idx+4] * 17 - 5, -5, 12)),
-        'eqMidFreq': float(np.clip(vec[idx+5] * 3500 + 1500, 1500, 5000)),
-        'eqHighGain': float(np.clip(vec[idx+6] * 15 - 10, -10, 5)),
+        'eqLowGain': float(np.clip(vec[idx+2] * 15 - 10, -10, 5)),
+        'eqMidGain': float(np.clip(vec[idx+3] * 17 - 5, -5, 12)),
+        'eqMidFreq': float(np.clip(vec[idx+4] * 3500 + 1500, 1500, 5000)),
+        'eqHighGain': float(np.clip(vec[idx+5] * 15 - 10, -10, 5)),
+        'bandQ': [float(np.clip(vec[idx+6+i] * 15.0, 0.3, 15.0)) for i in range(10)],
     }
     return phonemes, globals_
 

@@ -68,16 +68,26 @@ async function renderPhrase(text: string): Promise<Float32Array> {
   const offlineCtx = new WAA.OfflineAudioContext(1, SR * 10, SR)
   const engine = new VoderEngine()
 
-  // Apply global overrides before starting
-  if (globals.voicedGainMul !== undefined) (engine as any)._voicedGainMul = globals.voicedGainMul
-  if (globals.noiseGainMul !== undefined) (engine as any)._noiseGainMul = globals.noiseGainMul
-  if (globals.filterQMul !== undefined) (engine as any)._filterQMul = globals.filterQMul
-  if (globals.eqLowGain !== undefined) (engine as any)._eqLowGain = globals.eqLowGain
-  if (globals.eqMidGain !== undefined) (engine as any)._eqMidGain = globals.eqMidGain
-  if (globals.eqMidFreq !== undefined) (engine as any)._eqMidFreq = globals.eqMidFreq
-  if (globals.eqHighGain !== undefined) (engine as any)._eqHighGain = globals.eqHighGain
-
   await engine.start(offlineCtx as any)
+
+  // Apply global overrides AFTER start (filters exist now)
+  if (globals.filterQMul !== undefined) {
+    engine.setFilterQ(globals.filterQMul, globals.qTilt ?? 0.5)
+  }
+  // Per-band Q overrides (array of 10 absolute Q values)
+  if (globals.bandQ) {
+    const bandQ = globals.bandQ as number[]
+    for (let i = 0; i < Math.min(bandQ.length, 10); i++) {
+      (engine as any).bandFilters[i].Q.value = bandQ[i]
+    }
+    // Volume compensation: average Q relative to default Q×3.5
+    const avgQ = bandQ.reduce((a: number, b: number) => a + b, 0) / bandQ.length
+    const defaultAvgQ = 2.5 // approximate avg of BAND_Q * 3.5
+    const compensation = Math.sqrt(avgQ / defaultAvgQ)
+    if ((engine as any).master) {
+      (engine as any).master.gain.value = (engine as any).masterValue * compensation
+    }
+  }
 
   const result = textToPhonemes(text)
   const handle = speakPhonemeSequence(engine, result.phonemes, {
