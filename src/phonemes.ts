@@ -197,10 +197,10 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
   //   velar (K/G): burst energy at 1500-3000 Hz (varies with vowel context)
 
   // Voiced stops: low-frequency murmur during closure (voice bar)
-  B:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.02, durationMs: 65,
-        bands: [0.30, 0.35, 0.18, 0.08, 0.04, 0.02, 0.01, 0, 0, 0],
-        transient: { durationMs: 12, noise: 0.80,
-                     bands: [0.20, 0.40, 0.35, 0.25, 0.15, 0.08, 0.03, 0.01, 0, 0] } },
+  B:  { type: 'stop', voiced: true, voicedAmp: 0.55, noise: 0.05, durationMs: 65,
+        bands: [0.35, 0.40, 0.20, 0.10, 0.06, 0.03, 0.02, 0.01, 0, 0],
+        transient: { durationMs: 18, noise: 1.00,
+                     bands: [0.30, 0.50, 0.45, 0.35, 0.25, 0.15, 0.08, 0.04, 0.02, 0] } },
 
   // D: voiced alveolar — same high-frequency burst locus as T but with voicing
   D:  { type: 'stop', voiced: true, voicedAmp: 0.45, noise: 0.03, durationMs: 50,
@@ -213,10 +213,10 @@ export const PHONEMES: Record<string, PhonemeConfig> = {
         transient: { durationMs: 14, noise: 0.85,
                      bands: [0.03, 0.05, 0.12, 0.20, 0.40, 0.50, 0.25, 0.08, 0.02, 0] } },
 
-  P:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.05, durationMs: 50,
+  P:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.08, durationMs: 50,
         bands: [0.05, 0.08, 0.05, 0.03, 0.02, 0.01, 0, 0, 0, 0],
-        transient: { durationMs: 15, noise: 1.00,
-                     bands: [0.20, 0.40, 0.35, 0.25, 0.15, 0.08, 0.03, 0.01, 0, 0] } },
+        transient: { durationMs: 20, noise: 1.00,
+                     bands: [0.30, 0.50, 0.45, 0.35, 0.25, 0.15, 0.08, 0.04, 0.02, 0] } },
 
   // T: strongest burst of all stops — sharp alveolar spike at 4000-5000 Hz
   T:  { type: 'stop', voiced: false, voicedAmp: 0, noise: 0.08, durationMs: 40,
