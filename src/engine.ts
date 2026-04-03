@@ -166,7 +166,7 @@ export class VoderEngine {
       const filter = this.ctx.createBiquadFilter()
       filter.type = 'bandpass'
       filter.frequency.value = BAND_CENTERS[i]
-      filter.Q.value = BAND_Q[i] * 4.0 // sharper formants — Q×4 preferred in A/B test
+      filter.Q.value = BAND_Q[i] * 3.5 // sharper formants without hollow gaps
 
       const gain = this.ctx.createGain()
       gain.gain.value = 0
