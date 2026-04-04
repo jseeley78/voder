@@ -80,6 +80,7 @@ export interface SequenceOptions {
   basePitch: number
   rateScale: number
   expressiveness?: number
+  randomizeExpressiveness?: boolean
   humanize?: number
   onToken?: (event: TokenEvent) => void
   onDone?: () => void
@@ -151,7 +152,8 @@ export function speakPhonemeSequence(
     if (!rawTokens.length) return
 
     const prosodyOpts: Partial<ProsodyOptions> = {
-      expressiveness: options.expressiveness ?? 0.7,
+      expressiveness: options.expressiveness ?? 0.35,
+      randomizeExpressiveness: options.randomizeExpressiveness ?? true,
     }
     const prosodyTokens = applyProsody(rawTokens, prosodyOpts)
 

@@ -372,6 +372,7 @@ function speakOpts() {
     basePitch: parseFloat($input('pitch').value),
     rateScale: parseFloat($input('rateScale').value),
     expressiveness: parseFloat($input('expressiveness').value),
+    randomizeExpressiveness: ($('randomExpress') as HTMLInputElement).checked,
     humanize: parseFloat($input('humanize').value),
     onToken: (evt: TokenEvent) => {
       // Schedule UI update at the token's absolute start time.

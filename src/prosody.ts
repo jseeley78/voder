@@ -33,11 +33,14 @@ export interface ProsodyOptions {
   expressiveness: number
   /** Sentence-level pitch declination rate */
   declination: number
+  /** If true, vary expressiveness per word within ±0.25 of the base value */
+  randomizeExpressiveness: boolean
 }
 
 const DEFAULT_OPTIONS: ProsodyOptions = {
-  expressiveness: 0.7,
+  expressiveness: 0.35,
   declination: 0.018,
+  randomizeExpressiveness: true,
 }
 
 function parseToken(raw: string): { phoneme: string; stress: number } | { punct: string } | { wordBreak: true } {
@@ -142,14 +145,25 @@ export function applyProsody(
   let phrasePhonemeCount = 0
   let currentPhraseIdx = -1
 
+  // Per-word expressiveness: randomize around the base value at each word boundary
+  const baseExpr = o.expressiveness
+  let expr = baseExpr
+  function newWordExpressiveness() {
+    if (!o.randomizeExpressiveness) return
+    const variation = (Math.random() - 0.5) * 0.5  // ±0.25
+    expr = Math.max(0, Math.min(1, baseExpr + variation))
+  }
+  newWordExpressiveness()  // initial word
+
   for (let i = 0; i < parsed.length; i++) {
     const p = parsed[i]
 
-    // Word breaks — small pause
+    // Word breaks — small pause + new random expressiveness
     if ('wordBreak' in p) {
       if (result.length > 0) {
         result[result.length - 1].pauseAfterMs += 30
       }
+      newWordExpressiveness()
       continue
     }
 
@@ -203,7 +217,7 @@ export function applyProsody(
 
     // ── Syllable-level: stress ──
     if (isVowel && p.stress >= 0) {
-      const expr = o.expressiveness
+      // expr is the per-word expressiveness (already set above)
       switch (p.stress) {
         case 1:
           pitchMul += 0.14 * expr
@@ -229,28 +243,28 @@ export function applyProsody(
     if (phrase) {
       // Phrase-initial boost: pitch starts ~8% above neutral, falls to ~4% below
       const phrasePitchArc = 0.10 - phraseProgress * 0.16
-      pitchMul += phrasePitchArc * o.expressiveness
+      pitchMul += phrasePitchArc * expr
 
       // Topline declination: successive phrases start lower
       // (models the gradual pitch reset across a sentence)
       if (totalPhrases > 1 && pm) {
-        const toplineDropPerPhrase = 0.03 * o.expressiveness
+        const toplineDropPerPhrase = 0.03 * expr
         pitchMul -= pm.phraseIdx * toplineDropPerPhrase
       }
 
       // Nuclear accent: the last stressed vowel in the phrase gets
       // an extra pitch boost — it's the most informationally prominent
       if (i === phrase.lastStressedIdx) {
-        pitchMul += 0.06 * o.expressiveness
-        durationMul += 0.10 * o.expressiveness
-        ampMul += 0.05 * o.expressiveness
+        pitchMul += 0.06 * expr
+        durationMul += 0.10 * expr
+        ampMul += 0.05 * expr
       }
 
       // Pre-boundary lengthening: phonemes near the end of a phrase slow down
       // (not just the last one — the whole final ~20% of the phrase)
       if (phraseProgress > 0.8) {
         const slowdown = (phraseProgress - 0.8) / 0.2  // 0→1 over last 20%
-        durationMul += slowdown * 0.25 * o.expressiveness
+        durationMul += slowdown * 0.25 * expr
       }
     }
 
@@ -260,20 +274,20 @@ export function applyProsody(
     // ── Question rise ──
     if (sentenceType === 'question' && sentenceProgress > 0.7) {
       const riseProgress = (sentenceProgress - 0.7) / 0.3
-      pitchMul += riseProgress * 0.25 * o.expressiveness
+      pitchMul += riseProgress * 0.25 * expr
     }
 
     // ── Exclamation boost ──
     if (sentenceType === 'exclamation') {
       ampMul *= 1.08
-      if (sentenceProgress < 0.3) pitchMul += 0.08 * o.expressiveness
+      if (sentenceProgress < 0.3) pitchMul += 0.08 * expr
     }
 
     // ── Phrase-initial reset ──
     // After a pause, pitch resets upward (already handled by phrase arc,
     // but add a small extra bump for perceptibility)
     if (result.length > 0 && result[result.length - 1].pauseAfterMs > 100) {
-      pitchMul += 0.04 * o.expressiveness
+      pitchMul += 0.04 * expr
     }
 
     // Clamp
