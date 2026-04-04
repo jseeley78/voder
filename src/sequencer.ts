@@ -252,59 +252,31 @@ export function speakPhonemeSequence(
         }
       }
 
-      // ── Check for measured transition curve ──
-      const prevPhoneme = prev?.phoneme ?? ''
-      const transCurve = prev ? getTransitionCurve(prevPhoneme, cur.phoneme) : null
-      const totalPhonemeMs = onsetMs + steadyMs + offsetMs
+      {
+        // ── Onset/Steady/Offset with transition-curve-guided timing ──
 
-      if (transCurve && totalPhonemeMs > 20) {
-        // Data-driven transition: play through measured keyframes
-        // Use the curve for the onset+steady portion, then blend to next
-        const curveMs = totalPhonemeMs * 0.85  // 85% for curve, 15% for offset to next
-        const stepMs = curveMs / transCurve.length
-
-        for (let k = 0; k < transCurve.length; k++) {
-          const curveBands = transCurve[k].map(g => g * cur.ampMul)
-          const progress = k / (transCurve.length - 1)
-          // Interpolate voiced/noise between prev and current
-          const voiced = progress < 0.3 ? (prev?.ph.voiced || cur.ph.voiced) : cur.ph.voiced
-          const voicedAmp = progress < 0.3
-            ? (prev?.ph.voicedAmp ?? 0) * (1 - progress * 3) + cur.ph.voicedAmp * (progress * 3)
-            : cur.ph.voicedAmp
-          const noise = progress < 0.3
-            ? (prev?.ph.noise ?? 0) * (1 - progress * 3) + cur.ph.noise * (progress * 3)
-            : cur.ph.noise
-
-          engine.applyFrame({
-            voiced,
-            voicedAmp,
-            noise,
-            pitchHz: cur.pitchHz,
-            bands: curveBands,
-          }, stepMs * 0.8, 'smooth', t)
-          t += Math.max(0.005, stepMs / 1000)
-        }
-
-        // Brief offset toward next phoneme
-        const remainMs = totalPhonemeMs - curveMs
-        if (remainMs > 5 && next) {
-          const offsetBands = blendBands(cur.bands, next.bands, 0.4)
-          engine.applyFrame({
-            voiced: next.ph.voiced || cur.ph.voiced,
-            voicedAmp: cur.ph.voicedAmp * 0.6 + next.ph.voicedAmp * 0.4,
-            noise: cur.ph.noise * 0.6 + (next.ph.noise ?? 0) * 0.4,
-            pitchHz: cur.pitchHz * 0.6 + next.pitchHz * 0.4,
-            bands: offsetBands,
-          }, remainMs, 'expo', t)
-          t += Math.max(0.005, remainMs / 1000 - 0.005)
-        }
-      } else {
-        // ── Rule-based fallback: onset/steady/offset ──
+        // Check if we have a measured transition curve for this pair.
+        // The curve guides the blend SHAPE (how quickly to shift from prev→cur)
+        // but we always blend between OUR phoneme gains, not the curve's values.
+        const prevPhoneme = prev?.phoneme ?? ''
+        const transCurve = prev ? getTransitionCurve(prevPhoneme, cur.phoneme) : null
 
         // Phase 1: Onset transition
         if (onsetMs > 5) {
           const prevBands = prev ? prev.bands : SILENCE_BANDS
-          const blendToward = (prev && isConsonant(prev.ph.type) && isConsonant(cur.ph.type)) ? 0.65 : 0.5
+          // If we have a curve, derive the blend ratio from the curve's energy shift
+          // (how far the curve has moved from its start to its end at the 25% mark)
+          let blendToward = (prev && isConsonant(prev.ph.type) && isConsonant(cur.ph.type)) ? 0.65 : 0.5
+          if (transCurve) {
+            // Use curve shape: compare energy at frame 2 (25%) vs frame 0 (start)
+            // High change = fast onset, low change = gradual onset
+            const startEnergy = transCurve[0].reduce((a, b) => a + b, 0)
+            const midEnergy = transCurve[2].reduce((a, b) => a + b, 0)
+            const endEnergy = transCurve[7].reduce((a, b) => a + b, 0)
+            const totalShift = Math.abs(endEnergy - startEnergy) || 1
+            const earlyShift = Math.abs(midEnergy - startEnergy)
+            blendToward = Math.max(0.3, Math.min(0.8, earlyShift / totalShift))
+          }
           const onsetBands = blendBands(prevBands, cur.bands, blendToward)
           const prevAmp = prev?.ph.voicedAmp ?? 0
           engine.applyFrame({
