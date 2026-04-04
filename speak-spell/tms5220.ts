@@ -81,9 +81,9 @@ export class TMS5220 {
     let synthK6 = 0, synthK7 = 0, synthK8 = 0
     let synthK9 = 0, synthK10 = 0
 
-    // Filter state
-    let x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0
-    let x5 = 0, x6 = 0, x7 = 0, x8 = 0, x9 = 0
+    // Filter state (floating point)
+    let x0 = 0.0, x1 = 0.0, x2 = 0.0, x3 = 0.0, x4 = 0.0
+    let x5 = 0.0, x6 = 0.0, x7 = 0.0, x8 = 0.0, x9 = 0.0
 
     let periodCounter = 0
     let synthRand = 1
@@ -145,8 +145,8 @@ export class TMS5220 {
         }
       }
 
-      let u0: number, u1: number, u2: number, u3: number, u4: number
-      let u5: number, u6: number, u7: number, u8: number, u9: number, u10: number
+      let u0 = 0, u1 = 0, u2 = 0, u3 = 0, u4 = 0
+      let u5 = 0, u6 = 0, u7 = 0, u8 = 0, u9 = 0, u10 = 0
 
       if (synthPeriod) {
         // Voiced source
@@ -166,37 +166,47 @@ export class TMS5220 {
         u10 = (synthRand & 1) ? synthEnergy : -synthEnergy
       }
 
-      // Lattice filter forward path
-      // Use Math.imul for 32-bit integer multiply, clamp to int16 range
-      const cl = (v: number) => Math.max(-32768, Math.min(32767, v)) | 0
-      u9 = cl(u10 - ((Math.imul(synthK10, x9)) >> 7))
-      u8 = cl(u9 - ((Math.imul(synthK9, x8)) >> 7))
-      u7 = cl(u8 - ((Math.imul(synthK8, x7)) >> 7))
-      u6 = cl(u7 - ((Math.imul(synthK7, x6)) >> 7))
-      u5 = cl(u6 - ((Math.imul(synthK6, x5)) >> 7))
-      u4 = cl(u5 - ((Math.imul(synthK5, x4)) >> 7))
-      u3 = cl(u4 - ((Math.imul(synthK4, x3)) >> 7))
-      u2 = cl(u3 - ((Math.imul(synthK3, x2)) >> 7))
-      u1 = cl(u2 - ((Math.imul(synthK2, x1)) >> 15))
-      u0 = cl(u1 - ((Math.imul(synthK1, x0)) >> 15))
+      // Lattice filter in floating point (matches BrerDawg/ti_lpc approach)
+      // Convert K to float: K1,K2 divide by 32768, K3-K10 divide by 128
+      const fK1 = synthK1 / 32768, fK2 = synthK2 / 32768
+      const fK3 = synthK3 / 128, fK4 = synthK4 / 128
+      const fK5 = synthK5 / 128, fK6 = synthK6 / 128
+      const fK7 = synthK7 / 128, fK8 = synthK8 / 128
+      const fK9 = synthK9 / 128, fK10 = synthK10 / 128
 
-      // Lattice filter reverse path
-      // Clamp to int16 range — matches C int16_t behavior on Arduino
-      const clamp16 = (v: number) => Math.max(-32768, Math.min(32767, v)) | 0
-      x9 = clamp16(x8 + ((Math.imul(synthK9, u8)) >> 7))
-      x8 = clamp16(x7 + ((Math.imul(synthK8, u7)) >> 7))
-      x7 = clamp16(x6 + ((Math.imul(synthK7, u6)) >> 7))
-      x6 = clamp16(x5 + ((Math.imul(synthK6, u5)) >> 7))
-      x5 = clamp16(x4 + ((Math.imul(synthK5, u4)) >> 7))
-      x4 = clamp16(x3 + ((Math.imul(synthK4, u3)) >> 7))
-      x3 = clamp16(x2 + ((Math.imul(synthK3, u2)) >> 7))
-      x2 = clamp16(x1 + ((Math.imul(synthK2, u1)) >> 15))
-      x1 = clamp16(x0 + ((Math.imul(synthK1, u0)) >> 15))
-      x0 = clamp16(u0)
+      // Convert excitation to float
+      const fU10 = u10 / 256
 
-      // Output: Talkie outputs u0+128 as 8-bit unsigned for PWM
-      // We output as float. u0 range is roughly -256..256
-      output.push(u0 / 256)
+      // Forward path
+      u9 = fU10 - fK10 * x9
+      u8 = u9 - fK9 * x8
+      u7 = u8 - fK8 * x7
+      u6 = u7 - fK7 * x6
+      u5 = u6 - fK6 * x5
+      u4 = u5 - fK5 * x4
+      u3 = u4 - fK4 * x3
+      u2 = u3 - fK3 * x2
+      u1 = u2 - fK2 * x1
+      u0 = u1 - fK1 * x0
+
+      // Clamp output
+      if (u0 > 1.0) u0 = 1.0
+      if (u0 < -1.0) u0 = -1.0
+
+      // Reverse path
+      x9 = x8 + fK9 * u8
+      x8 = x7 + fK8 * u7
+      x7 = x6 + fK7 * u6
+      x6 = x5 + fK6 * u5
+      x5 = x4 + fK5 * u4
+      x4 = x3 + fK4 * u3
+      x3 = x2 + fK3 * u2
+      x2 = x1 + fK2 * u1
+      x1 = x0 + fK1 * u0
+      x0 = u0
+
+      // Output is already float [-1, 1] from the lattice filter
+      output.push(u0)
     }
 
     return new Float32Array(output)
