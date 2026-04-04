@@ -167,30 +167,32 @@ export class TMS5220 {
       }
 
       // Lattice filter forward path
-      // Use Math.imul for 32-bit integer multiply (avoids JS float precision issues)
-      // K3-K10 are int8, shift >>7. K1-K2 are int16, shift >>15
-      u9 = u10 - ((Math.imul(synthK10, x9)) >> 7)
-      u8 = u9 - ((Math.imul(synthK9, x8)) >> 7)
-      u7 = u8 - ((Math.imul(synthK8, x7)) >> 7)
-      u6 = u7 - ((Math.imul(synthK7, x6)) >> 7)
-      u5 = u6 - ((Math.imul(synthK6, x5)) >> 7)
-      u4 = u5 - ((Math.imul(synthK5, x4)) >> 7)
-      u3 = u4 - ((Math.imul(synthK4, x3)) >> 7)
-      u2 = u3 - ((Math.imul(synthK3, x2)) >> 7)
-      u1 = u2 - ((Math.imul(synthK2, x1)) >> 15)
-      u0 = u1 - ((Math.imul(synthK1, x0)) >> 15)
+      // Use Math.imul for 32-bit integer multiply, clamp to int16 range
+      const cl = (v: number) => Math.max(-32768, Math.min(32767, v)) | 0
+      u9 = cl(u10 - ((Math.imul(synthK10, x9)) >> 7))
+      u8 = cl(u9 - ((Math.imul(synthK9, x8)) >> 7))
+      u7 = cl(u8 - ((Math.imul(synthK8, x7)) >> 7))
+      u6 = cl(u7 - ((Math.imul(synthK7, x6)) >> 7))
+      u5 = cl(u6 - ((Math.imul(synthK6, x5)) >> 7))
+      u4 = cl(u5 - ((Math.imul(synthK5, x4)) >> 7))
+      u3 = cl(u4 - ((Math.imul(synthK4, x3)) >> 7))
+      u2 = cl(u3 - ((Math.imul(synthK3, x2)) >> 7))
+      u1 = cl(u2 - ((Math.imul(synthK2, x1)) >> 15))
+      u0 = cl(u1 - ((Math.imul(synthK1, x0)) >> 15))
 
       // Lattice filter reverse path
-      x9 = x8 + ((Math.imul(synthK9, u8)) >> 7)
-      x8 = x7 + ((Math.imul(synthK8, u7)) >> 7)
-      x7 = x6 + ((Math.imul(synthK7, u6)) >> 7)
-      x6 = x5 + ((Math.imul(synthK6, u5)) >> 7)
-      x5 = x4 + ((Math.imul(synthK5, u4)) >> 7)
-      x4 = x3 + ((Math.imul(synthK4, u3)) >> 7)
-      x3 = x2 + ((Math.imul(synthK3, u2)) >> 7)
-      x2 = x1 + ((Math.imul(synthK2, u1)) >> 15)
-      x1 = x0 + ((Math.imul(synthK1, u0)) >> 15)
-      x0 = u0
+      // Clamp to int16 range — matches C int16_t behavior on Arduino
+      const clamp16 = (v: number) => Math.max(-32768, Math.min(32767, v)) | 0
+      x9 = clamp16(x8 + ((Math.imul(synthK9, u8)) >> 7))
+      x8 = clamp16(x7 + ((Math.imul(synthK8, u7)) >> 7))
+      x7 = clamp16(x6 + ((Math.imul(synthK7, u6)) >> 7))
+      x6 = clamp16(x5 + ((Math.imul(synthK6, u5)) >> 7))
+      x5 = clamp16(x4 + ((Math.imul(synthK5, u4)) >> 7))
+      x4 = clamp16(x3 + ((Math.imul(synthK4, u3)) >> 7))
+      x3 = clamp16(x2 + ((Math.imul(synthK3, u2)) >> 7))
+      x2 = clamp16(x1 + ((Math.imul(synthK2, u1)) >> 15))
+      x1 = clamp16(x0 + ((Math.imul(synthK1, u0)) >> 15))
+      x0 = clamp16(u0)
 
       // Output: Talkie outputs u0+128 as 8-bit unsigned for PWM
       // We output as float. u0 range is roughly -256..256
