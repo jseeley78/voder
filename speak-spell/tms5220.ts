@@ -23,17 +23,29 @@ export class TMS5220 {
   decode(data: Uint8Array | number[]): Float32Array {
     const bytes = data instanceof Uint8Array ? data : new Uint8Array(data)
 
+    // Bit reversal — Talkie reverses each byte before reading
+    function rev(a: number): number {
+      a = ((a >> 4) & 0x0F) | ((a << 4) & 0xF0)
+      a = ((a >> 2) & 0x33) | ((a << 2) & 0xCC)
+      a = ((a >> 1) & 0x55) | ((a << 1) & 0xAA)
+      return a
+    }
+
     let ptrAddr = 0, ptrBit = 0
-    function getBits(n: number): number {
-      let val = 0
-      for (let i = 0; i < n; i++) {
-        if (ptrAddr < bytes.length) {
-          val |= ((bytes[ptrAddr] >> ptrBit) & 1) << i
-        }
-        ptrBit++
-        if (ptrBit === 8) { ptrBit = 0; ptrAddr++ }
+    function getBits(bits: number): number {
+      // Exact match to Talkie::getBits — reads from bit-reversed bytes
+      let data = rev(bytes[ptrAddr] ?? 0) << 8
+      if (ptrBit + bits > 8) {
+        data |= rev(bytes[ptrAddr + 1] ?? 0)
       }
-      return val
+      data <<= ptrBit
+      const value = (data >> (16 - bits)) & ((1 << bits) - 1)
+      ptrBit += bits
+      if (ptrBit >= 8) {
+        ptrBit -= 8
+        ptrAddr++
+      }
+      return value
     }
 
     let synthPeriod = 0, synthEnergy = 0
