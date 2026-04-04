@@ -72,13 +72,18 @@ export class TMS5220 {
     const reader = new BitReader(data)
     const output: number[] = []
 
-    // Synthesis state
+    // Current synthesis parameters (accumulate via interpolation)
     let synthEnergy = 0
     let synthPeriod = 0
-    const synthK = new Int32Array(10)
+    const synthK = new Array(10).fill(0)
+
+    // Target parameters (read from bitstream)
+    let targetEnergy = 0
+    let targetPeriod = 0
+    const targetK = new Array(10).fill(0)
 
     // Lattice filter state
-    const x = new Int32Array(10)
+    const x = new Array(10).fill(0)
 
     // Noise LFSR
     let synthRand = 1
@@ -86,121 +91,103 @@ export class TMS5220 {
     // Pitch counter
     let periodCounter = 0
 
+    // ISR sample counter (200 samples per frame = 8 sub-frames of 25)
+    let sampleCount = 0
+
     while (!reader.done) {
-      // Read frame
+      // Read next frame
       const energyIdx = reader.read(4)
 
       if (energyIdx === 0) {
-        // Silence frame
-        synthEnergy = 0
-        for (let s = 0; s < 200; s++) output.push(0)
+        // Silence frame — zero energy, generate 200 silent samples
+        targetEnergy = 0
+        targetPeriod = 0
+        for (let i = 0; i < 10; i++) targetK[i] = 0
+        // Generate silence with interpolation toward zero
+        for (let s = 0; s < 200; s++) {
+          synthEnergy = 0
+          output.push(0)
+        }
+        synthPeriod = 0
+        for (let i = 0; i < 10; i++) synthK[i] = 0
         continue
       }
+
       if (energyIdx === 15) {
         // Stop frame
         break
       }
 
-      const newEnergy = ENERGY[energyIdx]
+      targetEnergy = ENERGY[energyIdx]
       const repeat = reader.read(1)
       const pitchIdx = reader.read(6)
-      const newPeriod = PERIOD[pitchIdx]
+      targetPeriod = PERIOD[pitchIdx]
 
-      const newK = new Int32Array(10)
       if (!repeat) {
-        // Read K1-K4 always
         for (let i = 0; i < 4; i++) {
-          newK[i] = K_TABLES[i][reader.read(K_BITS[i])]
+          targetK[i] = K_TABLES[i][reader.read(K_BITS[i])]
         }
-        // Read K5-K10 only for voiced frames
-        if (newPeriod > 0) {
+        if (targetPeriod > 0) {
           for (let i = 4; i < 10; i++) {
-            newK[i] = K_TABLES[i][reader.read(K_BITS[i])]
+            targetK[i] = K_TABLES[i][reader.read(K_BITS[i])]
           }
+        } else {
+          for (let i = 4; i < 10; i++) targetK[i] = 0
         }
-      } else {
-        // Repeat: keep previous K values
-        for (let i = 0; i < 10; i++) newK[i] = synthK[i]
       }
+      // If repeat, targetK stays the same (already set from previous non-repeat frame)
 
-      // Interpolation coefficients (8 sub-frames of 25 samples)
-      const interp = [0, 3, 3, 3, 2, 2, 1, 1] // right-shift amounts for interpolation
-
-      for (let sub = 0; sub < 8; sub++) {
-        // Interpolate parameters
-        const shift = interp[sub]
-        if (sub === 0) {
-          // First sub-frame: snap to new target (actually start interpolating)
-        }
-        // Linear interpolation via bit shifting
-        const curEnergy = synthEnergy + ((newEnergy - synthEnergy) >> shift)
-        const curPeriod = synthPeriod + ((newPeriod - synthPeriod) >> shift)
-        const curK = new Int32Array(10)
-        for (let i = 0; i < 10; i++) {
-          curK[i] = synthK[i] + ((newK[i] - synthK[i]) >> shift)
-        }
-
-        // Generate 25 samples per sub-frame
-        for (let s = 0; s < 25; s++) {
-          let u10: number
-
-          if (curPeriod > 0) {
-            // Voiced: chirp excitation
-            if (periodCounter < CHIRP.length) {
-              // Chirp values are unsigned 0-127, convert to signed and scale by energy
-              u10 = (CHIRP[periodCounter] * curEnergy) >> 8
-            } else {
-              u10 = 0
-            }
-            periodCounter++
-            if (periodCounter >= curPeriod) periodCounter = 0
+      // Generate 200 samples (8 sub-frames of 25 samples)
+      for (sampleCount = 0; sampleCount < 200; sampleCount++) {
+        // Every 25 samples, interpolate parameters toward target
+        if (sampleCount % 25 === 0) {
+          const subFrame = sampleCount / 25
+          if (subFrame === 7) {
+            // Last sub-frame: snap to target
+            synthEnergy = targetEnergy
+            synthPeriod = targetPeriod
+            for (let i = 0; i < 10; i++) synthK[i] = targetK[i]
           } else {
-            // Unvoiced: LFSR noise
-            synthRand = (synthRand >> 1) ^ ((synthRand & 1) ? 0xB800 : 0)
-            u10 = (synthRand & 1) ? curEnergy : -curEnergy
+            // Interpolate: move 1/8 of the way toward target each sub-frame
+            synthEnergy += (targetEnergy - synthEnergy) >> 3
+            synthPeriod += (targetPeriod - synthPeriod) >> 3
+            for (let i = 0; i < 10; i++) {
+              synthK[i] += (targetK[i] - synthK[i]) >> 3
+            }
           }
-
-          // 10-stage lattice filter (from K10 down to K1)
-          // All math in integer, K values scaled by 512
-          let u9 = u10 - ((curK[9] * x[9]) >> 9)
-          x[9] = x[8] + ((curK[9] * u9) >> 9)
-
-          let u8 = u9 - ((curK[8] * x[8]) >> 9)
-          x[8] = x[7] + ((curK[8] * u8) >> 9)
-
-          let u7 = u8 - ((curK[7] * x[7]) >> 9)
-          x[7] = x[6] + ((curK[7] * u7) >> 9)
-
-          let u6 = u7 - ((curK[6] * x[6]) >> 9)
-          x[6] = x[5] + ((curK[6] * u6) >> 9)
-
-          let u5 = u6 - ((curK[5] * x[5]) >> 9)
-          x[5] = x[4] + ((curK[5] * u5) >> 9)
-
-          let u4 = u5 - ((curK[4] * x[4]) >> 9)
-          x[4] = x[3] + ((curK[4] * u4) >> 9)
-
-          let u3 = u4 - ((curK[3] * x[3]) >> 9)
-          x[3] = x[2] + ((curK[3] * u3) >> 9)
-
-          let u2 = u3 - ((curK[2] * x[2]) >> 9)
-          x[2] = x[1] + ((curK[2] * u2) >> 9)
-
-          let u1 = u2 - ((curK[1] * x[1]) >> 9)
-          x[1] = x[0] + ((curK[1] * u1) >> 9)
-
-          let u0 = u1 - ((curK[0] * x[0]) >> 9)
-          x[0] = u0
-
-          // Clamp and output
-          output.push(Math.max(-1, Math.min(1, u0 / 512)))
         }
-      }
 
-      // Update synthesis parameters for next frame
-      synthEnergy = newEnergy
-      synthPeriod = newPeriod
-      for (let i = 0; i < 10; i++) synthK[i] = newK[i]
+        // Excitation source
+        let u10: number
+
+        if (synthPeriod > 0) {
+          // Voiced: chirp excitation
+          if (periodCounter < CHIRP.length) {
+            u10 = ((CHIRP[periodCounter] | 0) * synthEnergy) >> 8
+          } else {
+            u10 = 0
+          }
+          periodCounter++
+          if (periodCounter >= synthPeriod) periodCounter = 0
+        } else {
+          // Unvoiced: LFSR noise
+          synthRand = (synthRand >> 1) ^ ((synthRand & 1) ? 0xB800 : 0)
+          u10 = (synthRand & 1) ? synthEnergy : -synthEnergy
+        }
+
+        // 10-stage lattice filter
+        // Process from stage 10 down to stage 1
+        let u = u10
+        for (let i = 9; i >= 0; i--) {
+          const kVal = synthK[i]
+          u = u - ((kVal * x[i]) >> 9)
+          x[i] = x[i > 0 ? i - 1 : 0] + ((kVal * u) >> 9)
+        }
+        x[0] = u
+
+        // Scale output: values are roughly in -512..512 range
+        output.push(Math.max(-1, Math.min(1, u / 256)))
+      }
     }
 
     return new Float32Array(output)
