@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/voder/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speak & Spell — TMS5220 LPC</title>
+</head>
+<body>
+  <div class="wrap">
+    <div class="row" style="justify-content: space-between; align-items: baseline;">
+      <h1>Speak & Spell</h1>
+      <div class="build-info"><a href="/voder/">Voder</a></div>
+    </div>
+    <p>
+      Browser-based emulation of the 1978 Texas Instruments Speak & Spell.
+      Uses a 10th-order LPC lattice filter at 8kHz with TMS5220-accurate
+      coefficient tables. Type any text to hear it spoken through LPC synthesis.
+    </p>
+
+    <div class="card">
+      <label for="textInput">Text</label>
+      <input id="textInput" type="text" value="Hello, I am Speak and Spell." autocomplete="off" spellcheck="false">
+      <div class="row" style="margin-top: 10px;">
+        <button id="speakBtn" class="primary">Speak</button>
+        <button id="exHello">Hello</button>
+        <button id="exSpell">Spell it</button>
+        <button id="exCorrect">That is correct</button>
+        <button id="exWrong">Wrong, try again</button>
+        <button id="exAlphabet">A B C D E</button>
+        <button id="exNumbers">1 2 3 4 5</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="scope-container">
+        <div class="current-word" id="currentWord"></div>
+        <canvas id="scope" width="600" height="120"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>Status</label>
+      <div id="status" class="small">Ready.</div>
+    </div>
+  </div>
+
+  <link rel="stylesheet" href="../src/style.css" />
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

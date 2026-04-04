@@ -37,5 +37,11 @@ export default defineConfig({
   ],
   build: {
     chunkSizeWarningLimit: 4000,
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        speakspell: 'speak-spell/index.html',
+      },
+    },
   },
 })
