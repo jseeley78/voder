@@ -143,10 +143,13 @@ export async function playLPC(ctx: AudioContext, data: Uint8Array | number[], an
     for (let i = 0; i < samples8k.length; i++) samples8k[i] *= sc
   }
 
-  // Create native 8kHz buffer
+  // Create native 8kHz buffer with 8-bit quantization (matches original DAC)
   const buffer = ctx.createBuffer(1, samples8k.length, 8000)
   const channel = buffer.getChannelData(0)
-  for (let i = 0; i < samples8k.length; i++) channel[i] = samples8k[i]
+  for (let i = 0; i < samples8k.length; i++) {
+    // Quantize to 8-bit (256 levels) like the original TMS5100 DAC
+    channel[i] = Math.round(samples8k[i] * 127) / 127
+  }
 
   const source = ctx.createBufferSource()
   source.buffer = buffer
