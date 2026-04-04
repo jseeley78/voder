@@ -226,16 +226,11 @@ export async function playLPC(ctx: AudioContext, data: Uint8Array | number[], an
     for (let i = 0; i < samples8k.length; i++) samples8k[i] *= sc
   }
 
-  const ratio = ctx.sampleRate / 8000
-  const outLen = Math.ceil(samples8k.length * ratio)
-  const buffer = ctx.createBuffer(1, outLen, ctx.sampleRate)
+  // Create buffer at native 8kHz — Web Audio handles the upsampling
+  const buffer = ctx.createBuffer(1, samples8k.length, 8000)
   const channel = buffer.getChannelData(0)
-  for (let i = 0; i < outLen; i++) {
-    const srcPos = i / ratio
-    const lo = Math.floor(srcPos)
-    const hi = Math.min(lo + 1, samples8k.length - 1)
-    const frac = srcPos - lo
-    channel[i] = samples8k[lo] * (1 - frac) + samples8k[hi] * frac
+  for (let i = 0; i < samples8k.length; i++) {
+    channel[i] = samples8k[i]
   }
 
   const source = ctx.createBufferSource()
