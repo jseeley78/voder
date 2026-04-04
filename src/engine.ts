@@ -166,10 +166,9 @@ export class VoderEngine {
       const filter = this.ctx.createBiquadFilter()
       filter.type = 'bandpass'
       filter.frequency.value = BAND_CENTERS[i]
-      // Q set per-band; default tilt=0.5 (upper bands sharper, lower wider)
-      const bandPos = i / 9
-      const tiltFactor = 1.0 + 0.5 * (bandPos - 0.5)
-      filter.Q.value = BAND_Q[i] * 3.5 * Math.max(0.3, tiltFactor)
+      // Per-band Q from CMA-ES v2 optimization (200 generations, MCD+CTC objective)
+      const CMA_Q = [4.8, 4.3, 7.2, 11.4, 5.3, 13.9, 10.3, 12.3, 12.1, 14.3]
+      filter.Q.value = CMA_Q[i]
 
       const gain = this.ctx.createGain()
       gain.gain.value = 0
