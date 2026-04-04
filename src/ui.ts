@@ -490,6 +490,28 @@ export function initUI(): void {
   $input('qTilt').addEventListener('input', () => {
     engine?.setFilterQ(parseFloat($input('filterQ').value), parseFloat($input('qTilt').value))
   })
+
+  // Q preset buttons for A/B comparison
+  // CMA-ES v2 optimized per-band Q values (200 generations, MCD+CTC objective)
+  const CMA_BAND_Q = [4.8, 4.3, 7.2, 11.4, 5.3, 13.9, 10.3, 12.3, 12.1, 14.3]
+  $('qPresetA').addEventListener('click', () => {
+    if (!engine) return
+    engine.setFilterQ(parseFloat($input('filterQ').value), parseFloat($input('qTilt').value))
+    setStatus('Q: Current (uniform)')
+  })
+  $('qPresetB').addEventListener('click', () => {
+    if (!engine) return
+    // Apply per-band Q directly to filters
+    for (let i = 0; i < 10; i++) {
+      (engine as any).bandFilters[i].Q.value = CMA_BAND_Q[i]
+    }
+    // Volume compensation
+    const avgQ = CMA_BAND_Q.reduce((a, b) => a + b, 0) / 10
+    if ((engine as any).master) {
+      (engine as any).master.gain.value = (engine as any).masterValue * Math.sqrt(avgQ / 2.5)
+    }
+    setStatus('Q: CMA-ES optimized (per-band)')
+  })
   bindSliderDisplay('master', 'masterVal', v => Number(v).toFixed(2))
   bindSliderDisplay('transitionMs', 'transitionVal')
   bindSliderDisplay('jitter', 'jitterVal', v => Number(v).toFixed(1))
