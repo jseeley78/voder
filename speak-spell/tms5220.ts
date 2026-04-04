@@ -281,9 +281,17 @@ export class TMS5220 {
  * Play LPC data through Web Audio.
  * Upsamples from 8kHz to the AudioContext sample rate.
  */
-export async function playLPC(ctx: AudioContext, data: Uint8Array | number[]): Promise<void> {
+export async function playLPC(ctx: AudioContext, data: Uint8Array | number[], analyser?: AnalyserNode): Promise<void> {
   const synth = new TMS5220()
   const samples8k = synth.decode(data)
+
+  // Normalize
+  let peak = 0
+  for (let i = 0; i < samples8k.length; i++) peak = Math.max(peak, Math.abs(samples8k[i]))
+  if (peak > 0.01) {
+    const sc = 0.85 / peak
+    for (let i = 0; i < samples8k.length; i++) samples8k[i] *= sc
+  }
 
   // Upsample to AudioContext rate
   const ratio = ctx.sampleRate / 8000
@@ -291,7 +299,6 @@ export async function playLPC(ctx: AudioContext, data: Uint8Array | number[]): P
   const buffer = ctx.createBuffer(1, outLen, ctx.sampleRate)
   const channel = buffer.getChannelData(0)
 
-  // Linear interpolation upsampling
   for (let i = 0; i < outLen; i++) {
     const srcPos = i / ratio
     const lo = Math.floor(srcPos)
@@ -300,10 +307,10 @@ export async function playLPC(ctx: AudioContext, data: Uint8Array | number[]): P
     channel[i] = samples8k[lo] * (1 - frac) + samples8k[hi] * frac
   }
 
-  // Play
   const source = ctx.createBufferSource()
   source.buffer = buffer
-  source.connect(ctx.destination)
+  if (analyser) source.connect(analyser)
+  else source.connect(ctx.destination)
   source.start()
 
   return new Promise(resolve => {

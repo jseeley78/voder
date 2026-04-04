@@ -19,8 +19,8 @@
     </p>
 
     <div class="card">
-      <label for="textInput">Text</label>
-      <input id="textInput" type="text" value="Hello, I am Speak and Spell." autocomplete="off" spellcheck="false">
+      <label for="textInput">Text (uses ROM words when available, LPC synthesis for others)</label>
+      <input id="textInput" type="text" value="HELLO" autocomplete="off" spellcheck="false">
       <div class="row" style="margin-top: 10px;">
         <button id="speakBtn" class="primary">Speak</button>
         <button id="exHello">Hello</button>
@@ -28,8 +28,13 @@
         <button id="exCorrect">That is correct</button>
         <button id="exWrong">Wrong, try again</button>
         <button id="exAlphabet">A B C D E</button>
-        <button id="exNumbers">1 2 3 4 5</button>
+        <button id="exNumbers">One two three</button>
       </div>
+    </div>
+
+    <div class="card">
+      <label>TI-99 Vocabulary (360 pre-encoded LPC words)</label>
+      <div id="wordGrid" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;"></div>
     </div>
 
     <div class="card">
