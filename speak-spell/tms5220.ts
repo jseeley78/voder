@@ -167,29 +167,29 @@ export class TMS5220 {
       }
 
       // Lattice filter forward path
-      // K3-K10 are int8, divide by 128 (>>7)
-      // K1-K2 are int16, divide by 32768 ((<<1)>>16 = >>15)
-      u9 = u10 - ((synthK10 * x9) >> 7)
-      u8 = u9 - ((synthK9 * x8) >> 7)
-      u7 = u8 - ((synthK8 * x7) >> 7)
-      u6 = u7 - ((synthK7 * x6) >> 7)
-      u5 = u6 - ((synthK6 * x5) >> 7)
-      u4 = u5 - ((synthK5 * x4) >> 7)
-      u3 = u4 - ((synthK4 * x3) >> 7)
-      u2 = u3 - ((synthK3 * x2) >> 7)
-      u1 = u2 - (((synthK2 * x1) << 1) >> 16)
-      u0 = u1 - (((synthK1 * x0) << 1) >> 16)
+      // Use Math.imul for 32-bit integer multiply (avoids JS float precision issues)
+      // K3-K10 are int8, shift >>7. K1-K2 are int16, shift >>15
+      u9 = u10 - ((Math.imul(synthK10, x9)) >> 7)
+      u8 = u9 - ((Math.imul(synthK9, x8)) >> 7)
+      u7 = u8 - ((Math.imul(synthK8, x7)) >> 7)
+      u6 = u7 - ((Math.imul(synthK7, x6)) >> 7)
+      u5 = u6 - ((Math.imul(synthK6, x5)) >> 7)
+      u4 = u5 - ((Math.imul(synthK5, x4)) >> 7)
+      u3 = u4 - ((Math.imul(synthK4, x3)) >> 7)
+      u2 = u3 - ((Math.imul(synthK3, x2)) >> 7)
+      u1 = u2 - ((Math.imul(synthK2, x1)) >> 15)
+      u0 = u1 - ((Math.imul(synthK1, x0)) >> 15)
 
       // Lattice filter reverse path
-      x9 = x8 + ((synthK9 * u8) >> 7)
-      x8 = x7 + ((synthK8 * u7) >> 7)
-      x7 = x6 + ((synthK7 * u6) >> 7)
-      x6 = x5 + ((synthK6 * u5) >> 7)
-      x5 = x4 + ((synthK5 * u4) >> 7)
-      x4 = x3 + ((synthK4 * u3) >> 7)
-      x3 = x2 + ((synthK3 * u2) >> 7)
-      x2 = x1 + (((synthK2 * u1) << 1) >> 16)
-      x1 = x0 + (((synthK1 * u0) << 1) >> 16)
+      x9 = x8 + ((Math.imul(synthK9, u8)) >> 7)
+      x8 = x7 + ((Math.imul(synthK8, u7)) >> 7)
+      x7 = x6 + ((Math.imul(synthK7, u6)) >> 7)
+      x6 = x5 + ((Math.imul(synthK6, u5)) >> 7)
+      x5 = x4 + ((Math.imul(synthK5, u4)) >> 7)
+      x4 = x3 + ((Math.imul(synthK4, u3)) >> 7)
+      x3 = x2 + ((Math.imul(synthK3, u2)) >> 7)
+      x2 = x1 + ((Math.imul(synthK2, u1)) >> 15)
+      x1 = x0 + ((Math.imul(synthK1, u0)) >> 15)
       x0 = u0
 
       // Output: Talkie outputs u0+128 as 8-bit unsigned for PWM
