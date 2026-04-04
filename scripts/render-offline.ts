@@ -70,6 +70,7 @@ async function renderPhrase(text: string): Promise<Float32Array> {
     basePitch: 110,
     rateScale: 1.0,
     expressiveness: 1.0,
+    randomizeExpressiveness: false,
     humanize: 0,
   })
 
