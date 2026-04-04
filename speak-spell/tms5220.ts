@@ -150,31 +150,15 @@ export class TMS5220 {
         }
       }
 
-      // Generate 200 samples (8 sub-frames × 25 samples) for this frame
-      for (let subFrame = 0; subFrame < 8; subFrame++) {
-        // Interpolate at the START of each sub-frame
-        // Talkie uses: synth += (new - synth) >> 3 for sub-frames 0-6, snap on 7
-        if (subFrame < 7) {
-          synthEnergy += (newEnergy - synthEnergy) >> 3
-          synthPeriod += (newPeriod - synthPeriod) >> 3
-          synthK1 += (newK1 - synthK1) >> 3
-          synthK2 += (newK2 - synthK2) >> 3
-          synthK3 += (newK3 - synthK3) >> 3
-          synthK4 += (newK4 - synthK4) >> 3
-          synthK5 += (newK5 - synthK5) >> 3
-          synthK6 += (newK6 - synthK6) >> 3
-          synthK7 += (newK7 - synthK7) >> 3
-          synthK8 += (newK8 - synthK8) >> 3
-          synthK9 += (newK9 - synthK9) >> 3
-          synthK10 += (newK10 - synthK10) >> 3
-        } else {
-          synthEnergy = newEnergy
-          synthPeriod = newPeriod
-          synthK1 = newK1; synthK2 = newK2; synthK3 = newK3; synthK4 = newK4
-          synthK5 = newK5; synthK6 = newK6; synthK7 = newK7; synthK8 = newK8
-          synthK9 = newK9; synthK10 = newK10
-        }
+      // Talkie snaps to new values immediately (no interpolation for TMS5100)
+      synthEnergy = newEnergy
+      synthPeriod = newPeriod
+      synthK1 = newK1; synthK2 = newK2; synthK3 = newK3; synthK4 = newK4
+      synthK5 = newK5; synthK6 = newK6; synthK7 = newK7; synthK8 = newK8
+      synthK9 = newK9; synthK10 = newK10
 
+      // Generate 200 samples for this frame
+      for (let subFrame = 0; subFrame < 8; subFrame++) {
         for (let s = 0; s < 25; s++) {
           let u10: number
 
