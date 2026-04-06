@@ -130,7 +130,12 @@ export class TMS5220 {
   }
 }
 
-export async function playLPC(ctx: AudioContext, data: Uint8Array | number[], analyser?: AnalyserNode): Promise<void> {
+export async function playLPC(
+  ctx: AudioContext,
+  data: Uint8Array | number[],
+  analyser?: AnalyserNode,
+  authentic = true,
+): Promise<void> {
   const synth = new TMS5220()
   const samples8k = synth.decode(data)
   if (samples8k.length === 0) return
@@ -143,7 +148,7 @@ export async function playLPC(ctx: AudioContext, data: Uint8Array | number[], an
     for (let i = 0; i < samples8k.length; i++) samples8k[i] *= sc
   }
 
-  // Create native 8kHz buffer with 8-bit quantization (matches original DAC)
+  // Create native 8kHz buffer
   const buffer = ctx.createBuffer(1, samples8k.length, 8000)
   const channel = buffer.getChannelData(0)
   for (let i = 0; i < samples8k.length; i++) {
@@ -153,8 +158,51 @@ export async function playLPC(ctx: AudioContext, data: Uint8Array | number[], an
 
   const source = ctx.createBufferSource()
   source.buffer = buffer
-  if (analyser) source.connect(analyser)
-  else source.connect(ctx.destination)
+
+  // Build audio chain
+  let outputNode: AudioNode = source
+
+  if (authentic) {
+    // Simulate the original Speak & Spell hardware:
+    // 1. Tiny speaker resonance (bandpass centered ~1kHz)
+    const speakerResonance = ctx.createBiquadFilter()
+    speakerResonance.type = 'peaking'
+    speakerResonance.frequency.value = 1200
+    speakerResonance.Q.value = 0.8
+    speakerResonance.gain.value = 6
+
+    // 2. Tiny speaker rolloff (lowpass ~3kHz)
+    const speakerRolloff = ctx.createBiquadFilter()
+    speakerRolloff.type = 'lowpass'
+    speakerRolloff.frequency.value = 3200
+    speakerRolloff.Q.value = 0.7
+
+    // 3. No deep bass (highpass ~200Hz — tiny speaker can't reproduce)
+    const noSubBass = ctx.createBiquadFilter()
+    noSubBass.type = 'highpass'
+    noSubBass.frequency.value = 200
+    noSubBass.Q.value = 0.5
+
+    // 4. Slight distortion via waveshaper (overdriven amplifier)
+    const waveshaper = ctx.createWaveShaper()
+    const curve = new Float32Array(256)
+    for (let i = 0; i < 256; i++) {
+      const x = (i / 128) - 1
+      // Soft clipping
+      curve[i] = Math.tanh(x * 1.5)
+    }
+    waveshaper.curve = curve
+
+    source.connect(noSubBass)
+    noSubBass.connect(speakerResonance)
+    speakerResonance.connect(speakerRolloff)
+    speakerRolloff.connect(waveshaper)
+    outputNode = waveshaper
+  }
+
+  if (analyser) outputNode.connect(analyser)
+  else outputNode.connect(ctx.destination)
+
   source.start()
   return new Promise(resolve => { source.onended = () => resolve() })
 }

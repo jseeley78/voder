@@ -336,7 +336,8 @@ async function playRomWord(name: string) {
   setStatus(`Playing ROM word: ${name}`)
 
   try {
-    await playLPC(ctx, data, analyserNode ?? undefined)
+    const authentic = ($('authenticMode') as HTMLInputElement).checked
+    await playLPC(ctx, data, analyserNode ?? undefined, authentic)
     setStatus('Done.')
     setTimeout(() => setDisplay(''), 500)
   } catch (err: any) {
